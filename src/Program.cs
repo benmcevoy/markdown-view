@@ -448,7 +448,73 @@ namespace MdView
 
         private static string RenderMarkdown(string markdown)
         {
-            return Markdig.Markdown.ToHtml(markdown);
+            // Resolve internal markdown links before rendering
+            var markdownWithLinks = ResolveMarkdownLink(markdown);
+            return Markdig.Markdown.ToHtml(markdownWithLinks);
+        }
+
+        /// <summary>
+        /// Resolves relative markdown links (e.g., [link](./other.md))
+        /// </summary>
+        private static string ResolveMarkdownLink(string markdown)
+        {
+            if (string.IsNullOrEmpty(markdown))
+            {
+                return markdown;
+            }
+
+            // Pattern to match markdown links: [text](path)
+            var linkPattern = new Regex(@"\[([^\]]+)\]\(([^)]+)\)", RegexOptions.Compiled);
+
+            var result = linkPattern.Replace(markdown, (match) =>
+            {
+                var linkPath = match.Groups[2].Value;
+
+                // Handle relative paths
+                if (linkPath.StartsWith("./"))
+                {
+                    linkPath = linkPath.Substring(2);
+                }
+                else if (linkPath.StartsWith("../"))
+                {
+                    // Skip for now - don't resolve parent directory links
+                    return match.Value;
+                }
+                else if (linkPath.StartsWith("#"))
+                {
+                    // Anchor link - keep as is
+                    return match.Value;
+                }
+                else
+                {
+                    // Absolute path or external link - keep as is
+                    return match.Value;
+                }
+
+                return match.Value;
+            });
+
+            return result;
+        }
+
+        /// <summary>
+        /// Generates JavaScript to maintain scroll position when navigating via markdown links
+        /// </summary>
+        private static string GenerateScrollPositionScript(string currentPath)
+        {
+            var escapedPath = currentPath.Replace("'", "\\'");
+            var script = new StringBuilder();
+            script.Append("<script>");
+            script.Append("function maintainScrollPosition() {");
+            script.Append("    var currentPath = document.getElementById('current-path').textContent;");
+            script.Append("    var targetPath = \"" + escapedPath + "\";");
+            script.Append("    var targetElement = document.querySelector('[data-path=\"' + targetPath + '\"]');");
+            script.Append("    if (targetElement) {");
+            script.Append("        targetElement.scrollIntoView({{ behavior: 'smooth' }});");
+            script.Append("    }");
+            script.Append("}");
+            script.Append("</script>");
+            return script.ToString();
         }
 
         private static string GenerateHtml(NavigationItem navItem, string renderedContent)
@@ -512,6 +578,10 @@ namespace MdView
             html.Append("<div class=\"main-content\">");
             html.Append("<div class=\"content\">");
 
+            // Store current path for scroll position maintenance
+            var escapedPath = navItem.RelativePath.Replace("'", "\\'");
+            html.Append("<div id='current-path' data-path='" + escapedPath + "'></div>");
+
             // Raw/Render Toggle
             html.Append("<div class=\"toggle-container\">");
             html.Append("<h3>View Mode</h3>");
@@ -534,11 +604,8 @@ namespace MdView
             html.Append(renderedContent);
             html.Append("</div>");
 
-            html.Append("</div>");
-            html.Append("</div>");
-            html.Append("</div>");
-            html.Append("</body>");
-            html.Append("</html>");
+            // Maintain scroll position when navigating via markdown links
+            html.Append(GenerateScrollPositionScript(navItem.RelativePath));
             return html.ToString();
         }
 
