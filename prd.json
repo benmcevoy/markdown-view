@@ -63,7 +63,7 @@
         "Maintain scroll position between views",
         "Handle broken links gracefully"
       ],
-      "passes": false
+      "passes": true
     },
     {
       "id": "US-006",
