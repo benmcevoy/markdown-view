@@ -1,0 +1,18 @@
+# Ralph Progress Log
+Started: Sun 08 Mar 2026 19:54:56 AEDT
+## 2026-03-08 - US-001
+- Implemented basic path-to-file mapping in Program.cs
+- Added query string removal from request paths
+- Added URL normalization (trailing slash removal)
+- Added URL decoding
+- Added directory traversal protection
+- Added file existence checking
+- Added 404 handling for missing files
+- Added directory default file (index.md) support
+- Files changed: src/Program.cs, src/Scanner.cs, sample/topic/index.md
+- **Learnings for future iterations:**
+  - Patterns discovered: context.Request.Path returns PathString type, must convert to string using .ToString()
+  - Gotcha: Path.Combine doesn't work correctly with absolute paths (starting with /), must strip leading slash first
+  - Gotcha: The server runs on port 5000 by default, need to kill existing processes before restarting
+  - Useful context: The sample directory is at /home/agent/hello-world/sample, files are directly in it without the sample/ prefix in the file system path
+---

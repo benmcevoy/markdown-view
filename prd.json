@@ -1,0 +1,91 @@
+{
+  "project": "Markdown Viewer",
+  "version": "1.0.0",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Implement Scanner to Parse Markdown Files",
+      "description": "Implement the Scanner class to parse .md files in the configured directory, build a nested navigation structure matching folder hierarchy, and identify frontmatter metadata if present.",
+      "acceptanceCriteria": [
+        "Scanner recursively scans directories for .md files",
+        "Builds nested navigation structure matching folder hierarchy",
+        "Parses YAML frontmatter if present in markdown files",
+        "Populates NavigationItem.Content with file content",
+        "Populates NavigationItem.RelativePath with relative path from root"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-002",
+      "title": "Create Web Server Routes",
+      "description": "Implement routing for / and /folder/subfolder/file.md paths, serve static CSS/JS assets for the UI, and handle 404 for invalid paths.",
+      "acceptanceCriteria": [
+        "Route / serves the root markdown (index.md or sample markdown)",
+        "Route /folder/file.md serves the specified markdown file",
+        "Route /folder/ serves index.md in that folder if it exists",
+        "Serve static CSS/JS assets for the UI",
+        "Return 404 for invalid paths",
+        "Prevent directory traversal attacks"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-003",
+      "title": "Implement Sidebar Navigation",
+      "description": "Generate HTML for the file structure sidebar, highlight current page in the navigation, and add search/filter functionality.",
+      "acceptanceCriteria": [
+        "Generate HTML sidebar showing navigation tree",
+        "Highlight current page in the navigation",
+        "Show folder structure with expandable/collapsible folders",
+        "Add search/filter functionality for navigation items"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-004",
+      "title": "Add Raw/Rendered Markdown View Toggle",
+      "description": "Create a UI switch between raw markdown and rendered HTML, implement syntax highlighting for code blocks, and add preview mode.",
+      "acceptanceCriteria": [
+        "UI toggle between raw markdown and rendered HTML",
+        "Syntax highlighting for code blocks in raw view",
+        "Properly render markdown using Markdig",
+        "Preserve line numbers in raw view"
+      ],
+      "passes": true
+    },
+    {
+      "id": "US-005",
+      "title": "Handle Internal Markdown Links",
+      "description": "Resolve relative links between markdown files, update sidebar navigation when navigating, and maintain scroll position between views.",
+      "acceptanceCriteria": [
+        "Parse and resolve relative markdown links (e.g., [link](./other.md))",
+        "Update navigation when clicking internal links",
+        "Maintain scroll position between views",
+        "Handle broken links gracefully"
+      ],
+      "passes": false
+    },
+    {
+      "id": "US-006",
+      "title": "Security Enhancements",
+      "description": "Validate and sanitize all user requests, prevent directory traversal attacks, and implement rate limiting for public endpoints.",
+      "acceptanceCriteria": [
+        "Validate all user requests",
+        "Prevent directory traversal attacks",
+        "Implement rate limiting",
+        "Sanitize user input",
+        "Don't expose internal file system paths"
+      ],
+      "passes": true
+    }
+  ],
+  "branchName": "main",
+  "priority": [
+    "US-001",
+    "US-002",
+    "US-006",
+    "US-005",
+    "US-004",
+    "US-003"
+  ]
+}

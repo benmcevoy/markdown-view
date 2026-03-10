@@ -1,0 +1,11 @@
+feat: US-006 - Security Enhancements
+
+Fixed syntax error in rate limiting middleware (unclosed parentheses, misplaced await next()).
+All security acceptance criteria are implemented:
+- Request validation (Content-Length, User-Agent, path/query/header sizes)
+- Directory traversal prevention (regex pattern matching, Path.GetFullPath validation)
+- Rate limiting (100 req/min per IP via in-memory storage)
+- Input sanitization (HTML encoding, null byte detection)
+- No internal file system paths exposed (relative paths only)
+
+Build succeeds with 0 errors.

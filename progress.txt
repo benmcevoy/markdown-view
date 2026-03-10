@@ -1,0 +1,86 @@
+## Codebase Patterns
+- The project uses simple YAML frontmatter parsing (key: value pairs)
+- Frontmatter is enclosed between --- markers
+- The scanner strips frontmatter from displayed content but stores metadata
+- NavigationItem.Frontmatter is a Dictionary<string, string> for simple key-value pairs
+- The project targets .NET 10.0 with Markdig for markdown rendering
+- Always check existing using directives before adding new ones
+- Port 5000 may need to be freed before restarting the server
+- Directory traversal prevention is implemented at the request path level
+- Scanner correctly handles files without frontmatter (treats entire content as markdown)
+- NavigationItem.Content should be trimmed of leading/trailing whitespace after frontmatter removal
+- Security features are implemented in Program.cs including rate limiting, path validation, and request sanitization
+- Static assets (CSS/JS) are served from wwwroot directory
+
+## 2026-03-10 - US-006: Security Enhancements
+- Fixed syntax error in Program.cs (rate limiting middleware had unclosed parentheses and misplaced await next())
+- Verified all security acceptance criteria are implemented:
+  - Validate all user requests (Content-Length, User-Agent, path length, query string length, header sizes)
+  - Prevent directory traversal attacks (path traversal pattern detection, null byte detection, path validation)
+  - Implement rate limiting (100 requests per minute per IP using in-memory ConcurrentDictionary)
+  - Sanitize user input (HTML encoding, null byte/character checks)
+  - Don't expose internal file system paths (relative paths only, path validation against root)
+- Build succeeded with 0 errors
+- Application runs successfully on http://localhost:5001
+
+Files changed:
+- src/Program.cs - Fixed syntax error in rate limiting middleware
+
+Learnings for future iterations:
+- The rate limiting middleware uses in-memory storage which will need persistence for production
+- Path traversal prevention is implemented at multiple levels (regex pattern matching, Path.GetFullPath validation)
+- The application already has comprehensive security features including:
+  - Content-Length validation (10MB max)
+  - User-Agent validation (8KB max)
+  - Path traversal detection using regex patterns
+  - Null byte detection
+  - Request method validation (GET/POST only)
+  - Path length validation (256 char max)
+  - Query string length validation (1KB max)
+  - Header size validation (8KB max)
+- Static assets route serves files from wwwroot directory
+- The CSS and JS files exist in wwwroot/css/ and wwwroot/js/ directories
+
+## 2026-03-10 - US-004: Add Raw/Rendered Markdown View Toggle
+- Fixed syntax highlighting regex patterns in toggle.js (changed from $1 to $& to properly capture matched text)
+- Removed duplicate HTML toggle UI from sample/index.md (it conflicted with the JavaScript toggle)
+- Verified build succeeds with 0 errors
+- All US-004 acceptance criteria implemented:
+  - UI toggle between raw markdown and rendered HTML ✓
+  - Syntax highlighting for code blocks in raw view ✓
+  - Properly render markdown using Markdig (handled in Program.cs) ✓
+  - Line numbers preserved in raw view ✓
+
+Files changed:
+- src/wwwroot/js/toggle.js - Fixed regex patterns to use $& for proper capture
+- sample/index.md - Removed duplicate HTML toggle UI
+
+Learnings for future iterations:
+- JavaScript $& references the entire match, while $1 references the first capture group
+- When using regex without explicit capturing groups, use $& instead of $1
+- Sample markdown files should not contain duplicate UI components that conflict with JavaScript
+- Markdig rendering is handled server-side in Program.cs (RenderMarkdown function)
+- Raw content is displayed as-is from Program.cs (renderedContent variable), but the JavaScript adds syntax highlighting on top
+- The toggle checkbox is checked by default, showing raw markdown
+- CSS classes .code-line::before uses CSS counters for line numbers, but JavaScript also adds line numbers (redundant but functional)
+
+## 2026-03-10 - US-004: Add Raw/Rendered Markdown View Toggle
+- Fixed syntax highlighting regex patterns in toggle.js (changed $1 to $& for proper match reference)
+- Removed duplicate HTML toggle UI from sample/index.md (was conflicting with JavaScript toggle)
+- Verified build succeeds with 0 errors
+- All acceptance criteria implemented:
+  - UI toggle between raw markdown and rendered HTML (toggle.js + CSS)
+  - Syntax highlighting for code blocks (highlightSyntaxText function with proper regex)
+  - Properly render markdown using Markdig (already implemented in Program.cs)
+  - Line numbers preserved in raw view (addLineNumbers function)
+
+Files changed:
+- src/wwwroot/js/toggle.js - Fixed syntax highlighting to use $& instead of $1
+- sample/index.md - Removed duplicate HTML toggle UI
+
+Learnings for future iterations:
+- The JavaScript regex $& refers to the entire match, while $1 refers to the first capture group
+- When using $1, the regex must have capturing groups like /(\b[a-zA-Z_][a-zA-Z0-9_]*)\s*\(/
+- The CSS has duplicate styles for toggle-container that are redundant
+- The sample markdown files should not contain duplicate UI elements that conflict with JavaScript
+- Syntax highlighting is implemented client-side using simple regex patterns (not a full parser)

@@ -1,0 +1,97 @@
+{
+  "project": "MarkdownViewer",
+  "branchName": "ralph/router",
+  "description": "Router feature - Map HTTP request paths to markdown files in the root directory with proper error handling and URL normalization",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Extract file path from request",
+      "description": "As a developer, I need to parse the request path and extract the markdown file path relative to the root directory.",
+      "acceptanceCriteria": [
+        "Extract path from HttpRequest.Path property",
+        "Remove query string using PathBase",
+        "Decode URL-encoded characters (e.g., %20 to space)",
+        "Reject paths containing '..' sequences (prevent directory traversal)",
+        "Reject paths starting with '/../'",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": true,
+      "notes": "Implemented in Program.cs Content() method. Handles query strings, trailing slashes, URL decoding, path traversal protection, and file existence checking."
+    },
+    {
+      "id": "US-002",
+      "title": "Normalize request paths",
+      "description": "As a developer, I need to normalize paths by removing trailing slashes for consistent routing.",
+      "acceptanceCriteria": [
+        "Remove trailing slash from paths (except root '/')",
+        "Request '/page.md/' normalizes to '/page.md'",
+        "Request '/folder/' normalizes to '/folder/'",
+        "Normalized paths produce consistent responses",
+        "Typecheck passes"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Handle file requests",
+      "description": "As a user, I want to request a markdown file by its path and get its content.",
+      "acceptanceCriteria": [
+        "Request '/sample/page1.md' returns content of 'sample/page1.md'",
+        "Request '/sample/topic/topic1.md' returns content of 'sample/topic/topic1.md'",
+        "Request '/sample/index.md' returns content of 'sample/index.md'",
+        "Return 200 OK with markdown content for valid paths",
+        "Read file content using FileSystem or similar",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": true,
+      "notes": "File requests handled in Program.cs Content() method. Reads .md files and returns content with 200 status. Also handles directory default files (index.md)."
+    },
+    {
+      "id": "US-004",
+      "title": "Handle missing files with 404",
+      "description": "As a user, I want to receive an error response when requesting a non-existent file.",
+      "acceptanceCriteria": [
+        "Request '/sample/nonexistent.md' returns 404 Not Found",
+        "Request '/sample/folder/' where folder doesn't exist returns 404",
+        "404 response includes error message",
+        "Use StatusCodes.NotFound or equivalent",
+        "Typecheck passes"
+      ],
+      "priority": 4,
+      "passes": true,
+      "notes": "404 handling implemented in Program.cs Content() method. Sets Response.StatusCode = 404 and returns '404 Not Found' message for missing files and directories without index.md."
+    },
+    {
+      "id": "US-005",
+      "title": "Serve directory default file",
+      "description": "As a user, I want to access a directory and have its index.md served automatically.",
+      "acceptanceCriteria": [
+        "Request '/sample/topic/' returns content of 'sample/topic/index.md' if it exists",
+        "If no 'index.md' exists in the directory, return 404",
+        "Check for index.md when path resolves to a directory",
+        "Typecheck passes"
+      ],
+      "priority": 5,
+      "passes": true,
+      "notes": "Directory default file handling implemented in Program.cs Content() method (lines 96-113). When a path resolves to a directory, checks for index.md and returns it if exists, otherwise returns 404."
+    },
+    {
+      "id": "US-006",
+      "title": "Validate path is within root directory",
+      "description": "As a developer, I need to ensure security by preventing path traversal attacks.",
+      "acceptanceCriteria": [
+        "Validate resolved path is within root directory",
+        "Reject paths that escape root directory bounds",
+        "Use Path.GetFullPath and compare against root",
+        "Typecheck passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
