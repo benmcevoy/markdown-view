@@ -36,12 +36,14 @@ Request → Program.Content() → Generate HTML with:
 │   ├── page1.md
 │   └── topic/
 │       └── topic1.md
-└── src/
-    ├── md-view.csproj         # .NET project file
-    ├── Program.cs             # Main entry point
-    ├── Scanner.cs             # Directory scanner
-    └── Models/
-        └── NavigationItem.cs  # Navigation model
+├── src/md-view/
+│   ├── md-view.csproj         # .NET project file
+│   ├── Program.cs             # Main entry point
+│   ├── Scanner.cs             # Directory scanner
+│   ├── Router.cs             # Router maps http request to file path
+│   └── Models/
+│       └── NavigationItem.cs  # Navigation model
+└── src/tests/        # contains xuint tests
 ```
 
 ## Commands
