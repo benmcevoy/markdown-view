@@ -4,28 +4,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Markdown Viewer** (.NET 10.0) that scans a directory for markdown files and creates a navigable, locally hosted website from them. It uses Kestrel web server to serve markdown content with a sidebar navigation.
+This is a **Markdown Viewer** (.NET 10.0) that scans a directory for markdown files and creates a navigable, locally hosted website from them. It uses Kestrel web server to serve markdown content with static assets.
+
+**Current State**: Core routing and rendering infrastructure is implemented. Scanner.cs and NavigationItem.cs were deleted in a previous commit.
 
 ## Architecture
 
-### Core Components
+### Core Components (Current)
 
-1. **Scanner.cs** - Recursively scans directories for `.md` files and builds a nested navigation structure
-2. **NavigationItem.cs** - Model representing a markdown file/folder with properties: Name, FilePath, Children, Content, RelativePath
-3. **Program.cs** - Main entry point that:
-   - Creates a Scanner with root directory path
-   - Builds Kestrel web server listening on localhost:5000
-   - Routes all requests through a single handler that generates HTML content
-4. **Markdig** library - Used for rendering markdown to HTML
+1. **Program.cs** - Main entry point that:
+   - Creates a Router with root directory path
+   - Builds Kestrel web server listening on localhost:5001
+   - Routes all requests through a Content handler that generates HTML content
 
-### Request Flow
+2. **Router.cs** - Maps HTTP request paths to file paths in the filesystem with:
+   - Path traversal protection (blocks `../`, `./`, `%` encoding, `?`, `#`)
+   - Static asset routing for `/css/*` and `/js/*`
+   - File existence checks to detect folders vs files
 
-```
-Request → Program.Content() → Generate HTML with:
-  - Sidebar navigation (from Scanner navigation tree)
-  - Main content area (rendered markdown)
-  - Handle 404 for invalid paths
-```
+3. **Renderer.cs** - Renders content based on route type:
+   - Static assets (CSS, JS) served with correct content types
+   - Markdown files rendered using Markdig library
+   - Folder routes resolve to `index.md`
+   - Internal markdown link resolution (relative paths only)
+
+4. **RouterTests.cs** - 14 unit tests covering:
+   - Path mapping for root, index, markdown files, folders
+   - Static asset routing for CSS and JS
+   - Security: path traversal, query strings, URI fragments, encoding
 
 ### File Structure
 
@@ -39,11 +45,12 @@ Request → Program.Content() → Generate HTML with:
 ├── src/md-view/
 │   ├── md-view.csproj         # .NET project file
 │   ├── Program.cs             # Main entry point
-│   ├── Scanner.cs             # Directory scanner
-│   ├── Router.cs             # Router maps http request to file path
-│   └── Models/
-│       └── NavigationItem.cs  # Navigation model
-└── src/tests/        # contains xuint tests
+│   ├── Router.cs              # HTTP path to file mapping
+│   ├── Renderer.cs            # Content rendering
+│   └── wwwroot/               # Static assets
+│       └── js/toggle.js
+└── src/tests/
+    └── RouterTests.cs         # Unit tests
 ```
 
 ## Commands
@@ -67,52 +74,41 @@ dotnet run -- --root /path/to/markdown/files
 # Run with watch for hot reload
 dotnet watch run
 
-# Run a single test (if tests exist)
-dotnet test --filter "FullyQualifiedName~TestName"
+# Run tests
+dotnet test
 
-# Build for specific framework
-dotnet build -f net10.0
+# Run specific tests
+dotnet test --filter "FullyQualifiedName~RouterTests"
 ```
 
-### Debug
+## Routing Behavior
 
-```bash
-# Set breakpoint and run
-dotnet run --debugger
+### Static Assets (`/css/*`, `/js/*`)
+- Route matches paths starting with `/css/` or `/js/`
+- Resolves to `wwwroot/css/*` or `wwwroot/js/*`
+- Returns `IsStaticAsset = true`
+- Only `.css` and `.js` extensions are served as static assets
 
-# Attach debugger
-dotnet debug
-```
+### Markdown Files (`/*.md`)
+- Route matches paths ending in `.md`
+- Resolves to `<root>/<path>.md`
+- Returns `IsFolder = false`, `IsStaticAsset = false`
 
-## Development Patterns
+### Folders (`/*/`)
+- Route matches paths without file extension
+- Returns `IsFolder = true` (checks if file doesn't exist)
+- Resolves to `<root>/<path>`
 
-### Adding New Markdown Files
-
-1. Place `.md` files in the sample directory (or configured root)
-2. The Scanner automatically discovers them recursively
-3. No code changes needed - navigation updates automatically
-
-### Modifying the Scanner
-
-The Scanner builds a tree structure:
-- Files: `NavigationItem` with `Name`, `FilePath`, `Content`, `RelativePath`, `Frontmatter`
-- Directories: `NavigationItem` with `Children` list
-- Recursive scan for subdirectories
-- YAML frontmatter is parsed and stored in `Frontmatter` property
-- Content property contains markdown content without frontmatter
-
-### Content Generation in Program.cs
-
-The `Content()` method handles request routing:
-- Maps request path to file in navigation tree
-- Renders markdown using Markdig
-- Generates sidebar HTML
-- Handles index/default file logic
-- Returns 404 for invalid paths
+### Security Restrictions
+The following are blocked and throw `NotSupportedException`:
+- Path traversal: `../`, `./`, `/.`
+- Query strings: `?`
+- URI fragments: `#`
+- URI encoding: `%`
 
 ## Configuration
 
-### Project Settings (src/md-view.csproj)
+### Project Settings (src/md-view/md-view.csproj)
 
 - **Target Framework**: net10.0
 - **Output Type**: Exe
@@ -127,40 +123,89 @@ The `Content()` method handles request routing:
 - **Root Directory**: `/home/agent/hello-world/sample`
 - **Server**: Kestrel
 - **Host**: localhost
-- **Port**: 5000
+- **Port**: 5001
 
-## TODO Items (from TODO.md)
+## Development Patterns
 
-High-priority tasks:
-1. Scanner implementation (parse .md files, build navigation, frontmatter support) - **COMPLETE**
-2. Web server routes (/, /folder/file.md, static assets, 404 handling)
-5. Internal markdown links (resolve relative links, update navigation)
-6. Security (validate requests, prevent directory traversal, rate limiting)
+### Adding New Static Assets
 
-Lower-priority:
-3. Sidebar navigation enhancements (highlight current, search/filter)
-4. Raw/render toggle (raw markdown vs rendered HTML, syntax highlighting)
+1. Place files in `src/md-view/wwwroot/css/` or `src/md-view/wwwroot/js/`
+2. Update CSS/JS files in wwwroot
+3. Assets are automatically served at `/css/<filename>` or `/js/<filename>`
+
+### Adding New Markdown Files
+
+1. Place `.md` files in the sample directory (or configured root)
+2. The Router automatically discovers them
+3. Files are rendered at `/<filename>.md`
+
+### Adding Unit Tests
+
+Tests are located in `src/tests/RouterTests.cs`
+- Use `[Fact]` attribute for test methods
+- Tests verify Router.Map() behavior
+- Tests cover normal paths and security restrictions
+
+## TODO Items
+
+1. **Scanner.cs** - Previously deleted, needs to be recreated for:
+   - Recursive directory scanning for `.md` files
+   - Build nested navigation tree structure
+   - Parse YAML frontmatter from markdown files
+   - Generate sidebar navigation HTML
+
+2. **NavigationItem.cs** - Previously deleted, needs to be recreated:
+   - Model for markdown files/folders
+   - Properties: Name, FilePath, Children, Content, RelativePath, Frontmatter
+
+3. **Renderer Template** - Currently placeholder:
+   - `src/md-view/wwwroot/html/main.html` needs to be created
+   - Should include sidebar navigation template
+   - Support for title, aside, and main content
+
+4. **Full Content Generation** - Currently placeholder:
+   - `Renderer.cs` has `var title = "TODO"` and `var aside = "TODO"`
+   - Needs proper HTML template rendering
+   - Sidebar should show navigation tree from Scanner
 
 ## Security Notes
 
+The Router implements basic security:
+- Validates all request paths before processing
+- Blocks directory traversal attempts
+- Blocks query strings and URI fragments
+- Blocks URI-encoded characters
+
 When implementing features:
-- Validate and sanitize all user requests
-- Prevent directory traversal attacks (check paths against root)
-- Implement rate limiting for public endpoints
+- Continue validating and sanitizing all user requests
+- Prevent directory traversal attacks
 - Don't expose internal file system paths in responses
+- Consider implementing rate limiting for public endpoints
 
 ## Notes
 
 - The project is in early development stage
-- Current implementation has placeholder content generation
+- Core routing and rendering infrastructure is functional
+- Scanner and NavigationItem models were deleted and need to be recreated
+- HTML template file needs to be created
 - Markdig library is used for markdown rendering
-- Scanner loads file content into NavigationItem.Content and strips YAML frontmatter
-- NavigationItem now includes Frontmatter property (Dictionary<string, string>) for YAML metadata
+- Unit tests cover Router functionality comprehensively
 
-## YAML Frontmatter Pattern
+## Test Coverage
 
-- Frontmatter is enclosed between `---` markers
-- Parse key: value pairs (skip empty lines and comments starting with `#`)
-- Strip quotes from values if they start and end with `"` or `'`
-- Frontmatter is optional; if not present, entire file content is treated as markdown
-- Use `TryParseFrontmatter()` helper method for safe parsing that returns false if no frontmatter found
+| Test | Description |
+|------|-------------|
+| `Map_Root_ReturnsIsFolder` | Root `/` maps to sample directory |
+| `Map_IndexMd_ReturnsIndexMdAbsolutePath` | `/index.md` maps to full file path |
+| `Map_StaticAssetCss_ReturnsCss` | `/css/style.css` is a static asset |
+| `Map_StaticAssetJs_ReturnsJs` | `/js/toggle.js` is a static asset |
+| `Map_StaticAssetJpg_IsNotSupported` | `/images/test.jpg` is NOT a static asset |
+| `Map_FileMd_ReturnsFileMd` | `/page1.md` maps to markdown file path |
+| `Map_StaticAsset_IsStaticAsset` | Verifies css files are static assets |
+| `Map_FileMd_IsNotStaticAsset` | Verifies md files are NOT static assets |
+| `Map_FileMd_IsNotFolder` | Verifies md files are NOT folders |
+| `Map_Folder_IsNotStaticAsset` | `/topic/` is a folder, not static asset |
+| `Map_PathTraversal_Throws` | `../` path traversal throws exception |
+| `Map_QueryString_Throws` | `?` query string throws exception |
+| `Map_UriFragment_Throws` | `#` fragment throws exception |
+| `Map_UriEndcoded_Throws` | `%` URI encoding throws exception |
