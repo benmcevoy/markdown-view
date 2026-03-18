@@ -1,9 +1,13 @@
+using MdView.Rendering;
+using MdView.Routing;
+
 namespace MdView
 {
     class Program
     {
-        private static readonly Router _router = new("/home/agent/hello-world/sample");
-        private static readonly Renderer _renderer = new();
+        private const string StaticAssetsPath = "wwwroot";
+        private static readonly Router _router = new("/home/agent/hello-world/sample", StaticAssetsPath);
+        private static readonly Renderer _renderer = new(new MarkdownFileRenderer(), new MainTemplate(StaticAssetsPath));
 
         static async Task Main(string[] args)
         {
@@ -34,9 +38,8 @@ namespace MdView
             try
             {
                 var requestPath = context.Request.Path.ToString();
-
                 var route = _router.Map(requestPath);
-                var response = await _renderer.Render(route);
+                var response = _renderer.Render(route);
 
                 context.Response.ContentType = response.ContentType;
                 context.Response.StatusCode = response.StatusCode;
