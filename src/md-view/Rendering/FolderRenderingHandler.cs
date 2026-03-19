@@ -1,11 +1,14 @@
+using MdView.Navigation;
 using MdView.Routing;
+using MdView.Templates;
 
 namespace MdView.Rendering
 {
-    public class FolderRenderingHandler(MarkdownFileRenderer renderer, MainTemplate template) : IRenderingHandler
+    public class FolderRenderingHandler(NavigationService navigation, MarkdownFileRenderer renderer, DefaultTemplate template) : IRenderingHandler
     {
+        private readonly NavigationService _navigation = navigation;
         private readonly MarkdownFileRenderer _renderer = renderer;
-        private readonly MainTemplate _template = template;
+        private readonly DefaultTemplate _template = template;
 
         public bool CanHandle(RouteInfo route) => route.RouteType == RouteType.Folder;
 

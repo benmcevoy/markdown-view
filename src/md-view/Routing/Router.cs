@@ -6,11 +6,10 @@ namespace MdView.Routing
     /// <remarks>
     /// Creates a new Router instance.
     /// </remarks>
-    public class Router(string rootPath, string staticAssetRootPath)
+    public class Router(string rootPath, string[] allowedFileExtensions)
     {
         private readonly IRouteHandler[] _routerHandlers = [
-            new StaticAssetRouteHandler(staticAssetRootPath),
-            new FileRouteHandler(rootPath),
+            new FileRouteHandler(rootPath, allowedFileExtensions),
             new FolderRouteHandler(rootPath)];
 
         /// <summary>

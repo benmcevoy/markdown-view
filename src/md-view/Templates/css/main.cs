@@ -1,0 +1,24 @@
+namespace MdView.Templates.css
+{
+  public class Main
+  {
+    public const string Css = @"
+      body {
+  color-scheme: dark;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  margin: 0;
+  color: #f0f6fc;
+  background-color: #0d1117;
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji';
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.main-content {
+    margin: 10px;
+    width:800px;
+}";
+  }
+}

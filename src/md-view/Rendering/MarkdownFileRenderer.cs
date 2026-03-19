@@ -1,17 +1,30 @@
 using System.Text.RegularExpressions;
+using Markdig;
+using Markdown.ColorCode;
 
 namespace MdView.Rendering
 {
     public class MarkdownFileRenderer
     {
+        private readonly MarkdownPipeline _pipeline;
+
+        public MarkdownFileRenderer()
+        {
+            _pipeline = new MarkdownPipelineBuilder()
+                .UseAdvancedExtensions()
+                .UseColorCode()
+                .Build();
+        }
+
         public string Render(string filePath)
         {
             var content = File.ReadAllText(filePath);
             var markdownWithLinks = ResolveMarkdownLink(content);
 
-            return Markdig.Markdown.ToHtml(markdownWithLinks);
+            return Markdig.Markdown.ToHtml(markdownWithLinks, _pipeline);
         }
 
+        // TODO: this needs tests as Qwen3.5 wrote it and it is probably whack
         private static string ResolveMarkdownLink(string markdown)
         {
             if (string.IsNullOrEmpty(markdown))

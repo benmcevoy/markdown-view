@@ -1,13 +1,15 @@
+using MdView.Navigation;
 using MdView.Routing;
+using MdView.Templates;
 
 namespace MdView.Rendering
 {
-    public class Renderer(MarkdownFileRenderer markdownFileRenderer, MainTemplate mainTemplate)
+    public class Renderer(NavigationService navigation, MarkdownFileRenderer markdownFileRenderer, DefaultTemplate template)
     {
         private readonly IRenderingHandler[] _handlers = [
             new StaticAssetRenderingHandler(),
-            new FileRenderingHandler(markdownFileRenderer, mainTemplate),
-            new FolderRenderingHandler(markdownFileRenderer, mainTemplate)];
+            new FileRenderingHandler(navigation, markdownFileRenderer, template),
+            new FolderRenderingHandler(navigation, markdownFileRenderer, template)];
 
         public ContentInfo Render(RouteInfo route)
         {

@@ -1,11 +1,14 @@
+using MdView.Navigation;
 using MdView.Routing;
+using MdView.Templates;
 
 namespace MdView.Rendering
 {
-    public class FileRenderingHandler(MarkdownFileRenderer fileRenderer, MainTemplate template) : IRenderingHandler
+    public class FileRenderingHandler(NavigationService navigation, MarkdownFileRenderer fileRenderer, DefaultTemplate template) : IRenderingHandler
     {
+        private readonly NavigationService _navigation = navigation;
         private readonly MarkdownFileRenderer _fileRenderer = fileRenderer;
-        private readonly MainTemplate _template = template;
+        private readonly DefaultTemplate _template = template;
 
         public bool CanHandle(RouteInfo route) => route.RouteType == RouteType.File;
 
