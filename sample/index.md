@@ -108,3 +108,24 @@ Implement a routing system that maps HTTP request paths to markdown files locate
 - Should we support case-insensitive file matching on case-insensitive file systems?
 - Should we add a configuration option for default file name (currently hardcoded to `index.md`)?
 - Should we implement caching for frequently accessed files?
+
+
+```csharp
+            var host = builder.Build();
+
+            Console.WriteLine("Starting Kestrel host...");
+            Console.WriteLine("Listening on: https://localhost:5001");
+
+            StartBrowser("https://localhost:5001");
+
+            await host.RunAsync();
+```
+
+
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
