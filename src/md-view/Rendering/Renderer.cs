@@ -7,7 +7,6 @@ namespace MdView.Rendering
     public class Renderer(NavigationService navigation, MarkdownFileRenderer markdownFileRenderer, DefaultTemplate template)
     {
         private readonly IRenderingHandler[] _handlers = [
-            new StaticAssetRenderingHandler(),
             new FileRenderingHandler(navigation, markdownFileRenderer, template),
             new FolderRenderingHandler(navigation, markdownFileRenderer, template)];
 

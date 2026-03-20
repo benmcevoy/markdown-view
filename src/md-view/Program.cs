@@ -23,8 +23,12 @@ namespace MdView
             var builder = Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseKestrel();
-                    webBuilder.Configure(app =>
+                    webBuilder
+                    .UseKestrel(options =>
+                    {
+                        options.Listen(System.Net.IPAddress.Loopback, 5001);
+                    })
+                    .Configure(app =>
                     {
                         app.Run(async context =>
                         {
@@ -42,9 +46,9 @@ namespace MdView
             var host = builder.Build();
 
             Console.WriteLine("Starting Kestrel host...");
-            Console.WriteLine("Listening on: https://localhost:5001");
+            Console.WriteLine("Listening on: http://localhost:5001");
 
-            StartBrowser("https://localhost:5001");
+            StartBrowser("http://localhost:5001");
 
             await host.RunAsync();
         }
