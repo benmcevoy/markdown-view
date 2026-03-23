@@ -1,11 +1,10 @@
 namespace MdView.Rendering
 {
-    public class ContentInfo
+    public class ContentInfo(string content)
     {
-        public string Content { get; set; } = "";
+        public string Content { get; set; } = content;
         public string ContentType { get; set; } = "text/html";
         public int StatusCode { get; set; } = 200;
-        public static ContentInfo NotFound() => new() { StatusCode = 404, Content = "text/plain" };
     }
 }
 

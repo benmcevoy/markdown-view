@@ -1,21 +1,25 @@
-using MdView.Navigation;
-using MdView.Routing;
 using MdView.Templates;
 
 namespace MdView.Rendering
 {
-    public class Renderer(NavigationService navigation, MarkdownFileRenderer markdownFileRenderer, DefaultTemplate template)
+    public class Renderer(DefaultTemplate template, IRenderingHandler[] handlers)
     {
-        private readonly IRenderingHandler[] _handlers = [
-            new FileRenderingHandler(navigation, markdownFileRenderer, template),
-            new FolderRenderingHandler(navigation, markdownFileRenderer, template)];
+        private readonly IRenderingHandler[] _handlers = handlers;
 
-        public ContentInfo Render(RouteInfo route)
+        public ContentInfo Render(FileSystemInfo route)
         {
-            foreach (var r in _handlers)
-                if (r.CanHandle(route)) return r.Handle(route);
+            var main = "nothing to display";
 
-            return ContentInfo.NotFound();
+            foreach (var r in _handlers)
+            {
+                if (r.CanHandle(route))
+                {
+                    main = r.Handle(route);
+                    break;
+                }
+            }
+
+            return new ContentInfo(template.Render(route.Name, "TODO: build nav structure", main));
         }
     }
 }

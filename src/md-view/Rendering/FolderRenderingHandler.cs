@@ -1,35 +1,23 @@
-using MdView.Navigation;
-using MdView.Routing;
-using MdView.Templates;
-
 namespace MdView.Rendering
 {
-    public class FolderRenderingHandler(NavigationService navigation, MarkdownFileRenderer renderer, DefaultTemplate template) : IRenderingHandler
+    public class FolderRenderingHandler(MarkdownFileRenderer renderer) : IRenderingHandler
     {
-        private readonly NavigationService _navigation = navigation;
         private readonly MarkdownFileRenderer _renderer = renderer;
-        private readonly DefaultTemplate _template = template;
 
-        public bool CanHandle(RouteInfo route) => route.RouteType == RouteType.Folder;
+        public bool CanHandle(FileSystemInfo route) => route is FolderInfo;
 
-        public ContentInfo Handle(RouteInfo route)
+        public string Handle(FileSystemInfo route)
         {
             var index = Path.Combine(route.Path, "index.md");
 
-            if (File.Exists(index))
-            {
-                var title = "TODO";
-                var aside = "TODO";
-                var main = _renderer.Render(index);
+            return File.Exists(index) 
+                ? _renderer.Render(index) 
+                : GenerateFolderContent(route);
+        }
 
-                return new ContentInfo
-                {
-                    Content = _template.Render(title, aside, main)
-                };
-            }
-
-            // TODO: generate main instead
-            return ContentInfo.NotFound();
+        private static string GenerateFolderContent(FileSystemInfo route)
+        {
+            return "<h1> TODO: generate a folder listing page/h1>";
         }
     }
 }

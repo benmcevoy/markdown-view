@@ -1,6 +1,4 @@
 using MdView.Rendering;
-using MdView.Routing;
-using MdView.Navigation;
 using System.Diagnostics;
 using MdView.Templates;
 
@@ -9,41 +7,50 @@ namespace MdView
     class Program
     {
         // TODO: be config and current folder
-        private static string[] _allowedFileExtenions = [".md"];
+        private static readonly string[] _allowedFileExtensions = [".md"];
 
         static async Task Main(string[] args)
         {
-            // TODO: should try to use arg
-            // then current folder by default
-            var rootFolder = "/home/agent/hello-world/sample";//Directory.GetCurrentDirectory();
+            Console.WriteLine("md-view started.");
+
+            // TODO: remove this
+            args = ["/home/agent/hello-world-docs"];
+
+            var rootFolder = ParseArgs(args);
+
+            Console.WriteLine($"using '{rootFolder}'.");
+
+            var fileSystemInfoService = new FileSystemInfoService(rootFolder, _allowedFileExtensions);
+            var fileSystem = fileSystemInfoService.Build();
+            var fileRenderer = new MarkdownFileRenderer();
+            var router = new Router(fileSystem);
+            var renderer = new Renderer(new DefaultTemplate(), [new FileRenderingHandler(fileRenderer), new FolderRenderingHandler(fileRenderer)]);
 
 
-            var router = new Router(rootFolder, _allowedFileExtenions);
-            var renderer = new Renderer(new(rootFolder, _allowedFileExtenions), new MarkdownFileRenderer(), new DefaultTemplate());
-            var builder = Host.CreateDefaultBuilder(args)
+            var webBuilder = Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
-                    .UseKestrel(options =>
-                    {
-                        options.Listen(System.Net.IPAddress.Loopback, 5001);
-                    })
-                    .Configure(app =>
-                    {
-                        app.Run(async context =>
+                        .UseKestrel(options =>
                         {
-                            var requestPath = context.Request.Path.ToString();
-                            var route = router.Map(requestPath);
-                            var response = renderer.Render(route);
+                            options.Listen(System.Net.IPAddress.Loopback, 5001);
+                        })
+                        .Configure(app =>
+                        {
+                            app.Run(async context =>
+                            {
+                                var requestPath = context.Request.Path.ToString();
+                                var route = router.Map(requestPath);
+                                var response = renderer.Render(route);
 
-                            context.Response.ContentType = response.ContentType;
-                            context.Response.StatusCode = response.StatusCode;
-                            await context.Response.WriteAsync(response.Content);
+                                context.Response.ContentType = response.ContentType;
+                                context.Response.StatusCode = response.StatusCode;
+                                await context.Response.WriteAsync(response.Content);
+                            });
                         });
-                    });
                 });
 
-            var host = builder.Build();
+            var host = webBuilder.Build();
 
             Console.WriteLine("Starting Kestrel host...");
             Console.WriteLine("Listening on: http://localhost:5001");
@@ -51,6 +58,15 @@ namespace MdView
             StartBrowser("http://localhost:5001");
 
             await host.RunAsync();
+        }
+
+        private static string ParseArgs(string[] args)
+        {
+            if (args == null) return Directory.GetCurrentDirectory();
+            if (args.Length == 0) return Directory.GetCurrentDirectory();
+            if (Directory.Exists(args[0])) return args[0];
+
+            throw new ArgumentException("CLI argument is not a directory?");
         }
 
         private static void StartBrowser(string targetUrl)
