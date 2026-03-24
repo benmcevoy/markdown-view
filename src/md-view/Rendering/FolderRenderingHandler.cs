@@ -1,23 +1,27 @@
+using System.Text;
+
 namespace MdView.Rendering
 {
-    public class FolderRenderingHandler(MarkdownFileRenderer renderer) : IRenderingHandler
+    public class FolderRenderingHandler() : IRenderingHandler
     {
-        private readonly MarkdownFileRenderer _renderer = renderer;
-
-        public bool CanHandle(FileSystemInfo route) => route is FolderInfo;
+        public bool CanHandle(FileSystemInfo route) =>
+             route is FolderInfo f && !f.Children.Any(x => x.Name == "index.md");
 
         public string Handle(FileSystemInfo route)
         {
-            var index = Path.Combine(route.Path, "index.md");
+            var sb = new StringBuilder();
+            var folder = route as FolderInfo;
 
-            return File.Exists(index) 
-                ? _renderer.Render(index) 
-                : GenerateFolderContent(route);
-        }
+            if (folder!.Children.Count == 0) return "";
 
-        private static string GenerateFolderContent(FileSystemInfo route)
-        {
-            return "<h1> TODO: generate a folder listing page/h1>";
+            foreach (var f in folder.OrderedChildren())
+            {
+                var title = f is FolderInfo ? $"/{f.Name}" : $"{f.Name}";
+                
+                sb.AppendLine($"<div><a href='{f.Uri}'>{title}</a></div>");
+            }
+
+            return sb.ToString();
         }
     }
 }

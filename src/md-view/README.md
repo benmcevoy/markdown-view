@@ -1,15 +1,16 @@
 # TODO
 
-- process start browser on startup
+DONE - process start browser on startup
 - use async
-- in memory cache for navigation
+DONE - in memory cache for navigation
 - config and .mdview settings (see admin)
 
 ## navigation
 
-- generate nav structure and cache
-- navigation is highlighting issues with rendering and routing
-- i see feature envy
+- render navigation
+DONE - generate nav structure and cache
+DONE - navigation is highlighting issues with rendering and routing
+DONE - i see feature envy
 
 
 ## front matter and metadata

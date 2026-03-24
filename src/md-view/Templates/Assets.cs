@@ -5,23 +5,58 @@ namespace MdView.Templates;
 public class Assets 
 { 
 
-    public const string main_css = @"      body {
-        color-scheme: dark;
-        -ms-text-size-adjust: 100%;
-        -webkit-text-size-adjust: 100%;
-        margin: 0;
-        color: #f0f6fc;
-        background-color: #0d1117;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-        font-size: 16px;
-        line-height: 1.5;
-        word-wrap: break-word;
-      }
+    public const string main_css = @"html { height: 100%;}
+body {
+  color-scheme: dark;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  margin: 0;
+  color: #f0f6fc;
+  background-color: #0d1117;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  font-size: 16px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  height: 100%;
+}
 
-      .main-content {
-        margin: 10px;
-        width: 800px;
-      }";
+.container {
+  display: flex;
+  height: 100%;
+}
+
+.main-content {
+  margin: 10px;
+  width: 80%;
+  height: 100%;
+}
+
+.markdown-body {
+  max-width: 880px;
+  height: 100%;
+}
+
+.sidebar {
+  width: 16%;
+  min-width: 200px;
+  overflow-x: scroll;
+}
+
+.sidebar ul {
+  padding-left: 20px;
+  list-style: none;
+}
+
+.sidebar .current {
+  background-color: #072446;
+  border-left: 2px solid #0a5dbd;
+  margin-left: -10px;
+  padding: 2px 5px 2px 10px;
+}
+
+.sidebar a, .main-content .breadcrumb a {
+  color: #4493f8;
+}";
 
 
     public const string markdown_css = @"/* dark */
@@ -1134,10 +1169,10 @@ public class Assets
 <body>
     <div class='container'>
         <div class='sidebar'>
-            <h3>Navigation</h3>
             {{aside}}
         </div>
         <div class='main-content'>
+            <h3 class='breadcrumb'>{{breadcrumb}}</h3>
             <div class='markdown-body'>
                 {{markdown}}
             </div>
@@ -1146,5 +1181,6 @@ public class Assets
     {{scripts}}
 </body>
 </html>";      
+
 }
 

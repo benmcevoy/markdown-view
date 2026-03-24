@@ -7,25 +7,32 @@ namespace MdView
     class Program
     {
         // TODO: be config and current folder
-        private static readonly string[] _allowedFileExtensions = [".md"];
+        // IRenderingHandler should expose string[] of support extension
+        private static readonly string[] _allowedFileExtensions = [
+            ".md", ".xml", ".json", ".js", ".ts", ".cs", ".jpeg", ".jpg", ".bmp", ".bmp", ".png", ".webp", ".pdf", ".html", ".sh", ".ps1"];
 
         static async Task Main(string[] args)
         {
-            Console.WriteLine("md-view started.");
-
-            // TODO: remove this
-            args = ["/home/agent/hello-world-docs"];
+            WriteBanner();
 
             var rootFolder = ParseArgs(args);
+
+            rootFolder = "/home/agent/hello-world/sample";
 
             Console.WriteLine($"using '{rootFolder}'.");
 
             var fileSystemInfoService = new FileSystemInfoService(rootFolder, _allowedFileExtensions);
             var fileSystem = fileSystemInfoService.Build();
-            var fileRenderer = new MarkdownFileRenderer();
-            var router = new Router(fileSystem);
-            var renderer = new Renderer(new DefaultTemplate(), [new FileRenderingHandler(fileRenderer), new FolderRenderingHandler(fileRenderer)]);
 
+            var navigation = new Navigation(fileSystem);
+            var router = new Router(fileSystem);
+            var renderer = new Renderer(new DefaultTemplate(), navigation, [
+                new MarkdownFileRendererHandler(), 
+                new CodeFileRendererHandler(),
+                new ImageFileRendererHandler(),
+                new PdfFileRendererHandler(),
+                new FolderRenderingHandler()
+                ]);
 
             var webBuilder = Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
@@ -43,9 +50,9 @@ namespace MdView
                                 var route = router.Map(requestPath);
                                 var response = renderer.Render(route);
 
-                                context.Response.ContentType = response.ContentType;
-                                context.Response.StatusCode = response.StatusCode;
-                                await context.Response.WriteAsync(response.Content);
+                                context.Response.ContentType = "text/html";
+                                context.Response.StatusCode = 200;
+                                await context.Response.WriteAsync(response);
                             });
                         });
                 });
@@ -58,6 +65,14 @@ namespace MdView
             StartBrowser("http://localhost:5001");
 
             await host.RunAsync();
+        }
+
+        private static void WriteBanner()
+        {
+Console.WriteLine(@" _ __ ___   __| |    __   _(_) _____      __");
+Console.WriteLine(@"| '_ ` _ \ / _` |____\ \ / / |/ _ \ \ /\ / /");
+Console.WriteLine(@"| | | | | | (_| |_____\ V /| |  __/\ V  V / ");
+Console.WriteLine(@"|_| |_| |_|\__,_|      \_/ |_|\___| \_/\_/  ");         
         }
 
         private static string ParseArgs(string[] args)

@@ -8,11 +8,12 @@
     <RootNamespace>MdView</RootNamespace>
   </PropertyGroup>
 
-  <!-- <PropertyGroup>
-      <PublishSingleFile>true</PublishSingleFile>
-      <SelfContained>true</SelfContained>
-      <PublishTrimmed>true</PublishTrimmed>
-  </PropertyGroup> -->
+  <PropertyGroup>
+    <PublishAot>true</PublishAot>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="1.1.1" />

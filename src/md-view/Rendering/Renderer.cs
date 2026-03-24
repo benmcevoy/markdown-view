@@ -2,11 +2,12 @@ using MdView.Templates;
 
 namespace MdView.Rendering
 {
-    public class Renderer(DefaultTemplate template, IRenderingHandler[] handlers)
+    public class Renderer(DefaultTemplate template, Navigation navigation, IRenderingHandler[] handlers)
     {
+        private readonly Navigation _navigation = navigation;
         private readonly IRenderingHandler[] _handlers = handlers;
 
-        public ContentInfo Render(FileSystemInfo route)
+        public string Render(FileSystemInfo route)
         {
             var main = "nothing to display";
 
@@ -19,7 +20,32 @@ namespace MdView.Rendering
                 }
             }
 
-            return new ContentInfo(template.Render(route.Name, "TODO: build nav structure", main));
+            var nav = _navigation.Render(route);
+            var title = Title(route, "");
+            var breadcrumb = Breadcrumb(route, "", true);
+
+            return template.Render(title, nav, main, breadcrumb);
+        }
+
+        private static string Title(FileSystemInfo route, string title)
+        {
+            title = $"/{route.Name}{title}";
+
+            if (route.Parent != null) title = Title(route.Parent, title);
+
+            return title;
+        }
+
+
+        private static string Breadcrumb(FileSystemInfo route, string title, bool first)
+        {
+            title = first
+                ? $" / {route.Name}"
+                : $" / <a href='{route.Uri}'>{route.Name}</a>{title}";
+
+            if (route.Parent != null) title = Breadcrumb(route.Parent, title, false);
+
+            return title;
         }
     }
 }
