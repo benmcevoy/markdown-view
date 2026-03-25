@@ -68,10 +68,10 @@ header{
 }
 
 .sidebar .current {
-  background-color: #000000;
+  background-color: #333;
   border-left: 2px solid #0a5dbd;
-  margin-left: -10px;
-  padding: 5px 10px 5px 10px;
+  margin-left: -30px;
+  padding: 5px 10px 5px 28px;
 }
 
 .sidebar a,
