@@ -13,16 +13,17 @@ namespace MdView.Rendering
             var sb = new StringBuilder();
             var folder = route as FolderInfo;
 
-            if (folder!.Children.Count == 0) return "";
+            if (folder!.Children.Count == 0) return "Nothing here...";
 
             foreach (var f in folder.OrderedChildren())
             {
-                var title = f is FolderInfo ? $"/{f.Name}" : $"{f.Name}";
-
-                sb.AppendLine($"<div><a href='{f.Uri}'>{title}</a></div>");
+                sb.AppendLine($"<div class='{FileSystemTypeClass(f)}'><a href='{f.Uri}'> {f.Name}</a></div>");
             }
 
             return sb.ToString();
         }
+
+        // TODO: DRY
+        private static string FileSystemTypeClass(FileSystemInfo candidate) => (candidate is FolderInfo) ? "folder" : "file";
     }
 }

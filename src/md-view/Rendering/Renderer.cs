@@ -4,6 +4,7 @@ namespace MdView.Rendering
 {
     public class Renderer(DefaultTemplate template, Navigation navigation, IRenderingHandler[] handlers)
     {
+        private readonly DefaultTemplate _template = template;
         private readonly Navigation _navigation = navigation;
         private readonly IRenderingHandler[] _handlers = handlers;
 
@@ -20,11 +21,13 @@ namespace MdView.Rendering
                 }
             }
 
+            // TODO: would be nice if these were handlers too, and were injected
+            // annoying to only inject Navigation
             var nav = _navigation.Render(route);
             var title = Title(route, "");
             var breadcrumb = Breadcrumb(route, "", true);
 
-            return template.Render(title, nav, main, breadcrumb);
+            return _template.Render(title, nav, main, breadcrumb, route.Name);
         }
 
         private static string Title(FileSystemInfo route, string title)

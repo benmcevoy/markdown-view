@@ -8,5 +8,5 @@ This is some test.
 
 [a link to a weird file](page.html)
 
-`an image ./snail.png`
+![an image](./snail.png)
 

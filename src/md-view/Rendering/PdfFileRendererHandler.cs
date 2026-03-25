@@ -11,7 +11,7 @@ namespace MdView.Rendering
             var file = input as FileInfo;
             var bytes = File.ReadAllBytes(file!.Path);
             var content = Convert.ToBase64String(bytes);
-            var html = $"<iframe src='data:application/pdf;base64, {content}' width='100%' height='90%' style='border:none;'></iframe>";
+            var html = $"<iframe src='data:application/pdf;base64, {content}' width='100%' style='border:none;height: 100vh'></iframe>";
 
             return html;
         }

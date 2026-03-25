@@ -12,20 +12,25 @@ namespace MdView
 
             var rootFolder = ParseArgs(args);
             // TODO:
+            // - images do net render when in markdown - should be converted to inline data:base64
             // - use config
-            // - admin page?
+            // - admin page
             // - default file is README.md, followed by index.md
-            // - FileSystemInfoService has unusal semantics
-            // - Error handling, 404
+            // - FileSystemInfoService has unusual semantics
+            // - Error handling, 404 page
             // - security middleware
             // - Admin > refresh file system cache - call Build()
             // - Admin > show config
             // - Admin > stop the server
+            // - Admin > show handlers and associated file extensions supported
+            // - sometimes larger files have issues? maybe render "too big" instead
+            // - use async?
+            // - shake the tree, can I get the exe size smaller?
 
             var ipAddress = System.Net.IPAddress.Loopback;
             var port = 5001;
 
-            rootFolder = "/home/agent/hello-world/sample";
+            //rootFolder = "/home/agent/hello-world/sample";
 
             Console.WriteLine($"using '{rootFolder}'.");
 
@@ -78,10 +83,12 @@ namespace MdView
 
         private static void WriteBanner()
         {
+            Console.WriteLine();
             Console.WriteLine(@" _ __ ___   __| |  __   _(_) _____      __");
             Console.WriteLine(@"| '_ ` _ \ / _` |__\ \ / / |/ _ \ \ /\ / /");
             Console.WriteLine(@"| | | | | | (_| |___\ V /| |  __/\ V  V / ");
             Console.WriteLine(@"|_| |_| |_|\__,_|    \_/ |_|\___| \_/\_/  ");
+            Console.WriteLine();
         }
 
         private static string ParseArgs(string[] args)

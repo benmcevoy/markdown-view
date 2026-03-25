@@ -5,7 +5,10 @@ namespace MdView.Templates;
 public class Assets 
 { 
 
-    public const string main_css = @"html { height: 100%;}
+    public const string main_css = @"html {
+  height: 100%;
+}
+
 body {
   color-scheme: dark;
   -ms-text-size-adjust: 100%;
@@ -20,26 +23,43 @@ body {
   height: 100%;
 }
 
+header{
+  padding: 10px 20px 5px 20px;
+  border-bottom: 0.0625rem solid;
+  border-color: #3d444d;
+}
+
 .container {
   display: flex;
   height: 100%;
 }
 
 .main-content {
-  margin: 10px;
+  padding: 10px;
   width: 80%;
-  height: 100%;
+  height: fit-content;
 }
 
-.markdown-body {
+.main-content .markdown-body {
+  padding: 20px;
   max-width: 880px;
   height: 100%;
+  background-color: inherit !important;
+  border: 0.0625rem solid;
+  border-color: #3d444d;
+  border-radius: 0.375rem;
 }
 
 .sidebar {
   width: 16%;
   min-width: 200px;
-  overflow-x: scroll;
+  overflow-x: auto;
+  scrollbar-gutter: stable;
+  flex-grow: 1;
+  height: fit-content;
+  border-right: 0.0625rem solid;
+  border-color: #3d444d;
+  border-radius: 0;
 }
 
 .sidebar ul {
@@ -54,8 +74,23 @@ body {
   padding: 5px 10px 5px 10px;
 }
 
-.sidebar a, .main-content .breadcrumb a {
+.sidebar a,
+.main-content .breadcrumb a {
   color: #4493f8;
+}
+
+.breadcrumb {
+  margin: 0px 0px 10px 0px;
+}
+
+.folder::before {
+  content: '[ ]';
+  color: #666;
+}
+
+.file::before {
+  content: '-';
+  color: #666;
 }";
 
 
@@ -1159,14 +1194,21 @@ body {
 
     public const string default_html = @"<!DOCTYPE html>
 <html lang='en'>
+
 <head>
-    <link rel='icon' href='data:image/x-icon;base64,AAABAAEAEBAQAAAAAAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAZlX/ADOA/wAzVf8AfwB/ADOq/wD//wAA/wD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmYAAGZmAAAAEQAAEQAAAAA1AAAzAAAAABFmZiMAAAAAAHd3AAAAAAAAZmYAAAAAZgB3dwBmAAB3AGZmAHcAAAB3d3d3AAAAAAB3dwAAAAAAd3d3dwAAAHcAd3cAdwAAdwB3dwB3AAAAd0REdwAAAABEAABEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' type='image/x-icon' />
+    <link rel='icon'
+        href='data:image/x-icon;base64,AAABAAEAEBAQAAAAAAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAZlX/ADOA/wAzVf8AfwB/ADOq/wD//wAA/wD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmYAAGZmAAAAEQAAEQAAAAA1AAAzAAAAABFmZiMAAAAAAHd3AAAAAAAAZmYAAAAAZgB3dwBmAAB3AGZmAHcAAAB3d3d3AAAAAAB3dwAAAAAAd3d3dwAAAHcAd3cAdwAAdwB3dwB3AAAAd0REdwAAAABEAABEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        type='image/x-icon' />
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>{{title}}</title>
     {{styles}}
 </head>
+
 <body>
+    <header>
+        <span>Refresh</span> | <span>Shutdown</span> | <span>Admin</span>
+    </header>
     <div class='container'>
         <div class='sidebar'>
             {{aside}}
@@ -1180,6 +1222,7 @@ body {
     </div>
     {{scripts}}
 </body>
+
 </html>";      
 
 }
