@@ -1,16 +1,23 @@
-using Microsoft.AspNetCore.Components.Web;
-
 namespace MdView
 {
-    public class FileSystemInfoService(string rootFolder, string[] allowedExtensions)
+    public class FileSystemInfoService
     {
-        //private readonly bool _includeDotEntries = false;
-        private readonly string _rootFolder = rootFolder;
-        private readonly string[] _allowedExtensions = allowedExtensions;
+        private readonly string _rootFolder;
+        private readonly string[] _allowedExtensions;
 
-        public FolderInfo Build()
+        public FolderInfo FileSystem {get; private set;}
+
+        public FileSystemInfoService(string rootFolder, string[] allowedExtensions)
         {
-            return Build(_rootFolder, new());
+            _rootFolder = rootFolder;
+            _allowedExtensions = allowedExtensions;
+            
+            FileSystem = Build(_rootFolder, new());
+        }
+
+        public void Build()
+        {
+            FileSystem = Build(_rootFolder, new());
         }
 
         private FolderInfo Build(string path, FolderInfo root)

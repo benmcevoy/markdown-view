@@ -36,7 +36,6 @@ namespace MdView.Rendering
             return title;
         }
 
-
         private static string Breadcrumb(FileSystemInfo route, string title, bool first)
         {
             title = first
@@ -49,6 +48,3 @@ namespace MdView.Rendering
         }
     }
 }
-
-
-

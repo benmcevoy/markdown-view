@@ -4,8 +4,9 @@ namespace MdView.Rendering
 {
     public class FolderRenderingHandler() : IRenderingHandler
     {
-        public bool CanHandle(FileSystemInfo route) =>
-             route is FolderInfo f && !f.Children.Any(x => x.Name == "index.md");
+        public string[] SupportedFileExtensions => [];
+
+        public bool CanHandle(FileSystemInfo route) => route is FolderInfo;
 
         public string Handle(FileSystemInfo route)
         {
@@ -17,7 +18,7 @@ namespace MdView.Rendering
             foreach (var f in folder.OrderedChildren())
             {
                 var title = f is FolderInfo ? $"/{f.Name}" : $"{f.Name}";
-                
+
                 sb.AppendLine($"<div><a href='{f.Uri}'>{title}</a></div>");
             }
 

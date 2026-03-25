@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Markdig;
 using Markdown.ColorCode;
 
@@ -15,17 +14,10 @@ namespace MdView.Rendering
                 .Build();
         }
 
+        public string[] SupportedFileExtensions => [".json", ".xml", ".js", ".cs", ".ts", ".html", ".sh", ".ps1"];
+
         public bool CanHandle(FileSystemInfo input) =>
-            input is FileInfo f && (
-                f.Extension == ".json" ||
-                f.Extension == ".xml" ||
-                f.Extension == ".js" ||
-                f.Extension == ".cs" ||
-                f.Extension == ".ts" ||
-                f.Extension == ".html" ||
-                f.Extension == ".sh" ||
-                f.Extension == ".ps1" 
-            );
+            input is FileInfo f && SupportedFileExtensions.Contains(f.Extension);
 
         public string Handle(FileSystemInfo input)
         {

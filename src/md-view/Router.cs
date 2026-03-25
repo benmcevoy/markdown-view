@@ -6,10 +6,10 @@ namespace MdView
     /// <remarks>
     /// Creates a new Router instance.
     /// </remarks>
-    public class Router(FolderInfo rootFolder)
+    public class Router(FileSystemInfoService fileSystemService)
     {
-        private readonly string _rootPath = rootFolder.Path;
-        private readonly Dictionary<string, FileSystemInfo> _fileSystem = FlattenFileSystem([], rootFolder);
+        private readonly string _rootPath = fileSystemService.FileSystem.Path;
+        private readonly Dictionary<string, FileSystemInfo> _fileSystem = FlattenFileSystem([], fileSystemService.FileSystem);
 
         /// <summary>
         /// Maps an HTTP request path to a file path in the filesystem.

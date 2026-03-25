@@ -2,9 +2,10 @@ namespace MdView.Rendering
 {
     public class PdfFileRendererHandler : IRenderingHandler
     {
-        public bool CanHandle(FileSystemInfo input) =>
-            input is FileInfo f && f.Extension == ".pdf";
+        public string[] SupportedFileExtensions => [".pdf"];
 
+        public bool CanHandle(FileSystemInfo input) =>
+            input is FileInfo f && SupportedFileExtensions.Contains(f.Extension);
         public string Handle(FileSystemInfo input)
         {
             var file = input as FileInfo;

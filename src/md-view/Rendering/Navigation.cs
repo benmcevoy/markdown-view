@@ -2,21 +2,15 @@ using System.Text;
 
 namespace MdView.Rendering
 {
-    public class Navigation(FolderInfo root)
+    public class Navigation(FileSystemInfoService fileSystemService)
     {
-        private readonly FolderInfo _root = root;
+        private readonly FolderInfo _root = fileSystemService.FileSystem;
 
         public string Render(FileSystemInfo current)
         {
-
             return @$"
-
 <nav>
-    <ul><li>
-    <a href='{_root.Uri}'>{Name(_root)}</a>
     {Render(_root, current)}
-    </li>
-    </ul>
 </nav>";
         }
 
@@ -41,8 +35,6 @@ namespace MdView.Rendering
 
             return sb.ToString();
         }
-
-   
 
         private static string CurrentClass(FileSystemInfo candidate, FileSystemInfo current) =>
              candidate.Path.Equals(current.Path, StringComparison.Ordinal) ? "current" : "";

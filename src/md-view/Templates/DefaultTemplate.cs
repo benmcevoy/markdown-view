@@ -1,11 +1,13 @@
+using System.Text;
+
 namespace MdView.Templates
 {
     public class DefaultTemplate()
     {
-        // TODO: use keyvalue pairs for content fragments
+        // TODO: use keyvalue pairs for content fragments or something to strengthen this and improve extensionabilty
         public string Render(string title, string aside, string main, string breadcrumb)
         {
-            var template = Assets.default_html;
+            var template = new StringBuilder(Assets.default_html, Assets.default_html.Length * 2);
 
             template = template.Replace("{{styles}}",
         @$"<style>
@@ -25,7 +27,7 @@ namespace MdView.Templates
             mermaid.initialize({{ startOnLoad: true }});
         </script>");
 
-            return template;
+            return template.ToString();
         }
     }
 }

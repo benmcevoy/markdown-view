@@ -2,14 +2,10 @@ namespace MdView.Rendering
 {
     public class ImageFileRendererHandler : IRenderingHandler
     {
+        public string[] SupportedFileExtensions => [".png", ".jpeg", ".jpg", ".bmp", ".gif", ".webp"];
+
         public bool CanHandle(FileSystemInfo input) =>
-            input is FileInfo f &&
-            (f.Extension == ".png" ||
-            f.Extension == ".jpeg" ||
-            f.Extension == ".jpg" ||
-            f.Extension == ".bmp" ||
-            f.Extension == ".gif" ||
-            f.Extension == ".webp");
+            input is FileInfo f && SupportedFileExtensions.Contains(f.Extension);
 
         public string Handle(FileSystemInfo input)
         {

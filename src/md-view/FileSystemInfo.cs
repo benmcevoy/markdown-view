@@ -5,10 +5,7 @@ namespace MdView
         public FolderInfo? Parent { get; set; } = null;
         public string Path { get; set; } = "";
         public string Name { get; set; } = "";
-        public string RequestPath { get; set; } = "";
         public string Uri { get; set; } = "";
-
-        public override string ToString() => $"{Name} ({Path})";
     }
 
     public class FolderInfo : FileSystemInfo

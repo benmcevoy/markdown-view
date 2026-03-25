@@ -1,13 +1,15 @@
-using System;
-using System.IO;
-using MdView.Routing;
-using Xunit;
-
 namespace MdView.Tests
 {
     public class RouterTests
     {
-        private readonly Router _router = new("/home/agent/hello-world/sample", [".md"]);
+        private readonly FileSystemInfoService _fileSystemService;
+        private readonly Router _router;
+
+        public RouterTests()
+        {
+            _fileSystemService = new("/home/agent/hello-world/sample", [".md"]);
+            _router = new(_fileSystemService.Build());
+        }
 
         [Fact]
         public void Map_Root_ReturnsIsFolder()
@@ -17,8 +19,7 @@ namespace MdView.Tests
             var route = _router.Map("/");
 
             // assert
-            Assert.Equal("/", route.RequestPath);
-            Assert.True(route.RouteType == RouteType.Folder); // Root path points to sample directory (a folder)
+            Assert.True(route is FolderInfo); // Root path points to sample directory (a folder)
             Assert.Equal("/home/agent/hello-world/sample", route.Path);
         }
 
@@ -31,13 +32,11 @@ namespace MdView.Tests
             var route = _router.Map("/index.md");
 
             // assert
-            Assert.Equal("/index.md", route.RequestPath);
             Assert.Equal("/home/agent/hello-world/sample/index.md", route.Path);
-            Assert.False(route.RouteType == RouteType.Folder);
+            Assert.False(route is FolderInfo);
         }
 
-      
-      // Map_FileFd_ReturnsFileMd
+        // Map_FileFd_ReturnsFileMd
         [Fact]
         public void Map_FileMd_ReturnsFileMd()
         {
@@ -46,11 +45,9 @@ namespace MdView.Tests
             var route = _router.Map("/page1.md");
 
             // assert
-            Assert.Equal("/page1.md", route.RequestPath);
             Assert.Equal("/home/agent/hello-world/sample/page1.md", route.Path);
-            Assert.False(route.RouteType == RouteType.File);
+            Assert.True(route is FileInfo);
         }
-
 
         // Map_FileMd_IsNotFolder
         [Fact]
@@ -61,7 +58,7 @@ namespace MdView.Tests
             var route = _router.Map("/page1.md");
 
             // assert
-            Assert.False(route.RouteType == RouteType.Folder);
+            Assert.False(route is FolderInfo);
         }
 
         // Map_PathTraversal_Throws
@@ -111,7 +108,5 @@ namespace MdView.Tests
             // assert
             Assert.Equal("forbidden", ex.Message);
         }
-
-
     }
 }
