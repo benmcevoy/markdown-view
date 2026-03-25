@@ -30,7 +30,7 @@ namespace MdView
             var ipAddress = System.Net.IPAddress.Loopback;
             var port = 5001;
 
-            rootFolder = "/home/agent/hello-world/sample";
+            //rootFolder = "/home/agent/hello-world/sample";
 
             Console.WriteLine($"using '{rootFolder}'.");
 

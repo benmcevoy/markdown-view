@@ -14,11 +14,11 @@ namespace MdView
         /// <summary>
         /// Maps an HTTP request path to a file path in the filesystem.
         /// </summary>
-        public FileSystemInfo Map(string requestPath)
+        public FileSystemInfo Map(string requestUrl)
         {
-            if (!IsValidRequest(requestPath)) throw new NotSupportedException("forbidden");
+            if (!IsValidRequest(requestUrl)) throw new NotSupportedException("forbidden");
 
-            var path = ResolvePath(_rootPath, requestPath);
+            var path = ResolvePath(_rootPath, requestUrl);
 
             return _fileSystem.TryGetValue(path, out var fileSystemInfo)
                 ? fileSystemInfo
@@ -44,24 +44,25 @@ namespace MdView
             if (relative.StartsWith('/')) relative = relative[1..];
 
             relative = Uri.UnescapeDataString(relative);
+            relative = relative.Replace('/', Path.DirectorySeparatorChar);
 
             return Path.Combine(root, relative);
         }
 
-        private static bool IsValidRequest(string requestPath)
+        private static bool IsValidRequest(string requestUrl)
         {
             // Sanitise
-            if (requestPath == null) return false;
+            if (requestUrl == null) return false;
 
             // path traversal is forbidden, i.e. ./../, throw new NotSupportedException
-            if (requestPath.Contains("./") ||
-                requestPath.Contains("../") ||
-                requestPath.Contains("/.") ||
-                requestPath.Contains(@"\")) return false;
+            if (requestUrl.Contains("./") ||
+                requestUrl.Contains("../") ||
+                requestUrl.Contains("/.") ||
+                requestUrl.Contains(@"\")) return false;
 
             // query string is forbidden i.e. ?
             // fragment is forbidden i.e. #
-            if (requestPath.Contains('?') || requestPath.Contains('#')) return false;
+            if (requestUrl.Contains('?') || requestUrl.Contains('#')) return false;
 
             return true;
         }
