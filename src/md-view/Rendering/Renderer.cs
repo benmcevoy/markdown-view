@@ -8,7 +8,7 @@ namespace MdView.Rendering
         private readonly Navigation _navigation = navigation;
         private readonly IRenderingHandler[] _handlers = handlers;
 
-        public string Render(FileSystemInfo route)
+        public Task<string> RenderAsync(FileSystemInfo route)
         {
             var main = "nothing to display";
 
@@ -27,7 +27,7 @@ namespace MdView.Rendering
             var title = Title(route, "");
             var breadcrumb = Breadcrumb(route, "", true);
 
-            return _template.Render(title, nav, main, breadcrumb, route.Name);
+            return Task.FromResult(_template.Render(title, nav, main, breadcrumb, route.Name));
         }
 
         private static string Title(FileSystemInfo route, string title)

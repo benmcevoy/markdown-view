@@ -1,55 +1,9 @@
-# TODO
-
-DONE - process start browser on startup
-- use async
-DONE - in memory cache for navigation
-- config and .mdview settings (see admin)
-
-## navigation
-
-- render navigation
-DONE - generate nav structure and cache
-DONE - navigation is highlighting issues with rendering and routing
-DONE - i see feature envy
-
-
-## front matter and metadata
-
-- what is front matter? a YAMLy set of keyvalues
-
-```
----  or +++ or ;
-title: my title   -or- title = My title  -or- 
-tags: a,b,c
----
-```
-make configurable to show or hide
-leverage for search
-
-markdig has YAML support
-
-- need titles for navigation
-
-
-file name
-
-
-## raw view
 
 ## admin
 
 - set port?
-- theme
 - store in a config file specific to MD folder , e.g.  .mdview
 - view log
-
-## more handlers
-
-- images
-- pdf
-- json and xml pretty
-- js, code, .env, .config pretty
-- allowed extensions etc in .mdview
 
 
 ## skillz
@@ -96,17 +50,7 @@ review compile errors
 - and then review warnings
 - treat warnings as errors
 
-## chat
 
-  4. No Scanner Implementation
-  - NavigationService.Build() is never called
-  - No recursive directory scanning for markdown files
-  - No navigation sidebar generation
-
-  5. Template Engine Fragility
-  - MainTemplate.Render() uses string Replace() instead of proper templating
-  - Vulnerable to injection attacks
-  - No variable escaping
 
   6. Add Middleware for Security
 

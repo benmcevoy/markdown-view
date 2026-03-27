@@ -8,11 +8,15 @@ namespace MdView
     {
         static async Task Main(string[] args)
         {
-            WriteBanner();
+            var command = new Cli().Parse(args);
 
-            var rootFolder = ParseArgs(args);
+            switch (command.Name)
+            {
+                case Cli.CommandNames.Start: { await Start(command.Parameter); break; }
+                default: { await Help(); break; }
+            }
+
             // TODO:
-            // - images do net render when in markdown - should be converted to inline data:base64
             // - use config
             // - admin page
             // - default file is README.md, followed by index.md
@@ -27,10 +31,17 @@ namespace MdView
             // - use async?
             // - shake the tree, can I get the exe size smaller?
 
+
+        }
+
+        private static async Task Start(string rootFolder)
+        {
+            WriteBanner();
+
             var ipAddress = System.Net.IPAddress.Loopback;
             var port = 5001;
 
-            //rootFolder = "/home/agent/hello-world/sample";
+            rootFolder = "/home/agent/hello-world/sample";
 
             Console.WriteLine($"Base path: '{rootFolder}'");
 
@@ -48,7 +59,7 @@ namespace MdView
             var router = new Router(fileSystemInfoService);
             var renderer = new Renderer(new DefaultTemplate(), navigation, renderers);
 
-            var webBuilder = Host.CreateDefaultBuilder(args)
+            var webBuilder = Host.CreateDefaultBuilder()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder
@@ -62,7 +73,7 @@ namespace MdView
                             {
                                 var requestPath = context.Request.Path.ToString();
                                 var route = router.Map(requestPath);
-                                var response = renderer.Render(route);
+                                var response = await renderer.RenderAsync(route);
 
                                 context.Response.ContentType = "text/html";
                                 context.Response.StatusCode = 200;
@@ -81,6 +92,21 @@ namespace MdView
             await host.RunAsync();
         }
 
+        private static async Task Help()
+        {
+            const string help = @"
+Usage: md-view [path-to-folder]
+
+path-to-folder:
+  The path to a folder to serve as a markdown viewer site.
+
+commands:
+  -h|--help                         Display help.
+";
+
+            Console.Write(help);
+        }
+
         private static void WriteBanner()
         {
             Console.WriteLine();
@@ -89,21 +115,6 @@ namespace MdView
             Console.WriteLine(@"| | | | | | (_| |___\ V /| |  __/\ V  V / ");
             Console.WriteLine(@"|_| |_| |_|\__,_|    \_/ |_|\___| \_/\_/  ");
             Console.WriteLine();
-        }
-
-        private static string ParseArgs(string[] args)
-        {
-            // # TODO: add --help and --path
-            if (args == null) return Directory.GetCurrentDirectory();
-            if (args.Length == 0) return Directory.GetCurrentDirectory();
-
-            var path = args[0];
-
-            if(path.EndsWith(Path.DirectorySeparatorChar)) path = path.TrimEnd(Path.DirectorySeparatorChar);
-
-            if (Directory.Exists(path)) return path;
-
-            throw new ArgumentException("CLI argument is not a directory?");
         }
 
         private static void StartBrowser(string targetUrl)
