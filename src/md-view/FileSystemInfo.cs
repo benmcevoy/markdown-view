@@ -6,6 +6,7 @@ namespace MdView
         public string Path { get; set; } = "";
         public string Name { get; set; } = "";
         public string Uri { get; set; } = "";
+        public string FileSystemInfoType() => (this is FolderInfo) ? "folder" : "file";
     }
 
     public class FolderInfo : FileSystemInfo

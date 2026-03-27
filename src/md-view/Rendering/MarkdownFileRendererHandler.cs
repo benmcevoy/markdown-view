@@ -18,9 +18,6 @@ namespace MdView.Rendering
 
         public string[] SupportedFileExtensions => [".md"];
 
-        public bool CanHandle(FileSystemInfo input) => 
-            input is FileInfo f && SupportedFileExtensions.Contains(f.Extension);
-
         public string Handle(FileSystemInfo input)
         {
             var content = File.ReadAllText(input.Path);

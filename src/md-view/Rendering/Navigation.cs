@@ -20,7 +20,7 @@ namespace MdView.Rendering
 
             foreach (var x in root.OrderedChildren())
             {
-                sb.AppendLine(@$"<li class='{FileSystemTypeClass(x)}'>
+                sb.AppendLine(@$"<li class='{x.FileSystemInfoType()}'>
                                     <a class='{CurrentClass(x, current)}' href='{x.Uri}'>{x.Name}</a>");
 
                 if (x is FolderInfo f && f.Children.Count > 0)
@@ -38,8 +38,5 @@ namespace MdView.Rendering
 
         private static string CurrentClass(FileSystemInfo candidate, FileSystemInfo current) =>
              candidate.Path.Equals(current.Path, StringComparison.Ordinal) ? "current" : "";
-
-        private static string FileSystemTypeClass(FileSystemInfo candidate) =>
-            (candidate is FolderInfo) ? "folder" : "file";
     }
 }

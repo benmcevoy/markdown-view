@@ -32,7 +32,7 @@ namespace MdView
 
             //rootFolder = "/home/agent/hello-world/sample";
 
-            Console.WriteLine($"using '{rootFolder}'.");
+            Console.WriteLine($"Base path: '{rootFolder}'");
 
             IRenderingHandler[] renderers = [
                 new MarkdownFileRendererHandler(),
@@ -42,7 +42,7 @@ namespace MdView
                 new FolderRenderingHandler()
                 ];
 
-            var allowedFileExtensions = renderers.SelectMany(x=>x.SupportedFileExtensions).ToArray();
+            var allowedFileExtensions = renderers.SelectMany(x => x.SupportedFileExtensions).ToArray();
             var fileSystemInfoService = new FileSystemInfoService(rootFolder, allowedFileExtensions);
             var navigation = new Navigation(fileSystemInfoService);
             var router = new Router(fileSystemInfoService);
@@ -93,9 +93,15 @@ namespace MdView
 
         private static string ParseArgs(string[] args)
         {
+            // # TODO: add --help and --path
             if (args == null) return Directory.GetCurrentDirectory();
             if (args.Length == 0) return Directory.GetCurrentDirectory();
-            if (Directory.Exists(args[0])) return args[0];
+
+            var path = args[0];
+
+            if(path.EndsWith(Path.DirectorySeparatorChar)) path = path.TrimEnd(Path.DirectorySeparatorChar);
+
+            if (Directory.Exists(path)) return path;
 
             throw new ArgumentException("CLI argument is not a directory?");
         }

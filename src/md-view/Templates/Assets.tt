@@ -10,7 +10,7 @@ public class Assets
     string text = System.IO.File.ReadAllText("./css/main.css");
 #>
 
-    public const string <#= name#> = @"<#= text.Replace("\"", "\\\"") #>";
+    public const string <#= name#> = @"<#= text.Replace("\"", "\"\"") #>";
 
 <#
     name = "markdown_css";

@@ -17,13 +17,10 @@ namespace MdView.Rendering
 
             foreach (var f in folder.OrderedChildren())
             {
-                sb.AppendLine($"<div class='{FileSystemTypeClass(f)}'><a href='{f.Uri}'> {f.Name}</a></div>");
+                sb.AppendLine($"<div class='{f.FileSystemInfoType()}'><a href='{f.Uri}'> {f.Name}</a></div>");
             }
 
             return sb.ToString();
         }
-
-        // TODO: DRY
-        private static string FileSystemTypeClass(FileSystemInfo candidate) => (candidate is FolderInfo) ? "folder" : "file";
     }
 }

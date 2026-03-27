@@ -16,9 +16,6 @@ namespace MdView.Rendering
 
         public string[] SupportedFileExtensions => [".json", ".xml", ".js", ".cs", ".ts", ".html", ".sh", ".ps1"];
 
-        public bool CanHandle(FileSystemInfo input) =>
-            input is FileInfo f && SupportedFileExtensions.Contains(f.Extension);
-
         public string Handle(FileSystemInfo input)
         {
             var file = input as FileInfo;
