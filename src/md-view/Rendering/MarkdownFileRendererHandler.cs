@@ -2,6 +2,7 @@ using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using Markdown.ColorCode;
+using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
 
 namespace MdView.Rendering
 {

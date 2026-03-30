@@ -1,3 +1,7 @@
+using System.Runtime;
+using MdView.FileSystem;
+using FileInfo = MdView.FileSystem.FileInfo;
+
 namespace MdView.Tests
 {
     public class RouterTests
@@ -8,7 +12,12 @@ namespace MdView.Tests
         public RouterTests()
         {
             _fileSystemService = new("/home/agent/hello-world/sample", [".md"]);
-            _router = new(_fileSystemService.Build());
+            _router = new(_fileSystemService);
+        }
+
+        private static Stream AsGET(string url)
+        {
+            return new MemoryStream(System.Text.UTF8Encoding.UTF8.GetBytes($"GET {url} HTTP/1.1"));
         }
 
         [Fact]
@@ -16,7 +25,7 @@ namespace MdView.Tests
         {
             // arrange
             // act
-            var route = _router.Map("/");
+            var route = _router.Map(AsGET("/"));
 
             // assert
             Assert.True(route is FolderInfo); // Root path points to sample directory (a folder)
@@ -29,7 +38,7 @@ namespace MdView.Tests
         {
             // arrange
             // act
-            var route = _router.Map("/index.md");
+            var route = _router.Map(AsGET("/index.md"));
 
             // assert
             Assert.Equal("/home/agent/hello-world/sample/index.md", route.Path);
@@ -42,7 +51,7 @@ namespace MdView.Tests
         {
             // arrange
             // act
-            var route = _router.Map("/page1.md");
+            var route = _router.Map(AsGET("/page1.md"));
 
             // assert
             Assert.Equal("/home/agent/hello-world/sample/page1.md", route.Path);
@@ -55,7 +64,7 @@ namespace MdView.Tests
         {
             // arrange
             // act
-            var route = _router.Map("/page1.md");
+            var route = _router.Map(AsGET("/page1.md"));
 
             // assert
             Assert.False(route is FolderInfo);
@@ -67,7 +76,7 @@ namespace MdView.Tests
         {
             // arrange
             // act
-            var ex = Assert.Throws<NotSupportedException>(() => _router.Map("/../../../etc/passwd"));
+            var ex = Assert.Throws<NotSupportedException>(() => _router.Map(AsGET("/../../../etc/passwd")));
 
             // assert
             Assert.Equal("forbidden", ex.Message);
@@ -79,7 +88,7 @@ namespace MdView.Tests
         {
             // arrange
             // act
-            var ex = Assert.Throws<NotSupportedException>(() => _router.Map("/index.md?foo=bar"));
+            var ex = Assert.Throws<NotSupportedException>(() => _router.Map(AsGET("/index.md?foo=bar")));
 
             // assert
             Assert.Equal("forbidden", ex.Message);
@@ -91,7 +100,7 @@ namespace MdView.Tests
         {
             // arrange
             // act
-            var ex = Assert.Throws<NotSupportedException>(() => _router.Map("/index.md#section"));
+            var ex = Assert.Throws<NotSupportedException>(() => _router.Map(AsGET("/index.md#section")));
 
             // assert
             Assert.Equal("forbidden", ex.Message);
@@ -103,7 +112,7 @@ namespace MdView.Tests
         {
             // arrange
             // act
-            var ex = Assert.Throws<NotSupportedException>(() => _router.Map("/index%20page.md"));
+            var ex = Assert.Throws<NotSupportedException>(() => _router.Map(AsGET("/index%20page.md")));
 
             // assert
             Assert.Equal("forbidden", ex.Message);

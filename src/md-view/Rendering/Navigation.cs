@@ -1,10 +1,12 @@
 using System.Text;
+using MdView.FileSystem;
+using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
 
 namespace MdView.Rendering
 {
     public class Navigation(FileSystemInfoService fileSystemService)
     {
-        private readonly FolderInfo _root = fileSystemService.FileSystem;
+        private readonly FolderInfo _root = fileSystemService.FileSystem();
 
         public string Render(FileSystemInfo current)
         {

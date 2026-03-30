@@ -1,4 +1,5 @@
 using MdView.Templates;
+using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
 
 namespace MdView.Rendering
 {
@@ -8,7 +9,7 @@ namespace MdView.Rendering
         private readonly Navigation _navigation = navigation;
         private readonly IRenderingHandler[] _handlers = handlers;
 
-        public Task<string> RenderAsync(FileSystemInfo route)
+        public string Render(FileSystemInfo route)
         {
             var main = "nothing to display";
 
@@ -27,7 +28,7 @@ namespace MdView.Rendering
             var title = Title(route, "");
             var breadcrumb = Breadcrumb(route, "", true);
 
-            return Task.FromResult(_template.Render(title, nav, main, breadcrumb, route.Name));
+            return _template.Render(title, nav, main, breadcrumb, route.Name);
         }
 
         private static string Title(FileSystemInfo route, string title)

@@ -1,23 +1,33 @@
-namespace MdView
+namespace MdView.FileSystem
 {
-    public class FileSystemInfoService
+    public class FileSystemInfoService(string rootFolder, string[] allowedExtensions)
     {
-        private readonly string _rootFolder;
-        private readonly string[] _allowedExtensions;
+        private readonly string _rootFolder = rootFolder;
+        private readonly string[] _allowedExtensions = allowedExtensions;
 
-        public FolderInfo FileSystem {get; private set;}
+        private FolderInfo? _fileSystem;
 
-        public FileSystemInfoService(string rootFolder, string[] allowedExtensions)
+        public FolderInfo FileSystem(bool force = false)
         {
-            _rootFolder = rootFolder;
-            _allowedExtensions = allowedExtensions;
-            
-            FileSystem = Build(_rootFolder, new());
+            if(force || _fileSystem == null) _fileSystem = Build(_rootFolder, new());
+
+            return _fileSystem;
         }
 
-        public void Build()
+        public Dictionary<string, FileSystemInfo> FlattenFileSystem(FolderInfo fileSystem) => FlattenFileSystem([], fileSystem);
+
+        private static Dictionary<string, FileSystemInfo> FlattenFileSystem(Dictionary<string, FileSystemInfo> fileSystem, 
+                                                                            FolderInfo folder)
         {
-            FileSystem = Build(_rootFolder, new());
+            fileSystem[folder.Path] = folder;
+
+            foreach (var f in folder.Children)
+            {
+                if (f is FolderInfo childFolder) fileSystem = FlattenFileSystem(fileSystem, childFolder);
+                if (f is FileInfo) fileSystem[f.Path] = f;
+            }
+
+            return fileSystem;
         }
 
         private FolderInfo Build(string path, FolderInfo root)

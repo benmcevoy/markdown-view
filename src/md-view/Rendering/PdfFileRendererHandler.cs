@@ -1,3 +1,6 @@
+using FileInfo = MdView.FileSystem.FileInfo;
+using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
+
 namespace MdView.Rendering
 {
     public class PdfFileRendererHandler : IRenderingHandler

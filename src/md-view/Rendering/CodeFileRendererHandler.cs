@@ -1,5 +1,6 @@
 using Markdig;
 using Markdown.ColorCode;
+using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
 
 namespace MdView.Rendering
 {
@@ -18,7 +19,7 @@ namespace MdView.Rendering
 
         public string Handle(FileSystemInfo input)
         {
-            var file = input as FileInfo;
+            var file = input as FileSystem.FileInfo;
             var content = File.ReadAllText(file!.Path);
             var markdown = @$"```{file.Extension[1..]}
 {content}

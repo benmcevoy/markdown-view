@@ -1,4 +1,6 @@
 using System.Text;
+using MdView.FileSystem;
+using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
 
 namespace MdView.Rendering
 {

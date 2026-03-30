@@ -1,14 +1,5 @@
-namespace MdView
+namespace MdView.FileSystem
 {
-    public abstract class FileSystemInfo
-    {
-        public FolderInfo? Parent { get; set; } = null;
-        public string Path { get; set; } = "";
-        public string Name { get; set; } = "";
-        public string Uri { get; set; } = "";
-        public string FileSystemInfoType() => (this is FolderInfo) ? "folder" : "file";
-    }
-
     public class FolderInfo : FileSystemInfo
     {
         public List<FileSystemInfo> Children { get; set; } = [];
@@ -31,10 +22,5 @@ namespace MdView
 
             return folders.Concat(files);
         }
-    }
-
-    public class FileInfo : FileSystemInfo
-    {
-        public string Extension { get; set; } = "";
     }
 }
