@@ -1,16 +1,22 @@
+using System.ComponentModel.Design.Serialization;
+using System.Text;
+using MdView.Routing;
 using MdView.Templates;
-using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
 
 namespace MdView.Rendering
 {
-    public class Renderer(DefaultTemplate template, Navigation navigation, IRenderingHandler[] handlers)
+    public class Renderer(DefaultTemplate template, IRenderingHandler[] handlers)
     {
         private readonly DefaultTemplate _template = template;
-        private readonly Navigation _navigation = navigation;
         private readonly IRenderingHandler[] _handlers = handlers;
 
-        public string Render(FileSystemInfo route)
+        public ContentInfo Render(Route route)
         {
+            if (route is SpecialRoute)
+            {
+                return new ContentInfo { Content = "404 - Not Found", StatusCode = "404 NotFound" };
+            }
+
             var main = "nothing to display";
 
             foreach (var r in _handlers)
@@ -22,16 +28,14 @@ namespace MdView.Rendering
                 }
             }
 
-            // TODO: would be nice if these were handlers too, and were injected
-            // annoying to only inject Navigation
-            var nav = _navigation.Render(route);
+            var nav = Navigation(route);
             var title = Title(route, "");
             var breadcrumb = Breadcrumb(route, "", true);
 
-            return _template.Render(title, nav, main, breadcrumb, route.Name);
+            return new() { Content = _template.Render(title, nav, main, breadcrumb, route.Name) };
         }
 
-        private static string Title(FileSystemInfo route, string title)
+        private static string Title(Route route, string title)
         {
             title = $"/{route.Name}{title}";
 
@@ -40,7 +44,7 @@ namespace MdView.Rendering
             return title;
         }
 
-        private static string Breadcrumb(FileSystemInfo route, string title, bool first)
+        private static string Breadcrumb(Route route, string title, bool first)
         {
             title = first
                 ? $" / {route.Name}"
@@ -50,5 +54,41 @@ namespace MdView.Rendering
 
             return title;
         }
+
+        private static string Navigation(Route current)
+        {
+            var root = current.Parent ?? current as FolderRoute;
+            while(root?.Parent != null) root = root.Parent;
+
+            return @$"
+<nav>
+    {Navigation(root!, current)}
+</nav>";
+        }
+
+        private static string Navigation(FolderRoute root, Route current)
+        {
+            var sb = new StringBuilder("<ul>");
+
+            foreach (var x in root.OrderedChildren())
+            {
+                sb.AppendLine(@$"<li class='{x.RouteType()}'>
+                                    <a class='{CurrentClass(x, current)}' href='{x.Uri}'>{x.Name}</a>");
+
+                if (x is FolderRoute f && f.Children.Count > 0)
+                {
+                    sb.AppendLine(Navigation(f, current));
+                }
+
+                sb.AppendLine("</li>");
+            }
+
+            sb.Append("</ul>");
+
+            return sb.ToString();
+        }
+
+        private static string CurrentClass(Route candidate, Route current) =>
+             candidate.Path.Equals(current.Path, StringComparison.Ordinal) ? "current" : "";
     }
 }

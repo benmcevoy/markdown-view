@@ -1,8 +1,6 @@
-using MdView.FileSystem;
-using FileInfo = MdView.FileSystem.FileInfo;
-using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
+using System.Data;
 
-namespace MdView
+namespace MdView.Routing
 {
     /// <summary>
     /// Router class that maps HTTP requests to file paths in the filesystem.
@@ -10,16 +8,17 @@ namespace MdView
     /// <remarks>
     /// Creates a new Router instance.
     /// </remarks>
-    public class Router(FileSystemInfoService fileSystemService)
+    public class Router(FileSystemRouter fileSystemRouter)
     {
         private const char Space = ' ';
         private const char QuestionMark = '?';
         private const char Hash = '#';
+        private const string UnsupportedRequest = "???";
         private static readonly char[] _buffer = new char[2048];
-        private readonly string _rootPath = fileSystemService.FileSystem().Path;
-        private readonly Dictionary<string, FileSystemInfo> _fileSystem = FlattenFileSystem([], fileSystemService.FileSystem());
+        private readonly string _rootPath = fileSystemRouter.FileSystem().Path;
+        private readonly Dictionary<string, Route> _fileSystem = FlattenFileSystem([], fileSystemRouter.FileSystem());
 
-        public FileSystemInfo Map(Stream stream) => Map(Parse(stream));
+        public Route Map(Stream stream) => Map(Parse(stream));
 
         private static string Parse(Stream request)
         {
@@ -31,8 +30,8 @@ namespace MdView
             // consume up to the first space
             while (sr.Read() != Space && !sr.EndOfStream) ;
 
-            // TODO: we got a weird request
-            if (sr.EndOfStream) return "???";
+            // unsupported
+            if (sr.EndOfStream) return UnsupportedRequest;
 
             var length = 0;
             var token = (char)sr.Read();
@@ -48,9 +47,11 @@ namespace MdView
             return new string(_buffer, 0, length);
         }
 
-        private FileSystemInfo Map(string requestUrl)
+        private Route Map(string requestUrl)
         {
-            if (!IsValidRequest(requestUrl)) throw new NotSupportedException("forbidden");
+            Console.WriteLine(requestUrl);
+
+            if (!IsValidRequest(requestUrl)) return Forbidden();
 
             var path = ResolvePath(_rootPath, requestUrl);
 
@@ -59,24 +60,29 @@ namespace MdView
                 : Special(requestUrl);
         }
 
-        private static FileInfo Special(string requestUrl)
+        private static Route Special(string requestUrl)
         {
-            if (requestUrl.Equals("/favicon.ico", StringComparison.OrdinalIgnoreCase))
+            if (requestUrl.Equals(UnsupportedRequest, StringComparison.OrdinalIgnoreCase))
             {
-                return new FileInfo { Extension = ".ico", Name = "favicon.ico" };
+                return NotFound();
             }
 
-            throw new NotSupportedException($"unsupported request: '{requestUrl}'");
+            if (requestUrl.Equals("/favicon.ico", StringComparison.OrdinalIgnoreCase))
+            {
+                return new FileRoute { Extension = ".ico", Name = "favicon.ico" };
+            }
+
+            return NotFound();
         }
 
-        private static Dictionary<string, FileSystemInfo> FlattenFileSystem(Dictionary<string, FileSystemInfo> fileSystem, FolderInfo folder)
+        private static Dictionary<string, Route> FlattenFileSystem(Dictionary<string, Route> fileSystem, FolderRoute folder)
         {
             fileSystem[folder.Path] = folder;
 
             foreach (var f in folder.Children)
             {
-                if (f is FolderInfo childFolder) fileSystem = FlattenFileSystem(fileSystem, childFolder);
-                if (f is FileInfo) fileSystem[f.Path] = f;
+                if (f is FolderRoute childFolder) fileSystem = FlattenFileSystem(fileSystem, childFolder);
+                if (f is FileRoute) fileSystem[f.Path] = f;
             }
 
             return fileSystem;
@@ -111,5 +117,8 @@ namespace MdView
 
             return true;
         }
+
+        private static SpecialRoute NotFound() => new() { Name = "404" };
+        private static SpecialRoute Forbidden() => new() { Name = "401" };
     }
 }

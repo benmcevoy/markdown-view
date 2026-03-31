@@ -1,36 +1,36 @@
-namespace MdView.FileSystem
+namespace MdView.Routing
 {
-    public class FileSystemInfoService(string rootFolder, string[] allowedExtensions)
+    public class FileSystemRouter(string rootFolder, string[] allowedExtensions)
     {
         private readonly string _rootFolder = rootFolder;
         private readonly string[] _allowedExtensions = allowedExtensions;
 
-        private FolderInfo? _fileSystem;
+        private FolderRoute? _fileSystem;
 
-        public FolderInfo FileSystem(bool force = false)
+        public FolderRoute FileSystem(bool force = false)
         {
             if(force || _fileSystem == null) _fileSystem = Build(_rootFolder, new());
 
             return _fileSystem;
         }
 
-        public Dictionary<string, FileSystemInfo> FlattenFileSystem(FolderInfo fileSystem) => FlattenFileSystem([], fileSystem);
+        public Dictionary<string, Route> FlattenFileSystem(FolderRoute fileSystem) => FlattenFileSystem([], fileSystem);
 
-        private static Dictionary<string, FileSystemInfo> FlattenFileSystem(Dictionary<string, FileSystemInfo> fileSystem, 
-                                                                            FolderInfo folder)
+        private static Dictionary<string, Route> FlattenFileSystem(Dictionary<string, Route> fileSystem, 
+                                                                            FolderRoute folder)
         {
             fileSystem[folder.Path] = folder;
 
             foreach (var f in folder.Children)
             {
-                if (f is FolderInfo childFolder) fileSystem = FlattenFileSystem(fileSystem, childFolder);
-                if (f is FileInfo) fileSystem[f.Path] = f;
+                if (f is FolderRoute childFolder) fileSystem = FlattenFileSystem(fileSystem, childFolder);
+                if (f is FileRoute) fileSystem[f.Path] = f;
             }
 
             return fileSystem;
         }
 
-        private FolderInfo Build(string path, FolderInfo root)
+        private FolderRoute Build(string path, FolderRoute root)
         {
             // this directory
             root.Name = Path.GetFileName(path);
@@ -40,7 +40,7 @@ namespace MdView.FileSystem
             // recurse all directories
             var folders = Directory
                 .GetDirectories(path)
-                .Select(f => Build(f, new FolderInfo { Parent = root }));
+                .Select(f => Build(f, new FolderRoute { Parent = root }));
 
             root.Children.AddRange(folders);
 
@@ -48,7 +48,7 @@ namespace MdView.FileSystem
             var files = Directory
                 .EnumerateFiles(path)
                 .Where(f => _allowedExtensions.Contains(Path.GetExtension(f)))
-                .Select(f => new FileInfo
+                .Select(f => new FileRoute
                 {
                     Parent = root,
                     Name = Path.GetFileName(f),

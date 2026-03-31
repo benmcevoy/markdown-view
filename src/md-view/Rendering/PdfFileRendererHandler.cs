@@ -1,5 +1,5 @@
-using FileInfo = MdView.FileSystem.FileInfo;
-using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
+
+using MdView.Routing;
 
 namespace MdView.Rendering
 {
@@ -7,9 +7,9 @@ namespace MdView.Rendering
     {
         public string[] SupportedFileExtensions => [".pdf"];
 
-        public string Handle(FileSystemInfo input)
+        public string Handle(Route input)
         {
-            var file = input as FileInfo;
+            var file = input as FileRoute;
             var bytes = File.ReadAllBytes(file!.Path);
             var content = Convert.ToBase64String(bytes);
             var html = $"<iframe src='data:application/pdf;base64, {content}' width='100%' style='border:none;height: 100vh'></iframe>";

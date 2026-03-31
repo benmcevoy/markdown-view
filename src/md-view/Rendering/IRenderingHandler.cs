@@ -1,13 +1,12 @@
-using FileInfo = MdView.FileSystem.FileInfo;
-using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
+using MdView.Routing;
 
 namespace MdView.Rendering
 {
-    public interface IRenderingHandler : IHandler<FileSystemInfo, string>
+    public interface IRenderingHandler : IHandler<Route, string>
     {
         string[] SupportedFileExtensions { get; }
 
-        bool IHandler<FileSystemInfo, string>.CanHandle(FileSystemInfo input)=>
-            input is FileInfo f && SupportedFileExtensions.Contains(f.Extension);
+        bool IHandler<Route, string>.CanHandle(Route input)=>
+            input is FileRoute f && SupportedFileExtensions.Contains(f.Extension);
     }
 }

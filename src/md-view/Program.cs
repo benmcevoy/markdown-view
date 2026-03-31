@@ -1,6 +1,6 @@
 using MdView.Rendering;
 using MdView.Templates;
-using MdView.FileSystem;
+using MdView.Routing;
 using MdView.Cli;
 using System.Net.Sockets;
 
@@ -20,9 +20,12 @@ namespace MdView
             }
 
             // TODO:
-            // - Error handling, 404 page
-            // - parameters include Port as parameter
-            // 
+            // - command parsing is pretty shit
+            // - parameters - allow render file or folder to html -r --render <target file/folder> <out?>
+            // - parameters include Port as parameter -p --port 5001
+            // - parameters --path <target file/folder>
+            // - routing is pretty whacky - probably just want Route type with data/values like asp.net
+            // - rendering is annoying as weird use of handlers, templates, etc - pick a lane
         }
 
         private static void Start(string rootFolder)
@@ -43,10 +46,9 @@ namespace MdView
                 ];
 
             var allowedFileExtensions = renderers.SelectMany(x => x.SupportedFileExtensions).ToArray();
-            var fileSystemInfoService = new FileSystemInfoService(rootFolder, allowedFileExtensions);
-            var navigation = new Navigation(fileSystemInfoService);
-            var renderer = new Renderer(new DefaultTemplate(), navigation, renderers);
-            var router = new Router(fileSystemInfoService);
+            var fileSystemRouter = new FileSystemRouter(rootFolder, allowedFileExtensions);
+            var renderer = new Renderer(new DefaultTemplate(), renderers);
+            var router = new Router(fileSystemRouter);
 
             using TcpListener listener = new(ipAddress, port);
 
@@ -62,7 +64,11 @@ namespace MdView
 
                 var route = router.Map(stream);
                 var content = renderer.Render(route);
-                var response = $"HTTP/1.1 200 OK\r\nContent-Length: {content.Length}\r\nContent-Type: text/html\r\n\r\n{content}";
+                var response = @$"HTTP/1.1 {content.StatusCode}
+Content-Length: {content.Content.Length}
+Content-Type: {content.ContentType}
+
+{content.Content}";
 
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(response);
 

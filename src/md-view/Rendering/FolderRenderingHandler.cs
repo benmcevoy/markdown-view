@@ -1,6 +1,5 @@
 using System.Text;
-using MdView.FileSystem;
-using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
+using MdView.Routing;
 
 namespace MdView.Rendering
 {
@@ -8,18 +7,18 @@ namespace MdView.Rendering
     {
         public string[] SupportedFileExtensions => [];
 
-        public bool CanHandle(FileSystemInfo route) => route is FolderInfo;
+        public bool CanHandle(Route route) => route is FolderRoute;
 
-        public string Handle(FileSystemInfo route)
+        public string Handle(Route route)
         {
             var sb = new StringBuilder();
-            var folder = route as FolderInfo;
+            var folder = route as FolderRoute;
 
             if (folder!.Children.Count == 0) return "Nothing here...";
 
             foreach (var f in folder.OrderedChildren())
             {
-                sb.AppendLine($"<div class='{f.FileSystemInfoType()}'><a href='{f.Uri}'> {f.Name}</a></div>");
+                sb.AppendLine($"<div class='{f.RouteType()}'><a href='{f.Uri}'> {f.Name}</a></div>");
             }
 
             return sb.ToString();

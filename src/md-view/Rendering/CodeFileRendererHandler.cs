@@ -1,6 +1,6 @@
 using Markdig;
 using Markdown.ColorCode;
-using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
+using MdView.Routing;
 
 namespace MdView.Rendering
 {
@@ -17,9 +17,9 @@ namespace MdView.Rendering
 
         public string[] SupportedFileExtensions => [".json", ".xml", ".js", ".cs", ".ts", ".html", ".sh", ".ps1"];
 
-        public string Handle(FileSystemInfo input)
+        public string Handle(Route input)
         {
-            var file = input as FileSystem.FileInfo;
+            var file = input as FileRoute;
             var content = File.ReadAllText(file!.Path);
             var markdown = @$"```{file.Extension[1..]}
 {content}

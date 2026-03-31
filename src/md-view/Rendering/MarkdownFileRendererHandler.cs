@@ -2,7 +2,7 @@ using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using Markdown.ColorCode;
-using FileSystemInfo = MdView.FileSystem.FileSystemInfo;
+using MdView.Routing;
 
 namespace MdView.Rendering
 {
@@ -21,7 +21,7 @@ namespace MdView.Rendering
 
         public string[] SupportedFileExtensions => [".md"];
 
-        public string Handle(FileSystemInfo input)
+        public string Handle(Route input)
         {
             var content = File.ReadAllText(input.Path);
             var document = Markdig.Markdown.Parse(content, _pipeline);
@@ -31,7 +31,7 @@ namespace MdView.Rendering
             return document.ToHtml(_pipeline);
         }
 
-        private static MarkdownDocument RewriteImages(FileSystemInfo input, MarkdownDocument document)
+        private static MarkdownDocument RewriteImages(Route input, MarkdownDocument document)
         {
             foreach (var image in document.Descendants<LinkInline>().Where(l => l.IsImage))
             {
@@ -64,6 +64,4 @@ namespace MdView.Rendering
             return Path.Combine(root, relative);
         }
     }
-
-
 }
