@@ -27,22 +27,24 @@ namespace MdView.Routing
 
             var sr = new StreamReader(request);
 
+            // TODO: assumes GET so HEAD|OPTION|POST|DELETE|etc all get treated as GET
             // consume up to the first space
-            while (sr.Read() != Space && !sr.EndOfStream) ;
+            while (sr.Read() != Space && !sr.EndOfStream);
 
             // unsupported
             if (sr.EndOfStream) return UnsupportedRequest;
 
             var length = 0;
-            var token = (char)sr.Read();
+            var character = (char)sr.Read();
 
             do
             {
-                _buffer[length++] = token;
-                token = (char)sr.Read();
+                _buffer[length++] = character;
+                // lookahead
+                character = (char)sr.Read();
             }
             // until a space or ? or #
-            while (token != Space && token != QuestionMark && token != Hash);
+            while (character != Space && character != QuestionMark && character != Hash);
 
             return new string(_buffer, 0, length);
         }

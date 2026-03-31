@@ -26,6 +26,7 @@ namespace MdView
             // - parameters --path <target file/folder>
             // - routing is pretty whacky - probably just want Route type with data/values like asp.net
             // - rendering is annoying as weird use of handlers, templates, etc - pick a lane
+            // - my tests suck
         }
 
         private static void Start(string rootFolder)

@@ -14,22 +14,6 @@ namespace MdView.Routing
             return _fileSystem;
         }
 
-        public Dictionary<string, Route> FlattenFileSystem(FolderRoute fileSystem) => FlattenFileSystem([], fileSystem);
-
-        private static Dictionary<string, Route> FlattenFileSystem(Dictionary<string, Route> fileSystem, 
-                                                                            FolderRoute folder)
-        {
-            fileSystem[folder.Path] = folder;
-
-            foreach (var f in folder.Children)
-            {
-                if (f is FolderRoute childFolder) fileSystem = FlattenFileSystem(fileSystem, childFolder);
-                if (f is FileRoute) fileSystem[f.Path] = f;
-            }
-
-            return fileSystem;
-        }
-
         private FolderRoute Build(string path, FolderRoute root)
         {
             // this directory

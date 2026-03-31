@@ -1,12 +1,10 @@
-using System.Runtime;
-using MdView.FileSystem;
-using FileInfo = MdView.FileSystem.FileInfo;
+using MdView.Routing;
 
 namespace MdView.Tests
 {
     public class RouterTests
     {
-        private readonly FileSystemInfoService _fileSystemService;
+        private readonly FileSystemRouter _fileSystemService;
         private readonly Router _router;
 
         public RouterTests()
@@ -17,7 +15,7 @@ namespace MdView.Tests
 
         private static Stream AsGET(string url)
         {
-            return new MemoryStream(System.Text.UTF8Encoding.UTF8.GetBytes($"GET {url} HTTP/1.1"));
+            return new MemoryStream(System.Text.Encoding.UTF8.GetBytes($"GET {url} HTTP/1.1"));
         }
 
         [Fact]
@@ -28,7 +26,7 @@ namespace MdView.Tests
             var route = _router.Map(AsGET("/"));
 
             // assert
-            Assert.True(route is FolderInfo); // Root path points to sample directory (a folder)
+            Assert.True(route is FolderRoute); // Root path points to sample directory (a folder)
             Assert.Equal("/home/agent/hello-world/sample", route.Path);
         }
 
@@ -42,7 +40,7 @@ namespace MdView.Tests
 
             // assert
             Assert.Equal("/home/agent/hello-world/sample/index.md", route.Path);
-            Assert.False(route is FolderInfo);
+            Assert.False(route is FolderRoute);
         }
 
         // Map_FileFd_ReturnsFileMd
@@ -55,7 +53,7 @@ namespace MdView.Tests
 
             // assert
             Assert.Equal("/home/agent/hello-world/sample/page1.md", route.Path);
-            Assert.True(route is FileInfo);
+            Assert.True(route is FileRoute);
         }
 
         // Map_FileMd_IsNotFolder
@@ -67,55 +65,59 @@ namespace MdView.Tests
             var route = _router.Map(AsGET("/page1.md"));
 
             // assert
-            Assert.False(route is FolderInfo);
+            Assert.False(route is FolderRoute);
         }
 
         // Map_PathTraversal_Throws
         [Fact]
-        public void Map_PathTraversal_Throws()
+        public void Map_PathTraversal_Returns401()
         {
             // arrange
             // act
-            var ex = Assert.Throws<NotSupportedException>(() => _router.Map(AsGET("/../../../etc/passwd")));
+            var route = _router.Map(AsGET("/../../../etc/passwd"));
 
             // assert
-            Assert.Equal("forbidden", ex.Message);
+            Assert.True(route.RouteType() == "special");
+            Assert.True(route.Name == "401");
         }
 
         // Map_QueryString_Throws
         [Fact]
-        public void Map_QueryString_Throws()
+        public void Map_QueryString_CleanUri()
         {
             // arrange
             // act
-            var ex = Assert.Throws<NotSupportedException>(() => _router.Map(AsGET("/index.md?foo=bar")));
+            var route = _router.Map(AsGET("/index.md?foo=bar"));
 
             // assert
-            Assert.Equal("forbidden", ex.Message);
+            Assert.True(route.RouteType() == "file");
+            Assert.True(route.Uri == "/index.md");
         }
 
         // Map_UriFragment_Throws
         [Fact]
-        public void Map_UriFragment_Throws()
+        public void Map_UriFragment_CleanUri()
         {
             // arrange
             // act
-            var ex = Assert.Throws<NotSupportedException>(() => _router.Map(AsGET("/index.md#section")));
+            var route = _router.Map(AsGET("/index.md#section"));
 
             // assert
-            Assert.Equal("forbidden", ex.Message);
+            Assert.True(route.RouteType() == "file");
+            Assert.True(route.Uri == "/index.md");
         }
 
         // Map_UriEndcoded_Throws
         [Fact]
-        public void Map_UriEndcoded_Throws()
+        public void Map_UriEndcoded_Returns404()
         {
             // arrange
             // act
-            var ex = Assert.Throws<NotSupportedException>(() => _router.Map(AsGET("/index%20page.md")));
+            var route = _router.Map(AsGET("/index%20page.md"));
 
             // assert
-            Assert.Equal("forbidden", ex.Message);
+            Assert.True(route.RouteType() == "special");
+            Assert.True(route.Name == "404");
         }
     }
 }
