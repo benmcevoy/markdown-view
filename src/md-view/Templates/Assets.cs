@@ -1223,9 +1223,9 @@ header {
 </head>
 
 <body>
-    <header>
+    <!-- <header>
         <span>Refresh</span> | <span>Shutdown</span> | <span>Admin</span>
-    </header>
+    </header> -->
     <div class='container'>
         <div class='sidebar'>
             {{aside}}

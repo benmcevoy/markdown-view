@@ -2,6 +2,12 @@
 
 A lightweight local web server for viewing markdown documents and other file types directly from your filesystem.
 
+(Pretty much) All my projects and profeessional work rely on markdown for documentation and knowledge bases.
+
+I want a nice way to view the documentation that is 100% local and does not require pushing to source control...
+
+[Copy Party](https://github.com/9001/copyparty) does a great job with it's built in markdown viewer, but all I wanted is a clean, dark markdown viewer, with Mermaid support.
+
 ## Features
 
 - Serve markdown files with syntax highlighting
@@ -51,6 +57,19 @@ The server will listen on `http://127.0.0.1:{port}` and serve files directly fro
 - `--port <port>`: HTTP port to listen on
 - `--help`: Display help information
 
+```
+               _          _               
+ _ __ ___   __| |  __   _(_) _____      __
+| '_ ` _ \ / _` |__\ \ / / |/ _ \ \ /\ / /
+| | | | | | (_| |___\ V /| |  __/\ V  V / 
+|_| |_| |_|\__,_|    \_/ |_|\___| \_/\_/  
+
+Base path: '/markdown-view/sample'
+Starting server.
+Listening on: http://127.0.0.1:5001
+```
+
+
 ## Development
 
 Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
@@ -59,6 +78,15 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```bash
 dotnet build
+```
+
+### Regenerate Assets
+
+Update embedded assets and templates.
+
+```
+cd src/md-view/Templates/
+dotnet t4 Assets.tt
 ```
 
 ### Publish AOT

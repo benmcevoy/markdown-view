@@ -15,7 +15,7 @@ namespace MdView.Rendering
                 .Build();
         }
 
-        public string[] SupportedFileExtensions => [".json", ".xml", ".js", ".cs", ".ts", ".html", ".sh", ".ps1"];
+        public string[] SupportedFileExtensions => [".json", ".xml", ".js", ".cs", ".ts", ".html", ".sh", ".ps1", ".css"];
 
         public string Handle(Route input)
         {

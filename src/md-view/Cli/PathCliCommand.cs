@@ -13,7 +13,7 @@ namespace MdView.Cli
             return context;
         }
 
-        public override string Error() => $"Unable to resolve path '{_parameter}'.";
+        public override string Error() => $"Unable to resolve path '{_parameter}'. Is it a folder?";
 
         private static bool TryResolveAbsolutePath(string path, out string absolutePath)
         {
