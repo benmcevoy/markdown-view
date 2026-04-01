@@ -42,7 +42,7 @@ namespace MdView
 
         private static void Start(Context context)
         {
-            if(string.IsNullOrWhiteSpace(context?.BasePath)) throw new ApplicationException("No base path specified. Unable to start.");
+            if(string.IsNullOrWhiteSpace(context?.BasePath)) return;
 
             WriteBanner();
 

@@ -1,82 +1,78 @@
+# MdView
 
-## admin
+A lightweight local web server for viewing markdown documents and other file types directly from your filesystem.
 
-- set port?
-- store in a config file specific to MD folder , e.g.  .mdview
-- view log
+## Features
 
+- Serve markdown files with syntax highlighting
+- Support for code files (with syntax highlighting)
+- Support for Mermaid diagrams
+- Image rendering
+- PDF rendering
+- Local-only HTTP server (loopback)
 
-## skillz
+## Installation
 
-dotnet format
-- nice that it also respects .editorconfig, as does vscode
-- 
+See releases for a standalone executable for Linux or Windows.
 
-review for state and side effects
-- look for static
-- look for non readonly module level
-- aim for small s singleton
+## Usage
 
-review for pattern usage
-- per file or feature
-- suggest architecture
-- reference to GoF, SOLID, etc.
+```
+Usage: md-view [path-to-folder] [commands]
 
-review for SRP
-- how long is this class
-- how long each method
-- review for spaghetti
-- too much if/else
-- pyramid of doom
-- flagitis within methods
+path-to-folder:
+  The path to a folder to serve as a markdown viewer site.
 
-review for DRY
-- just call it out for the human
+commands:
+  -h|--help                         Display help.
+  -p|--port <port>                  Specify listen port (Default: 5001), e.g. http://localhost:<port>
+```
 
-review for pokemon exception handling
+### Server Mode
 
-review for strength
-- guard clause on public method args
-- 
+Run the server and serve files from a directory:
 
-review for trust
-- validate inputs
+```bash
+# Serve from current directory on port 5001
+./md-view .
 
+# Serve from a specific directory on port 8080
+./md-view /path/to/your/files -p 8080
 
+# Specify a custom port
+./md-view . --port 3000
 
+```
 
-review compile errors
-- for each suggest fix and apply
-- and then review warnings
-- treat warnings as errors
+The server will listen on `http://127.0.0.1:{port}` and serve files directly from your filesystem.
 
+### CLI Commands
 
+- `--port <port>`: HTTP port to listen on
+- `--help`: Display help information
 
-  6. Add Middleware for Security
+## Development
 
-  Current: Security is only in Router.IsValidRequest() - naive string checking.
+Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
-  Suggested: Add middleware for:
-  - Path normalization (handle .. after normalization)
-  - Rate limiting
-  - Request logging
-  - CORS headers
+### Building
 
-  ---
-  7. Add Proper Error Handling
+```bash
+dotnet build
+```
 
-  Current: Generic 404 Not Found for all errors.
+### Publish AOT
 
-  Suggested: Custom error pages and proper exception handling:
+```bash
+dotnet publish
+```
 
-  // wwwroot/html/error.html
-  @{
-      var error = context.Exception;
-  }
-  <div class="error">
-      @error.Message
-  </div>
+### Running Tests
 
-  ---
+```bash
+dotnet test
+```
 
+## License
 
+MIT License
