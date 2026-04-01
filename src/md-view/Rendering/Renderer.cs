@@ -1,4 +1,3 @@
-using System.ComponentModel.Design.Serialization;
 using System.Text;
 using MdView.Routing;
 using MdView.Templates;
@@ -58,6 +57,7 @@ namespace MdView.Rendering
         private static string Navigation(Route current)
         {
             var root = current.Parent ?? current as FolderRoute;
+
             while(root?.Parent != null) root = root.Parent;
 
             return @$"

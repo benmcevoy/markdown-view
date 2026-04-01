@@ -1,18 +1,10 @@
-using System.Data;
-
 namespace MdView.Routing
 {
-    /// <summary>
-    /// Router class that maps HTTP requests to file paths in the filesystem.
-    /// </summary>
-    /// <remarks>
-    /// Creates a new Router instance.
-    /// </remarks>
     public class Router(FileSystemRouter fileSystemRouter)
     {
         private const char Space = ' ';
-        private const char QuestionMark = '?';
-        private const char Hash = '#';
+        private const char Query = '?';
+        private const char Fragment = '#';
         private const string UnsupportedRequest = "???";
         private static readonly char[] _buffer = new char[2048];
         private readonly string _rootPath = fileSystemRouter.FileSystem().Path;
@@ -24,27 +16,30 @@ namespace MdView.Routing
         {
             // GET <request-target>["?"<query>] HTTP/1.1
             // and then headers
-
             var sr = new StreamReader(request);
+            var line = sr.ReadLine() ?? "";
+            var parts = line.Split(Space, StringSplitOptions.RemoveEmptyEntries);
 
-            // TODO: assumes GET so HEAD|OPTION|POST|DELETE|etc all get treated as GET
-            // consume up to the first space
-            while (sr.Read() != Space && !sr.EndOfStream);
+            if (parts.Length != 3) return UnsupportedRequest;
 
-            // unsupported
-            if (sr.EndOfStream) return UnsupportedRequest;
+            // only support GET
+            if (!parts[0].Equals("GET", StringComparison.Ordinal)) return UnsupportedRequest;
 
-            var length = 0;
-            var character = (char)sr.Read();
-
-            do
+            // scan for terminating chars
+            int length;
+            for (length = 0; length < parts[1].Length; length++)
             {
-                _buffer[length++] = character;
-                // lookahead
-                character = (char)sr.Read();
+                var character = parts[1][length];
+
+                if (character == Space || 
+                    character == Query || 
+                    character == Fragment)
+                {
+                    break;
+                }
+
+                _buffer[length] = character;
             }
-            // until a space or ? or #
-            while (character != Space && character != QuestionMark && character != Hash);
 
             return new string(_buffer, 0, length);
         }

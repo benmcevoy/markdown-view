@@ -1,9 +1,9 @@
 namespace MdView.Cli
 {
-    public class CliCommand
+    public abstract class CliCommand
     {
-        public CommandNames Name { get; set; } = CommandNames.Help;
-        public string[] Parameter { get; set; } = [];
-        public static CliCommand Help => new();
+        public abstract bool CanExecute();
+        public abstract Context Execute(Context context);
+        public abstract string Error();
     }
 }

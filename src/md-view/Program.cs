@@ -10,32 +10,47 @@ namespace MdView
     {
         static void Main(string[] args)
         {
+            // TODO: DEBUG
             args = ["/home/agent/hello-world/sample"];
-            var command = new CommandProcessor().Parse(args);
 
-            switch (command.Name)
+            var context = new Context();
+            var commands = CliParser.Parse(args);
+
+            foreach (var command in commands)
             {
-                case CommandNames.Start: { Start(command.Parameter[0]); break; }
-                default: { Help(); break; }
+                if (command.CanExecute()){
+                    context = command.Execute(context);
+                    continue;
+                }
+
+                var color = Console.ForegroundColor;
+                
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(command.Error());
+                Console.ForegroundColor = color;
+                
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(context.BasePath))
+            {
+                Start(context);
             }
 
             // TODO:
-            // - command parsing is pretty shit
-            // - parameters - allow render file or folder to html -r --render <target file/folder> <out?>
-            // - parameters include Port as parameter -p --port 5001
-            // - parameters --path <target file/folder>
             // - routing is pretty whacky - probably just want Route type with data/values like asp.net
             // - rendering is annoying as weird use of handlers, templates, etc - pick a lane
             // - my tests suck
         }
 
-        private static void Start(string rootFolder)
+        private static void Start(Context context)
         {
             WriteBanner();
-            Console.WriteLine($"Base path: '{rootFolder}'");
+
+            Console.WriteLine($"Base path: '{context.BasePath}'");
 
             var ipAddress = System.Net.IPAddress.Loopback;
-            var port = 5001;
+            var port = context.Port;
 
             IRenderingHandler[] renderers = [
                 new MarkdownFileRendererHandler(),
@@ -47,7 +62,7 @@ namespace MdView
                 ];
 
             var allowedFileExtensions = renderers.SelectMany(x => x.SupportedFileExtensions).ToArray();
-            var fileSystemRouter = new FileSystemRouter(rootFolder, allowedFileExtensions);
+            var fileSystemRouter = new FileSystemRouter(context.BasePath, allowedFileExtensions);
             var renderer = new Renderer(new DefaultTemplate(), renderers);
             var router = new Router(fileSystemRouter);
 
@@ -77,21 +92,6 @@ Content-Type: {content.ContentType}
             }
         }
 
-        private static void Help()
-        {
-            const string help = @"
-Usage: md-view [path-to-folder]
-
-path-to-folder:
-  The path to a folder to serve as a markdown viewer site.
-
-commands:
-  -h|--help                         Display help.
-";
-
-            Console.Write(help);
-        }
-
         private static void WriteBanner()
         {
             Console.WriteLine(@"               _          _               ");
@@ -103,4 +103,3 @@ commands:
         }
     }
 }
-
