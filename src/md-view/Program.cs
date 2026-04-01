@@ -10,44 +10,43 @@ namespace MdView
     {
         static void Main(string[] args)
         {
-            // TODO: DEBUG
-            args = ["/home/agent/hello-world/sample"];
+            // TODO:
+            // - routing is pretty whacky - probably just want Route type with data/values like asp.net
+            // - routing is... not even routing. should map to an action, might be better to have "requestHandler"
+            // - "special" routes are stupid. route inheritance is stupid.
+            // - rendering is annoying as weird use of handlers, templates, etc - pick a lane
+            // - my tests suck
 
             var context = new Context();
             var commands = CliParser.Parse(args);
 
             foreach (var command in commands)
             {
-                if (command.CanExecute()){
+                if (command.CanExecute())
+                {
                     context = command.Execute(context);
                     continue;
                 }
 
                 var color = Console.ForegroundColor;
-                
+
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(command.Error());
                 Console.ForegroundColor = color;
-                
+
                 return;
             }
 
-            if (!string.IsNullOrWhiteSpace(context.BasePath))
-            {
-                Start(context);
-            }
-
-            // TODO:
-            // - routing is pretty whacky - probably just want Route type with data/values like asp.net
-            // - rendering is annoying as weird use of handlers, templates, etc - pick a lane
-            // - my tests suck
+            Start(context);
         }
 
         private static void Start(Context context)
         {
+            if(string.IsNullOrWhiteSpace(context?.BasePath)) throw new ApplicationException("No base path specified. Unable to start.");
+
             WriteBanner();
 
-            Console.WriteLine($"Base path: '{context.BasePath}'");
+            Console.WriteLine($"Base path: '{context!.BasePath}'");
 
             var ipAddress = System.Net.IPAddress.Loopback;
             var port = context.Port;
