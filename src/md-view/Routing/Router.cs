@@ -66,7 +66,7 @@ namespace MdView.Routing
 
             if (requestUrl.Equals("/favicon.ico", StringComparison.OrdinalIgnoreCase))
             {
-                return new FileRoute { Extension = ".ico", Name = "favicon.ico" };
+                return new SpecialRoute { Name = "favicon.ico" };
             }
 
             return NotFound();

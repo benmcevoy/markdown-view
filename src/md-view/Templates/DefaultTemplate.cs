@@ -25,7 +25,7 @@ namespace MdView.Templates
             template = template.Replace("{{scripts}}",
 @"<script type='module'>
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({{ startOnLoad: true }});
+    mermaid.initialize({ startOnLoad: true });
 </script>
 <!-- KaTeX -->
 <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css'>

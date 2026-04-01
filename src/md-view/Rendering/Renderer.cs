@@ -11,8 +11,15 @@ namespace MdView.Rendering
 
         public ContentInfo Render(Route route)
         {
-            if (route is SpecialRoute)
+            // TODO: this is nonsense
+            if (route is SpecialRoute s)
             {
+                if(s.Name == "favicon.ico") return new ContentInfo { Content = 
+                @"<link rel='icon'
+        href='data:image/x-icon;base64,AAABAAEAEBAQAAAAAAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAZlX/ADOA/wAzVf8AfwB/ADOq/wD//wAA/wD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmYAAGZmAAAAEQAAEQAAAAA1AAAzAAAAABFmZiMAAAAAAHd3AAAAAAAAZmYAAAAAZgB3dwBmAAB3AGZmAHcAAAB3d3d3AAAAAAB3dwAAAAAAd3d3dwAAAHcAd3cAdwAAdwB3dwB3AAAAd0REdwAAAABEAABEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+        type='image/x-icon' />",
+         ContentType = "image/x-icon" };
+
                 return new ContentInfo { Content = "404 - Not Found", StatusCode = "404 NotFound" };
             }
 
@@ -57,6 +64,8 @@ namespace MdView.Rendering
         private static string Navigation(Route current)
         {
             var root = current.Parent ?? current as FolderRoute;
+
+            if(root == null) return "";
 
             while(root?.Parent != null) root = root.Parent;
 
