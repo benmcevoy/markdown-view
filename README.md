@@ -13,6 +13,3 @@ all a bit work-in-progress
 
 - cli and daemon provding semantic search functions
 
-
-
-
