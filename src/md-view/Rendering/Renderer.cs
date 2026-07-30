@@ -12,15 +12,9 @@ namespace MdView.Rendering
         public ContentInfo Render(Route route)
         {
             // TODO: this is nonsense
-            if (route is SpecialRoute s)
+            if (route is SpecialRoute)
             {
-                if(s.Name == "favicon.ico") return new ContentInfo { Content = 
-                @"<link rel='icon'
-        href='data:image/x-icon;base64,AAABAAEAEBAQAAAAAAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAZlX/ADOA/wAzVf8AfwB/ADOq/wD//wAA/wD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZmYAAGZmAAAAEQAAEQAAAAA1AAAzAAAAABFmZiMAAAAAAHd3AAAAAAAAZmYAAAAAZgB3dwBmAAB3AGZmAHcAAAB3d3d3AAAAAAB3dwAAAAAAd3d3dwAAAHcAd3cAdwAAdwB3dwB3AAAAd0REdwAAAABEAABEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
-        type='image/x-icon' />",
-         ContentType = "image/x-icon" };
-
-                return new ContentInfo { Content = "404 - Not Found", StatusCode = "404 NotFound" };
+                return new () { Content = "404 - Not Found", StatusCode = "404 NotFound" };
             }
 
             var main = "nothing to display";
@@ -65,9 +59,9 @@ namespace MdView.Rendering
         {
             var root = current.Parent ?? current as FolderRoute;
 
-            if(root == null) return "";
+            if (root == null) return "";
 
-            while(root?.Parent != null) root = root.Parent;
+            while (root?.Parent != null) root = root.Parent;
 
             return @$"
 <nav>
@@ -81,13 +75,28 @@ namespace MdView.Rendering
 
             foreach (var x in root.OrderedChildren())
             {
-                sb.AppendLine(@$"<li class='{x.RouteType()}'>
-                                    <a class='{CurrentClass(x, current)}' href='{x.Uri}'>{x.Name}</a>");
+                var isFolder = x is FolderRoute;
+
+                sb.AppendLine(@$"<li class='{x.RouteType()}'>");
+
+                if (isFolder)
+                {
+                    sb.AppendLine(@$"<details {CurrentFolderOpen(x, current)}>
+    <summary>
+        <a class='{CurrentClass(x, current)}' href='{x.Uri}'>{x.Name}</a>
+    </summary>");
+                }
+                else
+                {
+                    sb.AppendLine(@$"<a class='{CurrentClass(x, current)}' href='{x.Uri}'>{x.Name}</a>");
+                }
 
                 if (x is FolderRoute f && f.Children.Count > 0)
                 {
                     sb.AppendLine(Navigation(f, current));
                 }
+
+                if (isFolder) sb.AppendLine("</details>");
 
                 sb.AppendLine("</li>");
             }
@@ -96,6 +105,8 @@ namespace MdView.Rendering
 
             return sb.ToString();
         }
+        private static string CurrentFolderOpen(Route candidate, Route current) =>
+            current.Path.StartsWith(candidate.Path, StringComparison.Ordinal) ? "open" : "";
 
         private static string CurrentClass(Route candidate, Route current) =>
              candidate.Path.Equals(current.Path, StringComparison.Ordinal) ? "current" : "";

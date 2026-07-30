@@ -46,8 +46,6 @@ namespace MdView.Routing
 
         private Route Map(string requestUrl)
         {
-            Console.WriteLine(requestUrl);
-
             if (!IsValidRequest(requestUrl)) return Forbidden();
 
             var path = ResolvePath(_rootPath, requestUrl);
@@ -62,11 +60,6 @@ namespace MdView.Routing
             if (requestUrl.Equals(UnsupportedRequest, StringComparison.OrdinalIgnoreCase))
             {
                 return NotFound();
-            }
-
-            if (requestUrl.Equals("/favicon.ico", StringComparison.OrdinalIgnoreCase))
-            {
-                return new SpecialRoute { Name = "favicon.ico" };
             }
 
             return NotFound();

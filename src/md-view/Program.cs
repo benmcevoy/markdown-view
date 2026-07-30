@@ -37,12 +37,14 @@ namespace MdView
                 return;
             }
 
+            context.BasePath = "/media/ben/DATA/Dev/IBM/2025-Watercorp/topics";
+
             Start(context);
         }
 
         private static void Start(Context context)
         {
-            if(string.IsNullOrWhiteSpace(context?.BasePath)) return;
+            if (string.IsNullOrWhiteSpace(context?.BasePath)) return;
 
             WriteBanner();
 
@@ -56,8 +58,7 @@ namespace MdView
                 new CodeFileRendererHandler(),
                 new ImageFileRendererHandler(),
                 new PdfFileRendererHandler(),
-                new FolderRenderingHandler(),
-                new FaviconFileRendererHandler()
+                new FolderRenderingHandler()
                 ];
 
             var allowedFileExtensions = renderers.SelectMany(x => x.SupportedFileExtensions).ToArray();
@@ -88,17 +89,40 @@ Content-Type: {content.ContentType}
                 byte[] msg = System.Text.Encoding.ASCII.GetBytes(response);
 
                 stream.Write(msg, 0, msg.Length);
+                stream.Flush();
             }
         }
 
         private static void WriteBanner()
         {
-            Console.WriteLine(@"               _          _               ");
-            Console.WriteLine(@" _ __ ___   __| |  __   _(_) _____      __");
-            Console.WriteLine(@"| '_ ` _ \ / _` |__\ \ / / |/ _ \ \ /\ / /");
-            Console.WriteLine(@"| | | | | | (_| |___\ V /| |  __/\ V  V / ");
-            Console.WriteLine(@"|_| |_| |_|\__,_|    \_/ |_|\___| \_/\_/  ");
+            Console.WriteLine();
+
+            // Console.WriteLine(@"               _          _               ");
+            // Console.WriteLine(@" _ __ ___   __| |  __   _(_) _____      __");
+            // Console.WriteLine(@"| '_ ` _ \ / _` |__\ \ / / |/ _ \ \ /\ / /");
+            // Console.WriteLine(@"| | | | | | (_| |___\ V /| |  __/\ V  V / ");
+            // Console.WriteLine(@"|_| |_| |_|\__,_|    \_/ |_|\___| \_/\_/  ");
+
+            // Console.WriteLine(@"                ░█            ░█");
+            // Console.WriteLine(@"                ░█");
+            // Console.WriteLine(@"░████████  ░██████    ░█    ░█░█ ░████ ░█  ░█  ░█");
+            // Console.WriteLine(@"░█  ░█  ░█░█    ░█░███░█    ░█░█░█   ░█░█  ░█  ░█");
+            // Console.WriteLine(@"░█  ░█  ░█░█    ░█     ░█  ░█ ░█░█████  ░█░█░█░█");
+            // Console.WriteLine(@"░█  ░█  ░█░█   ░██      ░█░█  ░█░█      ░█░█░█░█");
+            // Console.WriteLine(@"░█  ░█  ░█ ░████░█       ░█   ░█ ░████   ░█  ░█");
+
+            Console.WriteLine(@"███╗   ███╗██████╗       ██╗   ██╗██╗███████╗██╗    ██╗");
+            Console.WriteLine(@"████╗ ████║██╔══██╗      ██║   ██║██║██╔════╝██║    ██║");
+            Console.WriteLine(@"██╔████╔██║██║  ██║█████╗██║   ██║██║█████╗  ██║ █╗ ██║");
+            Console.WriteLine(@"██║╚██╔╝██║██║  ██║╚════╝╚██╗ ██╔╝██║██╔══╝  ██║███╗██║");
+            Console.WriteLine(@"██║ ╚═╝ ██║██████╔╝       ╚████╔╝ ██║███████╗╚███╔███╔╝");
+            Console.WriteLine(@"╚═╝     ╚═╝╚═════╝         ╚═══╝  ╚═╝╚══════╝ ╚══╝╚══╝ ");
+
             Console.WriteLine();
         }
     }
 }
+
+
+
+
