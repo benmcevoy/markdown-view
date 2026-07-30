@@ -2,11 +2,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C#: md-view",
+            "name": "C#: wikd",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/src/md-view/md-view.csproj",
-            "launchConfigurationId": "TargetFramework=;md-view"
+            "projectPath": "${workspaceFolder}/wikd/src/wikd/wikd.csproj",
+            "launchConfigurationId": "TargetFramework=;wikd"
+        },
+        {
+            "name": "C#: ragd",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/ragd/src/ragd/ragd.csproj",
+            "launchConfigurationId": "TargetFramework=;ragd"
         }
     ]
 }

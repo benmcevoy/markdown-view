@@ -12,7 +12,7 @@ namespace ragd
         {
             //args = ["new", "-db", "./app.db", "-m", "/media/ben/DATA/Dev/git/agents/models/Qwen3-Embedding-0.6B-Q8_0.gguf"];
             //args = ["start", "-db", "./app.db", "-m", "/media/ben/DATA/Dev/git/agents/models/Qwen3-Embedding-0.6B-Q8_0.gguf"];
-            args = ["listen", "-db", "./app.db", "-m", "/media/ben/DATA/Dev/git/agents/models/Qwen3-Embedding-0.6B-Q8_0.gguf"];
+            //args = ["listen", "-db", "./app.db", "-m", "/media/ben/DATA/Dev/git/agents/models/Qwen3-Embedding-0.6B-Q8_0.gguf"];
             //args = ["status"];
             //args = ["query", "use a hit box"];
             //args = ["stop", "-q", "--json"];
