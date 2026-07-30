@@ -97,26 +97,12 @@ Content-Type: {content.ContentType}
         {
             Console.WriteLine();
 
-            // Console.WriteLine(@"               _          _               ");
-            // Console.WriteLine(@" _ __ ___   __| |  __   _(_) _____      __");
-            // Console.WriteLine(@"| '_ ` _ \ / _` |__\ \ / / |/ _ \ \ /\ / /");
-            // Console.WriteLine(@"| | | | | | (_| |___\ V /| |  __/\ V  V / ");
-            // Console.WriteLine(@"|_| |_| |_|\__,_|    \_/ |_|\___| \_/\_/  ");
-
-            // Console.WriteLine(@"                ░█            ░█");
-            // Console.WriteLine(@"                ░█");
-            // Console.WriteLine(@"░████████  ░██████    ░█    ░█░█ ░████ ░█  ░█  ░█");
-            // Console.WriteLine(@"░█  ░█  ░█░█    ░█░███░█    ░█░█░█   ░█░█  ░█  ░█");
-            // Console.WriteLine(@"░█  ░█  ░█░█    ░█     ░█  ░█ ░█░█████  ░█░█░█░█");
-            // Console.WriteLine(@"░█  ░█  ░█░█   ░██      ░█░█  ░█░█      ░█░█░█░█");
-            // Console.WriteLine(@"░█  ░█  ░█ ░████░█       ░█   ░█ ░████   ░█  ░█");
-
-            Console.WriteLine(@"███╗   ███╗██████╗       ██╗   ██╗██╗███████╗██╗    ██╗");
-            Console.WriteLine(@"████╗ ████║██╔══██╗      ██║   ██║██║██╔════╝██║    ██║");
-            Console.WriteLine(@"██╔████╔██║██║  ██║█████╗██║   ██║██║█████╗  ██║ █╗ ██║");
-            Console.WriteLine(@"██║╚██╔╝██║██║  ██║╚════╝╚██╗ ██╔╝██║██╔══╝  ██║███╗██║");
-            Console.WriteLine(@"██║ ╚═╝ ██║██████╔╝       ╚████╔╝ ██║███████╗╚███╔███╔╝");
-            Console.WriteLine(@"╚═╝     ╚═╝╚═════╝         ╚═══╝  ╚═╝╚══════╝ ╚══╝╚══╝ ");
+            Console.WriteLine(@"██╗    ██╗██╗██╗  ██╗██████╗ ");
+            Console.WriteLine(@"██║    ██║██║██║ ██╔╝██╔══██╗");
+            Console.WriteLine(@"██║ █╗ ██║██║█████╔╝ ██║  ██║");
+            Console.WriteLine(@"██║███╗██║██║██╔═██╗ ██║  ██║");
+            Console.WriteLine(@"╚███╔███╔╝██║██║  ██╗██████╔╝");
+            Console.WriteLine(@"╚══╝╚══╝ ╚═╝╚═╝  ╚═╝╚═════╝ ");
 
             Console.WriteLine();
         }

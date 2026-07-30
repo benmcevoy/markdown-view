@@ -1,4 +1,4 @@
-# MdView
+# wikd
 
 A lightweight local web server for viewing markdown documents and other file types directly from your filesystem.
 
@@ -24,7 +24,7 @@ See releases for a standalone executable for Linux or Windows.
 ## Usage
 
 ```
-Usage: md-view [path-to-folder] [commands]
+Usage: wikd [path-to-folder] [commands]
 
 path-to-folder:
   The path to a folder to serve as a markdown viewer site.
@@ -40,13 +40,13 @@ Run the server and serve files from a directory:
 
 ```bash
 # Serve from current directory on port 5001
-./md-view .
+./wikd .
 
 # Serve from a specific directory on port 8080
-./md-view /path/to/your/files -p 8080
+./wikd /path/to/your/files -p 8080
 
 # Specify a custom port
-./md-view . --port 3000
+./wikd . --port 3000
 
 ```
 
@@ -58,12 +58,13 @@ The server will listen on `http://127.0.0.1:{port}` and serve files directly fro
 - `--help`: Display help information
 
 ```
-               _          _               
- _ __ ___   __| |  __   _(_) _____      __
-| '_ ` _ \ / _` |__\ \ / / |/ _ \ \ /\ / /
-| | | | | | (_| |___\ V /| |  __/\ V  V / 
-|_| |_| |_|\__,_|    \_/ |_|\___| \_/\_/  
-
+██╗    ██╗██╗██╗  ██╗██████╗ 
+██║    ██║██║██║ ██╔╝██╔══██╗
+██║ █╗ ██║██║█████╔╝ ██║  ██║
+██║███╗██║██║██╔═██╗ ██║  ██║
+╚███╔███╔╝██║██║  ██╗██████╔╝
+ ╚══╝╚══╝ ╚═╝╚═╝  ╚═╝╚═════╝ 
+                             
 Base path: '/markdown-view/sample'
 Starting server.
 Listening on: http://127.0.0.1:5001
@@ -85,7 +86,7 @@ dotnet build
 Update embedded assets and templates.
 
 ```
-cd src/md-view/Templates/
+cd src/wikd/Templates/
 dotnet t4 Assets.tt
 ```
 
