@@ -37,8 +37,6 @@ namespace wikd
                 return;
             }
 
-            context.BasePath = "/media/ben/DATA/Dev/IBM/2025-Watercorp/topics";
-
             Start(context);
         }
 

@@ -26,7 +26,7 @@ namespace wikd.Cli
             return result;
         }
 
-        private static bool IsHelp(string arg) => arg.Trim() == "-h" || arg.Trim() == "--help";
+        private static bool IsHelp(string arg) => arg.Trim() == "-h" || arg.Trim() == "-?" || arg.Trim() == "--help";
 
         private static bool IsPort(string arg) => arg.Trim() == "-p" || arg.Trim() == "--port";
     }
