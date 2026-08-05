@@ -22,4 +22,10 @@
     <PackageReference Include="Markdown.ColorCode" Version="3.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="Templates/css/main.css" />
+    <EmbeddedResource Include="Templates/css/markdown.css" />
+    <EmbeddedResource Include="Templates/html/default.html" />
+  </ItemGroup>
+
 </Project>

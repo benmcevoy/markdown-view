@@ -3,6 +3,7 @@ using wikd.Templates;
 using wikd.Routing;
 using wikd.Cli;
 using System.Net.Sockets;
+using System.Reflection;
 
 namespace wikd
 {

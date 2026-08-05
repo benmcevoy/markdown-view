@@ -81,15 +81,6 @@ Requires [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 dotnet build
 ```
 
-### Regenerate Assets
-
-Update embedded assets and templates.
-
-```
-cd src/wikd/Templates/
-dotnet t4 Assets.tt
-```
-
 ### Publish AOT
 
 ```bash

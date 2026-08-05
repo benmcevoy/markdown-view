@@ -24,4 +24,8 @@
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
     <PackageReference Include="System.CommandLine" Version="2.0.9" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Service/Handlers/help.json" />
+  </ItemGroup>
 </Project>
