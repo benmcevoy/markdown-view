@@ -10,6 +10,6 @@ public record Config
     public IPAddress Host { get; set; } = IPAddress.Loopback;
     public int Port { get; set; } = 53280;
     public string VectorExtensionPath { get; set; } = "";
-    public uint? ContextSize { get; set; } = 1024;
-    public LLamaAttentionType AttentionType { get; set; } = LLamaAttentionType.NonCausal;
+    public uint? ContextSize { get; set; } = 4096;
+    public LLamaAttentionType AttentionType { get; set; } = LLamaAttentionType.Unspecified;
 }

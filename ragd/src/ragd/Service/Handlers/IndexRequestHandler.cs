@@ -61,7 +61,7 @@ public class IndexFileRequestHandler(IEmbedder embedder, IRepository repository,
             {
                 Status = "ERROR",
                 Message = ex.Message,
-                Body = new IndexResult(-1, file.FullName, name)
+                Body = new IndexResult(0, file.FullName, name)
             };
         }
     }
@@ -74,7 +74,6 @@ public class IndexFileRequestHandler(IEmbedder embedder, IRepository repository,
 
         foreach (var chunk in chunks)
         {
-            // TODO: exceptions encountered when context exceeded
             // make sync
             var embedding = Task.Run(() => _embedder.GetEmbedding(chunk.Content)).GetAwaiter().GetResult();
             _repository.WriteChunk(chunk, embedding, name);

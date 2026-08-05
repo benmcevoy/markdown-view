@@ -13,6 +13,8 @@ public class QueryCommand : Command
     private readonly Client _client;
     private readonly ILogger _logger;
     private const string ArgumentName = "query";
+    private const string LimitOptionName = "--top";
+    private const int LimitDefault = 3;
 
     public QueryCommand(LifeCycleManager lifeCycleManager, Client client, ILogger logger)
         : base("query", "Query the index for semantically matching results.")
@@ -22,6 +24,7 @@ public class QueryCommand : Command
         _logger = logger;
 
         Options.Add(new NameOption());
+        Options.Add(new Option<int>(LimitOptionName) { Required = false, Description = $"Limit number of results returned, (default {LimitDefault})" });
         Arguments.Add(new Argument<string>(ArgumentName));
 
         SetAction(Query);
@@ -37,6 +40,7 @@ public class QueryCommand : Command
 
         var name = parseResult.GetValue<string>(NameOption.OptionName) ?? "";
         var query = parseResult.GetRequiredValue<string>(ArgumentName);
+        var limit = parseResult.GetValue<int?>(LimitOptionName) ?? LimitDefault;
 
         var response = _client.Send(new Request
         {
@@ -45,7 +49,8 @@ public class QueryCommand : Command
             Query = new Dictionary<string, string>
             {
                 { "q", Uri.EscapeDataString(query) },
-                { "name", Uri.EscapeDataString(name) }
+                { "name", Uri.EscapeDataString(name) },
+                { "limit", Uri.EscapeDataString(limit.ToString()) }
             }
         });
 
@@ -56,10 +61,11 @@ public class QueryCommand : Command
     {
         if (parseResult.IsJson()) return Response.AsJson(response);
 
-        var body = response.BodyAs<Collection<QueryResult>>() ?? [];
+        var body = (response.BodyAs<Collection<QueryResult>>() ?? [])
+                .OrderByDescending(x => x.Score);
 
         return @$"Status: {response.Status}
 Message: {response.Message}        
-{body.Aggregate("", (current, next) => current + "\r\n<result>\r\n" + next.Content + "\r\n</result>")}";
+{body.Aggregate("", (current, next) => current + $"\r\n<result score='{next.Score}' path='{next.SourcePath}' start='{next.StartOffset}' end='{next.EndOffset}'>\r\n" + next.Content + "\r\n</result>")}";
     }
 }

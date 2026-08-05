@@ -6,7 +6,7 @@ public interface IRepository
 {
     void Dispose();
     void Initialize(int vectorLength);
-    ICollection<QueryResult> Query(float[] query, string name, int limit = 2);
+    ICollection<QueryResult> Query(float[] query, string name, int limit = 10);
     void WriteChunk(ContentChunk chunk, float[] embedding, string name);
 }
 
@@ -160,15 +160,17 @@ CREATE TABLE chunks_meta (
         FROM chunks_vec
         INNER JOIN chunks_meta on chunks_meta.chunks_vec_rowid = chunks_vec.rowid
         WHERE chunks_vec.embedding match @embedding
-        AND k = @limit
-        {(hasName ? "AND chunks_meta.name = @name" : "")}
+            AND k = @limit
+            {(hasName ? "AND chunks_meta.name = @name" : "")}
         ORDER BY chunks_vec.distance ASC
         ";
 
         var embeddingBytes = new byte[query.Length * sizeof(float)];
         Buffer.BlockCopy(query, 0, embeddingBytes, 0, embeddingBytes.Length);
+
         cmd.Parameters.AddWithValue("@embedding", embeddingBytes);
         cmd.Parameters.AddWithValue("@limit", limit);
+
         if (hasName) cmd.Parameters.AddWithValue("@name", name);
 
         var reader = cmd.ExecuteReader();
@@ -177,17 +179,19 @@ CREATE TABLE chunks_meta (
 
         while (reader.Read())
         {
+            var score = 1 / (1 + reader.GetFieldValue<float>(chunks_vec_distance_ordinal));
+
             result.Add(new QueryResult(
                 reader.GetFieldValue<string>(chunks_meta_content_ordinal),
-                reader.GetFieldValue<float>(chunks_vec_distance_ordinal),
-               reader.GetFieldValue<string>(chunks_meta_name_ordinal),
-               reader.GetFieldValue<string>(chunks_meta_source_path_ordinal),
-               reader.GetFieldValue<string>(chunks_meta_chunk_path_ordinal),
-               reader.GetFieldValue<int>(chunks_meta_chunk_index_ordinal),
-               reader.GetFieldValue<int>(chunks_meta_total_chunks_ordinal),
-               reader.GetFieldValue<int>(chunks_meta_start_offset_ordinal),
-               reader.GetFieldValue<int>(chunks_meta_end_offset_ordinal),
-               reader.GetFieldValue<DateTime>(chunks_meta_created_at_ordinal)
+                score,
+                reader.GetFieldValue<string>(chunks_meta_name_ordinal),
+                reader.GetFieldValue<string>(chunks_meta_source_path_ordinal),
+                reader.GetFieldValue<string>(chunks_meta_chunk_path_ordinal),
+                reader.GetFieldValue<int>(chunks_meta_chunk_index_ordinal),
+                reader.GetFieldValue<int>(chunks_meta_total_chunks_ordinal),
+                reader.GetFieldValue<int>(chunks_meta_start_offset_ordinal),
+                reader.GetFieldValue<int>(chunks_meta_end_offset_ordinal),
+                reader.GetFieldValue<DateTime>(chunks_meta_created_at_ordinal)
             ));
         }
 

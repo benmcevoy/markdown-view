@@ -21,9 +21,12 @@ public class QueryRequestHandler(IRepository repository, IEmbedder embedder, Con
         request.Query.TryGetValue("name", out var name);
         var cleanQuery = _cleaner.Clean(query);
 
+        var limit = 3;
+        int.TryParse(request.Query["top"], out limit);
+
         // make sync
         var embedding = Task.Run(() => _embedder.GetEmbedding(cleanQuery)).GetAwaiter().GetResult();
-        var results = _repository.Query(embedding, name ?? "");
+        var results = _repository.Query(embedding, name ?? "", limit);
 
         return new (HttpStatusCode.OK)
         {
