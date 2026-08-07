@@ -10,7 +10,7 @@ namespace wikd.Tests
         public RouterTests()
         {
             _fileSystemService = new("/home/agent/hello-world/sample", [".md"]);
-            _router = new(_fileSystemService);
+            _router = new(new Http.Parser(), _fileSystemService);
         }
 
         private static Stream AsGET(string url)

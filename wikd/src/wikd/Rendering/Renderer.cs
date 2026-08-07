@@ -12,9 +12,9 @@ namespace wikd.Rendering
         public ContentInfo Render(Route route)
         {
             // TODO: this is nonsense
-            if (route is SpecialRoute)
+            if (route is SpecialRoute special)
             {
-                return new () { Content = "404 - Not Found", StatusCode = "404 NotFound" };
+                return new () { Content = special.Name, StatusCode = special.StatusCode };
             }
 
             var main = "nothing to display";

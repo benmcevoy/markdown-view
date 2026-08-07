@@ -63,7 +63,7 @@ namespace wikd
             var allowedFileExtensions = renderers.SelectMany(x => x.SupportedFileExtensions).ToArray();
             var fileSystemRouter = new FileSystemRouter(context.BasePath, allowedFileExtensions);
             var renderer = new Renderer(new DefaultTemplate(), renderers);
-            var router = new Router(fileSystemRouter);
+            var router = new Router(new Http.Parser(), fileSystemRouter);
 
             using TcpListener listener = new(ipAddress, port);
 

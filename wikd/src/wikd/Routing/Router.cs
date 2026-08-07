@@ -1,63 +1,44 @@
+using wikd.Http;
+
 namespace wikd.Routing
 {
-    public class Router(FileSystemRouter fileSystemRouter)
+    public class Router(Http.Parser parser, FileSystemRouter fileSystemRouter)
     {
-        private const char Space = ' ';
-        private const char Query = '?';
-        private const char Fragment = '#';
+        private const string SearchRoute = "__ragd__search";
+        private const string AdminRoute = "__ragd__admin";
         private const string UnsupportedRequest = "???";
-        private static readonly char[] _buffer = new char[2048];
         private readonly string _rootPath = fileSystemRouter.FileSystem().Path;
         private readonly Dictionary<string, Route> _fileSystem = FlattenFileSystem([], fileSystemRouter.FileSystem());
+        private readonly Parser _parser = parser;
 
         public Route Map(Stream stream) => Map(Parse(stream));
 
-        private static string Parse(Stream request)
+        private Request Parse(Stream request) => _parser.ParseRequest(request);
+
+        private Route Map(Request request)
         {
-            // GET <request-target>["?"<query>] HTTP/1.1
-            // and then headers
-            var sr = new StreamReader(request);
-            var line = sr.ReadLine() ?? "";
-            var parts = line.Split(Space, StringSplitOptions.RemoveEmptyEntries);
+            if (!IsValidRequest(request)) return Forbidden();
 
-            if (parts.Length != 3) return UnsupportedRequest;
-
-            // only support GET
-            if (!parts[0].Equals("GET", StringComparison.Ordinal)) return UnsupportedRequest;
-
-            // scan for terminating chars
-            int length;
-            for (length = 0; length < parts[1].Length; length++)
-            {
-                var character = parts[1][length];
-
-                if (character == Space || 
-                    character == Query || 
-                    character == Fragment)
-                {
-                    break;
-                }
-
-                _buffer[length] = character;
-            }
-
-            return new string(_buffer, 0, length);
-        }
-
-        private Route Map(string requestUrl)
-        {
-            if (!IsValidRequest(requestUrl)) return Forbidden();
-
-            var path = ResolvePath(_rootPath, requestUrl);
+            var path = ResolvePath(_rootPath, request.Path);
 
             return _fileSystem.TryGetValue(path, out var fileSystemInfo)
                 ? fileSystemInfo
-                : Special(requestUrl);
+                : Special(request);
         }
 
-        private static Route Special(string requestUrl)
+        private static Route Special(Request request)
         {
-            if (requestUrl.Equals(UnsupportedRequest, StringComparison.OrdinalIgnoreCase))
+            if (request.Path.Equals(SearchRoute, StringComparison.OrdinalIgnoreCase))
+            {
+                return new SpecialRoute { Name = "search", StatusCode = HttpStatusCode.OK };
+            }
+
+            if (request.Path.Equals(AdminRoute, StringComparison.OrdinalIgnoreCase))
+            {
+                return new SpecialRoute { Name = "admin", StatusCode = HttpStatusCode.OK };
+            }
+
+            if (request.Path.Equals(UnsupportedRequest, StringComparison.OrdinalIgnoreCase))
             {
                 return NotFound();
             }
@@ -90,10 +71,13 @@ namespace wikd.Routing
             return Path.Combine(root, relative);
         }
 
-        private static bool IsValidRequest(string requestUrl)
+        private static bool IsValidRequest(Request request)
         {
             // Sanitise
-            if (requestUrl == null) return false;
+            if (request == null) return false;
+            if (request.Path == null) return false;
+
+            var requestUrl = request.Path;
 
             // path traversal is forbidden, i.e. ./../, throw new NotSupportedException
             if (requestUrl.Contains("./") ||
@@ -101,14 +85,10 @@ namespace wikd.Routing
                 requestUrl.Contains("/.") ||
                 requestUrl.Contains(@"\")) return false;
 
-            // query string is forbidden i.e. ?
-            // fragment is forbidden i.e. #
-            if (requestUrl.Contains('?') || requestUrl.Contains('#')) return false;
-
             return true;
         }
 
-        private static SpecialRoute NotFound() => new() { Name = "404" };
-        private static SpecialRoute Forbidden() => new() { Name = "401" };
+        private static SpecialRoute NotFound() => new() { Name = "404", StatusCode = HttpStatusCode.NotFound };
+        private static SpecialRoute Forbidden() => new() { Name = "401", StatusCode = HttpStatusCode.Forbidden };
     }
 }
