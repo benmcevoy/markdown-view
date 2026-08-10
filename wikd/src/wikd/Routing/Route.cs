@@ -6,10 +6,11 @@ namespace wikd.Routing
         public string Path { get; set; } = "";
         public string Name { get; set; } = "";
         public string Uri { get; set; } = "";
-        public string RouteType() => this switch 
-        { 
-            FolderRoute => "folder", 
-            FileRoute => "file", 
-            _ => "special" };
+        public string RouteType() => this switch
+        {
+            FolderRoute => "folder",
+            FileRoute => "file",
+            _ => "special"
+        };
     }
 }

@@ -15,7 +15,7 @@ public class QueryRequestHandler(IRepository repository, IEmbedder embedder, Con
         && request.Method == Http.HttpMethod.GET
         && request.Query.ContainsKey("q");
 
-    public Response Handle(Request request)
+    public JsonResponse Handle(Request request)
     {
         var query = request.Query["q"];
         request.Query.TryGetValue("name", out var name);

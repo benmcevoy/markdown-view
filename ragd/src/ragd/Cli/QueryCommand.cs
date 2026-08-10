@@ -34,7 +34,7 @@ public class QueryCommand : Command
     {
         if (!_lifeCycleManager.IsRunning())
         {
-            parseResult.Out(Response.DaemonNotRunning);
+            parseResult.Out(JsonResponse.DaemonNotRunning);
             return;
         }
 
@@ -57,9 +57,9 @@ public class QueryCommand : Command
         parseResult.Out(response, Format);
     }
 
-    private static string Format(ParseResult parseResult, Response response)
+    private static string Format(ParseResult parseResult, JsonResponse response)
     {
-        if (parseResult.IsJson()) return Response.AsJson(response);
+        if (parseResult.IsJson()) return JsonResponse.AsJson(response);
 
         var body = (response.BodyAs<Collection<QueryResult>>() ?? [])
                 .OrderByDescending(x => x.Score);

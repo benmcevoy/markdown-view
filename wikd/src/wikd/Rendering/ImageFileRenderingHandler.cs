@@ -2,7 +2,7 @@ using wikd.Routing;
 
 namespace wikd.Rendering
 {
-    public class ImageFileRendererHandler : IRenderingHandler
+    public class ImageFileRenderingHandler : IRenderingHandler
     {
         public string[] SupportedFileExtensions => [".png", ".jpeg", ".jpg", ".bmp", ".gif", ".webp"];
 

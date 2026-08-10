@@ -52,12 +52,17 @@ namespace wikd
             var ipAddress = System.Net.IPAddress.Loopback;
             var port = context.Port;
 
+            var search = new SearchService(context.BasePath);
+
             IRenderingHandler[] renderers = [
-                new MarkdownFileRendererHandler(),
-                new CodeFileRendererHandler(),
-                new ImageFileRendererHandler(),
-                new PdfFileRendererHandler(),
-                new FolderRenderingHandler()
+                new MarkdownFileRenderingHandler(),
+                new CodeFileRenderingHandler(),
+                new ImageFileRenderingHandler(),
+                new PdfFileRenderingHandler(),
+                new FolderRenderingHandler(),
+                new SearchRenderingHandler(search),
+                new AdminRenderingHandler(),
+                new DefaultSpecialRenderingHandler()
                 ];
 
             var allowedFileExtensions = renderers.SelectMany(x => x.SupportedFileExtensions).ToArray();
@@ -85,7 +90,7 @@ Content-Type: {content.ContentType}
 
 {content.Content}";
 
-                byte[] msg = System.Text.Encoding.ASCII.GetBytes(response);
+                var msg = System.Text.Encoding.UTF8.GetBytes(response);
 
                 stream.Write(msg, 0, msg.Length);
                 stream.Flush();
@@ -94,15 +99,19 @@ Content-Type: {content.ContentType}
 
         private static void WriteBanner()
         {
+            // figlet font is "DOS-Rebel"  apparantly, cool
             Console.WriteLine();
-
-            Console.WriteLine(@"██╗    ██╗██╗██╗  ██╗██████╗ ");
-            Console.WriteLine(@"██║    ██║██║██║ ██╔╝██╔══██╗");
-            Console.WriteLine(@"██║ █╗ ██║██║█████╔╝ ██║  ██║");
-            Console.WriteLine(@"██║███╗██║██║██╔═██╗ ██║  ██║");
-            Console.WriteLine(@"╚███╔███╔╝██║██║  ██╗██████╔╝");
-            Console.WriteLine(@"╚══╝╚══╝ ╚═╝╚═╝  ╚═╝╚═════╝ ");
-
+            var c = Console.ForegroundColor;
+            Console.ForegroundColor = (ConsoleColor)Random.Shared.Next(1, 16);
+            Console.WriteLine(@"                  ███  █████          █████");
+            Console.WriteLine(@"                 ░░░  ░░███          ░░███ ");
+            Console.WriteLine(@" █████ ███ █████ ████  ░███ █████  ███████ ");
+            Console.WriteLine(@"░░███ ░███░░███ ░░███  ░███░░███  ███░░███ ");
+            Console.WriteLine(@" ░███ ░███ ░███  ░███  ░██████░  ░███ ░███ ");
+            Console.WriteLine(@" ░░███████████   ░███  ░███░░███ ░███ ░███ ");
+            Console.WriteLine(@"  ░░████░████    █████ ████ █████░░████████");
+            Console.WriteLine(@"   ░░░░ ░░░░    ░░░░░ ░░░░ ░░░░░  ░░░░░░░░ ");
+            Console.ForegroundColor = c;
             Console.WriteLine();
         }
     }

@@ -6,11 +6,11 @@ using wikd.Routing;
 
 namespace wikd.Rendering
 {
-    public class MarkdownFileRendererHandler : IRenderingHandler
+    public class MarkdownFileRenderingHandler : IRenderingHandler
     {
         private readonly MarkdownPipeline _pipeline;
 
-        public MarkdownFileRendererHandler()
+        public MarkdownFileRenderingHandler()
         {
             _pipeline = new MarkdownPipelineBuilder()
                 .UseAdvancedExtensions()

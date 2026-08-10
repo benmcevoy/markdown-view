@@ -17,11 +17,11 @@ public static class ParseResultExtensions
     /// <summary>
     /// Write response to the caller via std out. 
     /// </summary>
-    public static void Out(this ParseResult parseResult, Response response) =>
+    public static void Out(this ParseResult parseResult, JsonResponse response) =>
         Console.WriteLine(parseResult.IsJson()
-            ? Response.AsJson(response)
-            : Response.AsText(response));
+            ? JsonResponse.AsJson(response)
+            : JsonResponse.AsText(response));
 
-    public static void Out(this ParseResult parseResult, Response response, Func<ParseResult, Response, string> formatter) =>
+    public static void Out(this ParseResult parseResult, JsonResponse response, Func<ParseResult, JsonResponse, string> formatter) =>
         Console.WriteLine(formatter(parseResult, response));            
 }

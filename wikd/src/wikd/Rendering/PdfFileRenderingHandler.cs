@@ -3,7 +3,7 @@ using wikd.Routing;
 
 namespace wikd.Rendering
 {
-    public class PdfFileRendererHandler : IRenderingHandler
+    public class PdfFileRenderingHandler : IRenderingHandler
     {
         public string[] SupportedFileExtensions => [".pdf"];
 

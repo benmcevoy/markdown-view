@@ -1,4 +1,5 @@
 using System.Text;
+using wikd.Http;
 using wikd.Routing;
 using wikd.Templates;
 
@@ -11,28 +12,24 @@ namespace wikd.Rendering
 
         public ContentInfo Render(Route route)
         {
-            // TODO: this is nonsense
-            if (route is SpecialRoute special)
-            {
-                return new () { Content = special.Name, StatusCode = special.StatusCode };
-            }
-
-            var main = "nothing to display";
+            var main = "nothing to see here";
 
             foreach (var r in _handlers)
             {
-                if (r.CanHandle(route))
-                {
-                    main = r.Handle(route);
-                    break;
-                }
+                if (!r.CanHandle(route)) continue;
+                main = r.Handle(route);
+                break;
             }
 
             var nav = Navigation(route);
             var title = Title(route, "");
             var breadcrumb = Breadcrumb(route, "", true);
 
-            return new() { Content = _template.Render(title, nav, main, breadcrumb, route.Name) };
+            return new()
+            {
+                Content = _template.Render(title, nav, main, breadcrumb, route.Name),
+                StatusCode = route is SpecialRoute s ? s.StatusCode : HttpStatusCode.OK
+            };
         }
 
         private static string Title(Route route, string title)

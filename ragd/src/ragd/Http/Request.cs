@@ -4,7 +4,7 @@ namespace ragd.Http;
 
 public record Request
 {
-    public string Method { get; init; } = HttpMethod.UNSUPPPORTED;
+    public HttpMethod Method { get; init; } = HttpMethod.UNSUPPORTED;
 
     public string Path { get; init; } = "/";
 

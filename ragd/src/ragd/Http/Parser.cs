@@ -29,13 +29,18 @@ public class Parser
             Headers = headers,
             Method = method,
             Path = path,
-            Query = QueryStringToDictionary(query),
+            Query = query,
             Body = body
         };
     }
 
-    public Response ParseResponse(Stream responseStream)
+    public JsonResponse ParseResponse(Stream responseStream)
     {
+
+        // TODO: this assumes some json payload
+        // but could be formencoded or whatever
+        // should check the content-type?
+
         /*
         HTTP/1.1 200 OK
         Content-Type: application/json
@@ -55,35 +60,35 @@ public class Parser
 
         var body = sr.ReadToEnd();
 
-        return JsonSerializer.Deserialize<Response>(body, JsonSerializerOptions.Web) ?? Response.ServerError;
+        return JsonSerializer.Deserialize<JsonResponse>(body, JsonSerializerOptions.Web) ?? JsonResponse.ServerError;
     }
 
-    private static (string, string, string) ParseRequestLine(string line)
+    private static (HttpMethod, string, Dictionary<string, string>) ParseRequestLine(string line)
     {
         var parts = line.Split(Delimiters.Space, StringSplitOptions.RemoveEmptyEntries);
 
-        if (parts.Length != 3) return (HttpMethod.UNSUPPPORTED, "", "");
+        if (parts.Length != 3) return (HttpMethod.UNSUPPORTED, "", new());
 
         var method = ParseMethod(parts[0]);
 
-        if (method == HttpMethod.UNSUPPPORTED) return (HttpMethod.UNSUPPPORTED, "", "");
+        if (method == HttpMethod.UNSUPPORTED) return (HttpMethod.UNSUPPORTED, "", new());
 
         var (path, query) = ParsePathAndQuery(parts[1]);
 
         return (method, path, query);
     }
 
-    private static string ParseMethod(string part)
+    private static HttpMethod ParseMethod(string part)
     {
         return part switch
         {
-            HttpMethod.GET => HttpMethod.GET,
-            HttpMethod.POST => HttpMethod.POST,
-            _ => HttpMethod.UNSUPPPORTED,
+            "GET" => HttpMethod.GET,
+            "POST" => HttpMethod.POST,
+            _ => HttpMethod.UNSUPPORTED,
         };
     }
 
-    private static (string, string) ParsePathAndQuery(string part)
+    private static (string, Dictionary<string, string>) ParsePathAndQuery(string part)
     {
         int length;
         var partLength = part.Length;
@@ -106,8 +111,8 @@ public class Parser
 
         // continue scanning for
         // ?foo=bar&baz=boo
-        if (length >= partLength) return (path, "");
-        if (part[length] != Delimiters.Query) return (path, "");
+        if (length >= partLength) return (path, new());
+        if (part[length] != Delimiters.Query) return (path, new());
 
         var queryStart = length + 1;
 
@@ -124,7 +129,7 @@ public class Parser
 
         var query = part[queryStart..(queryStart + length)];
 
-        return (path, query);
+        return (path, QueryStringToDictionary(query));
     }
 
     private static Dictionary<string, string> ParseHeaders(StreamReader sr)

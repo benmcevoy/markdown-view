@@ -4,9 +4,8 @@ namespace wikd.Routing
 {
     public class Router(Http.Parser parser, FileSystemRouter fileSystemRouter)
     {
-        private const string SearchRoute = "__ragd__search";
-        private const string AdminRoute = "__ragd__admin";
-        private const string UnsupportedRequest = "???";
+        public const string SearchRoute = "__wikd__search";
+        public const string AdminRoute = "__wikd__admin";
         private readonly string _rootPath = fileSystemRouter.FileSystem().Path;
         private readonly Dictionary<string, Route> _fileSystem = FlattenFileSystem([], fileSystemRouter.FileSystem());
         private readonly Parser _parser = parser;
@@ -17,7 +16,7 @@ namespace wikd.Routing
 
         private Route Map(Request request)
         {
-            if (!IsValidRequest(request)) return Forbidden();
+            if (!IsValidRequest(request)) return new SpecialRoute { Name = "401", StatusCode = HttpStatusCode.Forbidden };
 
             var path = ResolvePath(_rootPath, request.Path);
 
@@ -26,25 +25,13 @@ namespace wikd.Routing
                 : Special(request);
         }
 
-        private static Route Special(Request request)
-        {
-            if (request.Path.Equals(SearchRoute, StringComparison.OrdinalIgnoreCase))
-            {
-                return new SpecialRoute { Name = "search", StatusCode = HttpStatusCode.OK };
-            }
-
-            if (request.Path.Equals(AdminRoute, StringComparison.OrdinalIgnoreCase))
-            {
-                return new SpecialRoute { Name = "admin", StatusCode = HttpStatusCode.OK };
-            }
-
-            if (request.Path.Equals(UnsupportedRequest, StringComparison.OrdinalIgnoreCase))
-            {
-                return NotFound();
-            }
-
-            return NotFound();
-        }
+        private static SpecialRoute Special(Request request) =>
+             request.Path.ToLowerInvariant() switch
+             {
+                 SearchRoute => new() { Name = "search", StatusCode = HttpStatusCode.OK, Path = SearchRoute, Query = request.Query },
+                 AdminRoute => new() { Name = "admin", StatusCode = HttpStatusCode.OK, Path = AdminRoute },
+                 _ => new() { Name = "404", StatusCode = HttpStatusCode.NotFound }
+             };
 
         private static Dictionary<string, Route> FlattenFileSystem(Dictionary<string, Route> fileSystem, FolderRoute folder)
         {
@@ -87,8 +74,5 @@ namespace wikd.Routing
 
             return true;
         }
-
-        private static SpecialRoute NotFound() => new() { Name = "404", StatusCode = HttpStatusCode.NotFound };
-        private static SpecialRoute Forbidden() => new() { Name = "401", StatusCode = HttpStatusCode.Forbidden };
     }
 }

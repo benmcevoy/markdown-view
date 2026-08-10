@@ -26,6 +26,7 @@
     <EmbeddedResource Include="Templates/css/main.css" />
     <EmbeddedResource Include="Templates/css/markdown.css" />
     <EmbeddedResource Include="Templates/html/default.html" />
+    <EmbeddedResource Include="Templates/js/script.html" />
   </ItemGroup>
 
 </Project>

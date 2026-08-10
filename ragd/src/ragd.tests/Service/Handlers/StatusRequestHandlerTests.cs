@@ -12,12 +12,12 @@ public class StatusRequestHandlerTests
         var sut = new StatusRequestHandler(new());
         var getStatusRequest = new Http.Request
         {
-            Method = "GET",
+            Method = Http.HttpMethod.GET,
             Path = "status"
         };
         var otherRequest = new Request
         {
-            Method = "PUT",
+            Method = Http.HttpMethod.UNSUPPORTED,
             Path = "state"
         };
 
@@ -42,7 +42,7 @@ public class StatusRequestHandlerTests
         var sut = new StatusRequestHandler(config);
         var getStatusRequest = new Http.Request
         {
-            Method = "GET",
+            Method = Http.HttpMethod.GET,
             Path = "status"
         };
 

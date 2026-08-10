@@ -29,7 +29,7 @@ namespace ragd.Service
                 using var stream = client.GetStream();
 
                 var request = _parser.ParseRequest(stream);
-                var response = Response.ServerError;
+                var response = JsonResponse.ServerError;
 
                 using (new WithColor(ConsoleColor.Yellow)) Console.WriteLine(request);
 

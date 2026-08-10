@@ -14,7 +14,7 @@ public class IndexFileRequestHandler(IEmbedder embedder, IRepository repository,
         && request.Method == Http.HttpMethod.POST
         && request.Query.ContainsKey("path");
 
-    public Response Handle(Request request)
+    public JsonResponse Handle(Request request)
     {
         // expect Query to contain file or folder path
         var path = request.Query["path"];

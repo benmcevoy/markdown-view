@@ -7,5 +7,5 @@ public class HelpRequestHandler : IRequestHandler
     public bool CanHandle(Request request) => request.Path.Equals("help", StringComparison.OrdinalIgnoreCase)
             && request.Method == Http.HttpMethod.GET;
 
-    public Response Handle(Request request) => new(HttpStatusCode.OK) { Status = "OK", Body = Help.Api };
+    public JsonResponse Handle(Request request) => new(HttpStatusCode.OK) { Status = "OK", Body = Help.Api };
 }

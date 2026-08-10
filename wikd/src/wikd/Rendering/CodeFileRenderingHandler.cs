@@ -4,11 +4,11 @@ using wikd.Routing;
 
 namespace wikd.Rendering
 {
-    public class CodeFileRendererHandler : IRenderingHandler
+    public class CodeFileRenderingHandler : IRenderingHandler
     {
         private readonly MarkdownPipeline _pipeline;
 
-        public CodeFileRendererHandler()
+        public CodeFileRenderingHandler()
         {
             _pipeline = new MarkdownPipelineBuilder()
                 .UseColorCode()

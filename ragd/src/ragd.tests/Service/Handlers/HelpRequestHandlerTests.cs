@@ -1,4 +1,3 @@
-using ragd.Http;
 using ragd.Service.Handlers;
 
 namespace ragd.Tests.Service.Handlers;
@@ -12,7 +11,7 @@ public class HelpRequestHandlerTest
         var sut = new HelpRequestHandler();
         var request = new Http.Request
         {
-            Method = "GET",
+            Method = Http.HttpMethod.GET,
             Path = "Help"
         };
 
@@ -30,7 +29,7 @@ public class HelpRequestHandlerTest
         var sut = new HelpRequestHandler();
         var request = new Http.Request
         {
-            Method = "GET",
+            Method = Http.HttpMethod.GET,
             Path = "/help"
         };
 

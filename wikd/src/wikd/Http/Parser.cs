@@ -13,7 +13,7 @@ public class Parser
         var body = "";
         var sr = new StreamReader(requestStream);
         var line = sr.ReadLine() ?? "";
-        var (method, path, query) = ParseRequestLine(line);
+        var (method, path, query) = ParseLine(line);
         var headers = ParseHeaders(sr);
 
         if (method == HttpMethod.POST)
@@ -27,20 +27,20 @@ public class Parser
             Headers = headers,
             Method = method,
             Path = path,
-            Query = QueryStringToDictionary(query),
+            Query = query,
             Body = body
         };
     }
 
-    private static (string, string, string) ParseRequestLine(string line)
+    private static (string, string, Dictionary<string, string>) ParseLine(string line)
     {
         var parts = line.Split(Delimiters.Space, StringSplitOptions.RemoveEmptyEntries);
 
-        if (parts.Length != 3) return (HttpMethod.UNSUPPPORTED, "", "");
+        if (parts.Length != 3) return (HttpMethod.UNSUPPPORTED, "", new());
 
         var method = ParseMethod(parts[0]);
 
-        if (method == HttpMethod.UNSUPPPORTED) return (HttpMethod.UNSUPPPORTED, "", "");
+        if (method == HttpMethod.UNSUPPPORTED) return (HttpMethod.UNSUPPPORTED, "", new());
 
         var (path, query) = ParsePathAndQuery(parts[1]);
 
@@ -57,7 +57,7 @@ public class Parser
         };
     }
 
-    private static (string, string) ParsePathAndQuery(string part)
+    private static (string, Dictionary<string, string>) ParsePathAndQuery(string part)
     {
         int length;
         var partLength = part.Length;
@@ -80,8 +80,8 @@ public class Parser
 
         // continue scanning for
         // ?foo=bar&baz=boo
-        if (length >= partLength) return (path, "");
-        if (part[length] != Delimiters.Query) return (path, "");
+        if (length >= partLength) return (path, new());
+        if (part[length] != Delimiters.Query) return (path, new());
 
         var queryStart = length + 1;
 
@@ -98,7 +98,7 @@ public class Parser
 
         var query = part[queryStart..(queryStart + length)];
 
-        return (path, query);
+        return (path, QueryStringToDictionary(query));
     }
 
     private static Dictionary<string, string> ParseHeaders(StreamReader sr)

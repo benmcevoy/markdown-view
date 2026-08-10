@@ -10,7 +10,7 @@ public class StopRequestHandler : IRequestHandler
 
     public bool CanHandle(Request request) => IsStopRequest(request);
 
-    public Response Handle(Request request) => new(HttpStatusCode.OK)
+    public JsonResponse Handle(Request request) => new(HttpStatusCode.OK)
     {
         Status = LifeCycleStates.STOPPED,
         Message = "Rag Daemon is stopping"

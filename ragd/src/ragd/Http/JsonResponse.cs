@@ -2,13 +2,11 @@ using System.Text.Json;
 
 namespace ragd.Http;
 
-public record Response(string StatusCode)
+public record JsonResponse(HttpStatusCode StatusCode) 
 {
-    public string StatusCode { get; init; } = StatusCode;
+    public HttpStatusCode StatusCode { get; init; } = StatusCode;
     public string Message { get; set; } = "";
     public string Status { get; set; } = "ERROR";
-
-
     public object Body { get; set; } = new();
 
     public T? BodyAs<T>() => Body is JsonElement json
@@ -17,7 +15,7 @@ public record Response(string StatusCode)
 
     public override string ToString() => AsHttp(this);
 
-    public static string AsHttp(Response response)
+    public static string AsHttp(JsonResponse response)
     {
         var body = AsJson(response);
 
@@ -28,7 +26,7 @@ Content-Length: {body.Length}
 {body}";
     }
 
-    public static string AsJson(Response response)
+    public static string AsJson(JsonResponse response)
     {
         return @$"{{
     ""status"": ""{response.Status}"",
@@ -37,16 +35,16 @@ Content-Length: {body.Length}
 }}";
     }
 
-    public static string AsText(Response response) => @$"Status: {response.Status}
+    public static string AsText(JsonResponse response) => @$"Status: {response.Status}
 {response.Message}";
 
-    public static Response ServerError = new(HttpStatusCode.ServerError)
+    public static JsonResponse ServerError = new(HttpStatusCode.ServerError)
     {
         Status = "ERROR",
         Message = "missing handler"
     };
 
-    public static Response DaemonNotRunning = new(HttpStatusCode.ServerError)
+    public static JsonResponse DaemonNotRunning = new(HttpStatusCode.ServerError)
     {
         Status = "ERROR",
         Message = "Daemon is not running."

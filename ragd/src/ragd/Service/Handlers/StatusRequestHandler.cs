@@ -10,7 +10,7 @@ public class StatusRequestHandler(Config config) : IRequestHandler
         request.Path.Equals("status", StringComparison.OrdinalIgnoreCase) 
             && request.Method == Http.HttpMethod.GET;
 
-    public Response Handle(Request request) => new(HttpStatusCode.OK)
+    public JsonResponse Handle(Request request) => new(HttpStatusCode.OK)
     {
         Status = LifeCycleStates.RUNNING,
         Message = "Rag Daemon is running",

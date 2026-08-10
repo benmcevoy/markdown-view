@@ -1,8 +1,6 @@
 namespace ragd.Http;
 
-internal struct HttpMethod
+public enum HttpMethod
 {
-    internal const string GET = "GET";
-    internal const string POST = "POST";
-    internal const string UNSUPPPORTED = "UNSUPPORTED";
+    UNSUPPORTED = 0, GET, POST,
 }

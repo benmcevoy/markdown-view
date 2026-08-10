@@ -10,7 +10,7 @@ public class Client(Parser parser, IPAddress host, int port)
     private readonly IPAddress _host = host;
     private readonly int _port = port;
 
-    public Response Send(Request request)
+    public JsonResponse Send(Request request)
     {
         using var client = new TcpClient(_host.ToString(), _port);
 

@@ -4,12 +4,13 @@ namespace wikd.Tests
 {
     public class RouterTests
     {
+        private const string RootPath = "../../../../../../sample";
         private readonly FileSystemRouter _fileSystemService;
         private readonly Router _router;
 
         public RouterTests()
         {
-            _fileSystemService = new("/home/agent/hello-world/sample", [".md"]);
+            _fileSystemService = new(RootPath, [".md"]);
             _router = new(new Http.Parser(), _fileSystemService);
         }
 
@@ -27,7 +28,7 @@ namespace wikd.Tests
 
             // assert
             Assert.True(route is FolderRoute); // Root path points to sample directory (a folder)
-            Assert.Equal("/home/agent/hello-world/sample", route.Path);
+            Assert.Equal(RootPath, route.Path);
         }
 
         // Map_IndexMd_ReturnsIndexMdAbsolutePath
@@ -39,7 +40,7 @@ namespace wikd.Tests
             var route = _router.Map(AsGET("/index.md"));
 
             // assert
-            Assert.Equal("/home/agent/hello-world/sample/index.md", route.Path);
+            Assert.Equal($"{RootPath}/index.md", route.Path);
             Assert.False(route is FolderRoute);
         }
 
@@ -52,7 +53,7 @@ namespace wikd.Tests
             var route = _router.Map(AsGET("/page1.md"));
 
             // assert
-            Assert.Equal("/home/agent/hello-world/sample/page1.md", route.Path);
+            Assert.Equal($"{RootPath}/page1.md", route.Path);
             Assert.True(route is FileRoute);
         }
 
