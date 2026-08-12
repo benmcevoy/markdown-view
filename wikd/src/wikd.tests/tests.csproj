@@ -23,4 +23,11 @@
     <ProjectReference Include="..\wikd\wikd.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None
+      Include="sample\**"
+      CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+
 </Project>

@@ -4,7 +4,7 @@ namespace wikd.Tests.Routing
 {
     public class RouterTests
     {
-        private const string RootPath = "../../../../../../sample";
+        private const string RootPath = "./sample";
         private readonly FileSystemRouter _fileSystemService;
         private readonly Router _router;
 
