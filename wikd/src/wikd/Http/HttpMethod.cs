@@ -4,5 +4,5 @@ internal struct HttpMethod
 {
     internal const string GET = "GET";
     internal const string POST = "POST";
-    internal const string UNSUPPPORTED = "UNSUPPORTED";
+    internal const string UNSUPPORTED = "UNSUPPORTED";
 }

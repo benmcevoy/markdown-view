@@ -21,6 +21,8 @@ namespace ragd.Service
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            var yellow = () => new WithColor(ConsoleColor.Yellow); 
+
             _listener.Start();
 
             while (!stoppingToken.IsCancellationRequested)
@@ -31,7 +33,7 @@ namespace ragd.Service
                 var request = _parser.ParseRequest(stream);
                 var response = JsonResponse.ServerError;
 
-                using (new WithColor(ConsoleColor.Yellow)) Console.WriteLine(request);
+                using (yellow()) Console.WriteLine(request);
 
                 foreach (var r in _handlers)
                 {
@@ -42,7 +44,7 @@ namespace ragd.Service
                     }
                 }
 
-                using (new WithColor(ConsoleColor.Yellow)) Console.WriteLine(response);
+                using (yellow()) Console.WriteLine(response);
 
                 var msg = System.Text.Encoding.UTF8.GetBytes(response.ToString());
 

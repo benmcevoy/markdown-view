@@ -50,7 +50,7 @@ public class QueryCommand : Command
             {
                 { "q", Uri.EscapeDataString(query) },
                 { "name", Uri.EscapeDataString(name) },
-                { "limit", Uri.EscapeDataString(limit.ToString()) }
+                { "top", Uri.EscapeDataString(limit.ToString()) }
             }
         });
 

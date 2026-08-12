@@ -24,7 +24,8 @@ public class StatusCommand : Command
 
         if (!_lifeCycleManager.IsRunning())
         {
-            parseResult.Out($"Status: {LifeCycleStates.STOPPED}");
+            parseResult.Out(Stopped());
+
             return;
         }
 
@@ -32,4 +33,6 @@ public class StatusCommand : Command
 
         parseResult.Out(response);
     }
+
+    private static JsonResponse Stopped() => new (HttpStatusCode.ServerError) { Status = LifeCycleStates.STOPPED };
 }

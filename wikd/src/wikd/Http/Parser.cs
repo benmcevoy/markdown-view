@@ -36,11 +36,11 @@ public class Parser
     {
         var parts = line.Split(Delimiters.Space, StringSplitOptions.RemoveEmptyEntries);
 
-        if (parts.Length != 3) return (HttpMethod.UNSUPPPORTED, "", new());
+        if (parts.Length != 3) return (HttpMethod.UNSUPPORTED, "", new());
 
         var method = ParseMethod(parts[0]);
 
-        if (method == HttpMethod.UNSUPPPORTED) return (HttpMethod.UNSUPPPORTED, "", new());
+        if (method == HttpMethod.UNSUPPORTED) return (HttpMethod.UNSUPPORTED, "", new());
 
         var (path, query) = ParsePathAndQuery(parts[1]);
 
@@ -53,7 +53,7 @@ public class Parser
         {
             HttpMethod.GET => HttpMethod.GET,
             HttpMethod.POST => HttpMethod.POST,
-            _ => HttpMethod.UNSUPPPORTED,
+            _ => HttpMethod.UNSUPPORTED,
         };
     }
 
@@ -185,7 +185,7 @@ public class Parser
         return (key, value);
     }
 
-    record Delimiters
+    struct Delimiters
     {
         internal const char Space = ' ';
         internal const char Query = '?';

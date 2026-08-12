@@ -10,9 +10,7 @@ public class CondenseWhitespaceCleanerTests
         // arrange 
         var sut = new CondenseWhiteSpaceCleaner();
         var expected = @"This is a line tab with spaces
-
 and
-
 some blank lines.";
 
         // act 

@@ -1,3 +1,7 @@
+using System.Text;
+using HtmlAgilityPack;
+using Markdig;
+
 namespace ragd.Service.Clean.Markdown
 {
     /// <summary>
@@ -7,10 +11,18 @@ namespace ragd.Service.Clean.Markdown
     {
         public string Clean(string chunk)
         {
-            // TODO: Do i need this?
-            // remove inline code, bold, italic
+            var result = new StringBuilder(chunk.Length);
+            var document = Markdig.Parsers.MarkdownParser.Parse(chunk);
+            var html = new HtmlDocument();
 
-            throw new NotImplementedException();
+            html.LoadHtml(document.ToHtml());
+
+            foreach (var node in html.DocumentNode.SelectNodes("//text()"))
+            {
+                result.Append(node.InnerText);
+            }
+
+            return result.ToString();
         }
     }
 }

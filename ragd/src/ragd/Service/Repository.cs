@@ -1,4 +1,7 @@
 using Microsoft.Data.Sqlite;
+using ragd.Service.Clean;
+using ragd.Service.Clean.Markdown;
+using ragd.Service.Clean.Text;
 
 namespace ragd.Service;
 
@@ -14,8 +17,10 @@ public class Repository : IDisposable, IRepository
 {
     private readonly SqliteConnection _connection;
     private readonly string _databasePath;
+    private readonly ICleaner _cleaner;
 
-    public Repository(Config config)
+
+    public Repository(Config config, QueryResultCleaner cleaner)
     {
         _databasePath = config.DatabasePath;
 
@@ -23,6 +28,8 @@ public class Repository : IDisposable, IRepository
         _connection.EnableExtensions();
         _connection.LoadExtension(config.VectorExtensionPath);
         _connection.Open();
+        _cleaner = cleaner;
+
     }
 
     public void Initialize(int vectorLength)
@@ -180,9 +187,12 @@ CREATE TABLE chunks_meta (
         while (reader.Read())
         {
             var score = 1 / (1 + reader.GetFieldValue<float>(chunks_vec_distance_ordinal));
+            var raw = reader.GetFieldValue<string>(chunks_meta_content_ordinal);
+
 
             result.Add(new QueryResult(
-                reader.GetFieldValue<string>(chunks_meta_content_ordinal),
+                raw,
+                _cleaner.Clean(raw),
                 score,
                 reader.GetFieldValue<string>(chunks_meta_name_ordinal),
                 reader.GetFieldValue<string>(chunks_meta_source_path_ordinal),

@@ -15,7 +15,7 @@ public class Parser
         var body = "";
         var sr = new StreamReader(requestStream);
         var line = sr.ReadLine() ?? "";
-        var (method, path, query) = ParseRequestLine(line);
+        var (method, path, query) = ParseLine(line);
         var headers = ParseHeaders(sr);
 
         if (method == HttpMethod.POST)
@@ -63,7 +63,7 @@ public class Parser
         return JsonSerializer.Deserialize<JsonResponse>(body, JsonSerializerOptions.Web) ?? JsonResponse.ServerError;
     }
 
-    private static (HttpMethod, string, Dictionary<string, string>) ParseRequestLine(string line)
+    private static (HttpMethod, string, Dictionary<string, string>) ParseLine(string line)
     {
         var parts = line.Split(Delimiters.Space, StringSplitOptions.RemoveEmptyEntries);
 
@@ -216,7 +216,7 @@ public class Parser
         return (key, value);
     }
 
-    record Delimiters
+    struct Delimiters
     {
         internal const char Space = ' ';
         internal const char Query = '?';

@@ -17,7 +17,7 @@ namespace ragd.Service.Clean.Text
 
             chunk = _whitespaceExceptNewlinesPattern().Replace(chunk, " ");
             chunk = chunk.Replace("\n ", "\n");
-            chunk = _multipleLinesPattern().Replace(chunk, "\n\n");
+            chunk = _multipleLinesPattern().Replace(chunk, "\n");
             chunk = chunk.Trim();
 
             return chunk;

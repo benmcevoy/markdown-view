@@ -10,9 +10,7 @@ public class MarkdownChunkCleanerTests
         // arrange 
         var sut = new MarkdownChunkCleaner();
         var expected = @"This is a line tab with spaces
-
 and
-
 some blank lines.";
 
         // act 
@@ -38,9 +36,7 @@ some blank lines.";
         var expected = @"some
 bl
 ank
-
 ank
-
 lines";
         // act 
         var actual = sut.Clean(@" 
@@ -108,23 +104,14 @@ many space separated asterix with blank line above and below
         ");
 
         var expected = @"3 hyphens with blank line above and below
-
 3 asterix with blank line above and below
-
 3 underscores with blank line above and below
-
 2 hyphens are legit
-
 --
-
 hyphens with spaces with blank line above and below
-
 many hyphens with blank line above and below
-
 many space separated asterix with blank line above and below
-
 3 characters with blank line above and below
-
 @@@";
 
         // assert

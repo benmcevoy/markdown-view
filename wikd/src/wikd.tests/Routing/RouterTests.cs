@@ -1,6 +1,6 @@
 using wikd.Routing;
 
-namespace wikd.Tests
+namespace wikd.Tests.Routing
 {
     public class RouterTests
     {
@@ -31,7 +31,6 @@ namespace wikd.Tests
             Assert.Equal(RootPath, route.Path);
         }
 
-        // Map_IndexMd_ReturnsIndexMdAbsolutePath
         [Fact]
         public void Map_IndexMd_ReturnsIndexMdAbsolutePath()
         {
@@ -44,7 +43,6 @@ namespace wikd.Tests
             Assert.False(route is FolderRoute);
         }
 
-        // Map_FileFd_ReturnsFileMd
         [Fact]
         public void Map_FileMd_ReturnsFileMd()
         {
@@ -57,7 +55,6 @@ namespace wikd.Tests
             Assert.True(route is FileRoute);
         }
 
-        // Map_FileMd_IsNotFolder
         [Fact]
         public void Map_FileMd_IsNotFolder()
         {
@@ -69,7 +66,6 @@ namespace wikd.Tests
             Assert.False(route is FolderRoute);
         }
 
-        // Map_PathTraversal_Throws
         [Fact]
         public void Map_PathTraversal_Returns401()
         {
@@ -82,7 +78,6 @@ namespace wikd.Tests
             Assert.True(route.Name == "401");
         }
 
-        // Map_QueryString_Throws
         [Fact]
         public void Map_QueryString_CleanUri()
         {
@@ -95,7 +90,6 @@ namespace wikd.Tests
             Assert.True(route.Uri == "/index.md");
         }
 
-        // Map_UriFragment_Throws
         [Fact]
         public void Map_UriFragment_CleanUri()
         {
@@ -108,7 +102,6 @@ namespace wikd.Tests
             Assert.True(route.Uri == "/index.md");
         }
 
-        // Map_UriEndcoded_Throws
         [Fact]
         public void Map_UriEndcoded_Returns404()
         {

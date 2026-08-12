@@ -1,9 +1,12 @@
 using System.CommandLine;
 using Microsoft.Extensions.Logging;
 using ragd.Cli.Options;
+using ragd.Http;
+
 // TODO: something wrong here
 // new database is not part of service, exists on the cli side
 // I think this should delegate to a Service.NewHandler
+
 using ragd.Service;
 using ragd.Service.Embed;
 
@@ -41,7 +44,7 @@ public class NewCommand : Command
             VectorExtensionPath = Path.Combine(AppContext.BaseDirectory, "vec0.so")
         };
         using var embedder = new Embedder(config);
-        using var repository = new Repository(config);
+        using var repository = new Repository(config, new());
 
         var vectorLength = embedder.EmbeddingSize();
         var trainedContextSize = embedder.TrainedContextSize();
@@ -51,11 +54,16 @@ public class NewCommand : Command
         _logger.LogInformation($"Model has trained context size of '{trainedContextSize}'.");
 
         repository.Initialize(vectorLength);
-
-        _logger.LogInformation(@$"You can start the daemon with: 
-        
-rag start --database '{database.FullName}' --model '{model.FullName}'");
-
-        parseResult.Out("State: Created");
+        parseResult.Out(Created(database.FullName, model.FullName));
     }
+
+    private static JsonResponse Created(string database, string model) =>
+        new(HttpStatusCode.OK)
+        {
+            Status = "Created",
+            Message = @$"You can start the daemon with: 
+        
+rag start --database '{database}' --model '{model}'"
+        };
+
 }

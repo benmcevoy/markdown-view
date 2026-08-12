@@ -75,7 +75,7 @@ namespace ragd
                 .AddSingleton<CondenseWhiteSpaceCleaner>()
                 .AddSingleton<MarkdownDocumentChunker>()
                 .AddSingleton<IEmbedder, Embedder>()
-                .AddSingleton<IRepository, Repository>()
+                .AddSingleton<IRepository, Repository>(_ => new Repository(config, new()))
                 .AddSingleton<Http.Parser>()
                 .AddSingleton<IRequestHandler, HelpRequestHandler>()
                 .AddSingleton<IRequestHandler, IndexFileRequestHandler>()

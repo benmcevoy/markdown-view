@@ -1,6 +1,7 @@
 namespace ragd.Service
 {
     public record QueryResult(
+        string Raw,
         string Content,
         float Score,
         string Name,

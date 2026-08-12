@@ -1,6 +1,7 @@
 using System.CommandLine;
 using Microsoft.Extensions.Logging;
 using ragd.Cli.Options;
+using ragd.Http;
 
 namespace ragd.Cli;
 
@@ -29,6 +30,8 @@ public class StartCommand : Command
 
         var state = _lifeCycleManager.StartDaemon(database, model);
 
-        parseResult.Out($"Status: {state}");
+        parseResult.Out(Status(state));
     }
+
+    private static JsonResponse Status(string status) => new (HttpStatusCode.OK) { Status = status };
 }

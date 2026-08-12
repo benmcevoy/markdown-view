@@ -10,14 +10,14 @@ public class StopRequestHandlerTests
     {
         // arrange
         var sut = new StopRequestHandler();
-        var postStopRequest = new Http.Request
+        var postStopRequest = new Request
         {
-            Method = Http.HttpMethod.POST,
+            Method = ragd.Http.HttpMethod.POST,
             Path = "stop"
         };
         var otherRequest = new Request
         {
-            Method = Http.HttpMethod.GET,
+            Method = ragd.Http.HttpMethod.GET,
             Path = "Stahp!"
         };
 
@@ -39,9 +39,9 @@ public class StopRequestHandlerTests
     {
         // arrange
         var sut = new StopRequestHandler();
-        var postStopRequest = new Http.Request
+        var postStopRequest = new Request
         {
-            Method = Http.HttpMethod.POST,
+            Method = ragd.Http.HttpMethod.POST,
             Path = "stop"
         };
 
@@ -56,14 +56,14 @@ public class StopRequestHandlerTests
     public void StopRequestHandler_IsStopRequest()
     {
         // arrange
-        var postStopRequest = new Http.Request
+        var postStopRequest = new Request
         {
-            Method = Http.HttpMethod.POST,
+            Method = ragd.Http.HttpMethod.POST,
             Path = "stop"
         };
         var otherRequest = new Request
         {
-            Method = Http.HttpMethod.GET,
+            Method = ragd.Http.HttpMethod.GET,
             Path = "Stop!"
         };
 

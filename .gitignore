@@ -5,6 +5,7 @@
 
 nohup.out
 TODO.md
+.envrc
 
 # dotenv files
 .env

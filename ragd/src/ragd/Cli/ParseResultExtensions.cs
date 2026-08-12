@@ -10,11 +10,6 @@ public static class ParseResultExtensions
     public static bool IsJson(this ParseResult parseResult) => parseResult.GetValue<bool>(JsonOption.OptionName);
     
     /// <summary>
-    /// Write response to the caller via std out 
-    /// </summary>
-    public static void Out(this ParseResult _, string response) => Console.WriteLine(response);
-    
-    /// <summary>
     /// Write response to the caller via std out. 
     /// </summary>
     public static void Out(this ParseResult parseResult, JsonResponse response) =>

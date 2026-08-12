@@ -3,7 +3,7 @@ using LLama.Native;
 
 namespace ragd;
 
-public record Config
+public class Config
 {
     public string DatabasePath { get; set; } = "";
     public string ModelPath { get; set; } = "";

@@ -10,14 +10,14 @@ public class StatusRequestHandlerTests
     {
         // arrange
         var sut = new StatusRequestHandler(new());
-        var getStatusRequest = new Http.Request
+        var getStatusRequest = new Request
         {
-            Method = Http.HttpMethod.GET,
+            Method = ragd.Http.HttpMethod.GET,
             Path = "status"
         };
         var otherRequest = new Request
         {
-            Method = Http.HttpMethod.UNSUPPORTED,
+            Method = ragd.Http.HttpMethod.UNSUPPORTED,
             Path = "state"
         };
 
@@ -40,9 +40,9 @@ public class StatusRequestHandlerTests
         // arrange
         var config = new Config();
         var sut = new StatusRequestHandler(config);
-        var getStatusRequest = new Http.Request
+        var getStatusRequest = new Request
         {
-            Method = Http.HttpMethod.GET,
+            Method = ragd.Http.HttpMethod.GET,
             Path = "status"
         };
 

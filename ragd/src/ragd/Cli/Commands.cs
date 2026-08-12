@@ -18,7 +18,7 @@ public class Commands
         _rootCommand.Subcommands.Add(new NewCommand(_logger));
         _rootCommand.Subcommands.Add(new QueryCommand(lifeCycleManager, client, _logger));
         _rootCommand.Subcommands.Add(new StartCommand(lifeCycleManager, _logger));
-        _rootCommand.Subcommands.Add(new StopCommand(client, _logger));
+        _rootCommand.Subcommands.Add(new StopCommand(lifeCycleManager, client, _logger));
         _rootCommand.Subcommands.Add(new StatusCommand(lifeCycleManager, client, _logger));
 
         // add global options
