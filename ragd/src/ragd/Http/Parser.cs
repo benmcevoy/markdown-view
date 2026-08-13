@@ -36,7 +36,6 @@ public class Parser
 
     public JsonResponse ParseResponse(Stream responseStream)
     {
-
         // TODO: this assumes some json payload
         // but could be formencoded or whatever
         // should check the content-type?

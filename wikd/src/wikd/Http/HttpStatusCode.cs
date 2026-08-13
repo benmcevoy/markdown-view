@@ -1,8 +1,19 @@
 namespace wikd.Http;
 
-internal struct HttpStatusCode
+public record HttpStatusCode 
 {
-    internal const string OK = "200 OK";
-    internal const string NotFound = "404 Not Found";
-    internal const string Forbidden = "401 Forbidden";
+    public static HttpStatusCode OK = new("OK", 200);
+    public static HttpStatusCode ServerError = new("Internal Server Error", 500);
+    public static HttpStatusCode ClientError = new("Bad Request", 400);
+    public static HttpStatusCode NotFound = new("Not Found", 404);
+
+    private HttpStatusCode(string status, int code)
+    {
+        Status = status;
+        Code = code;
+    }
+
+    public string Status { get; }
+    public int Code { get; }
+    public override string ToString() => $"{Code} {Status}";
 }

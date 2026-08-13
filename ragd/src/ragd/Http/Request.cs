@@ -16,8 +16,6 @@ public record Request
 
     public string Body { get; init; } = "";
 
-    public static Request Unsupported = new();
-
     public override string ToString()
     {
         var sb = new StringBuilder();

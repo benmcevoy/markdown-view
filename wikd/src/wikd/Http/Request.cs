@@ -1,8 +1,10 @@
+using System.Text;
+
 namespace wikd.Http;
 
 public record Request
 {
-    public string Method { get; init; } = HttpMethod.UNSUPPORTED;
+    public HttpMethod Method { get; init; } = HttpMethod.UNSUPPORTED;
 
     public string Path { get; init; } = "/";
 
@@ -14,5 +16,21 @@ public record Request
 
     public string Body { get; init; } = "";
 
-    public static Request Unsupported = new();
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine($"{Method} {Path}{Query.AsQuery()} HTTP/1.1");
+
+        if (Headers.Count > 0) sb.Append(Headers.AsHeaders());
+
+        sb.AppendLine();
+
+        if (!string.IsNullOrWhiteSpace(Body))
+        {
+            sb.AppendLine(Body);
+        }
+
+        return sb.ToString();
+    }
 }

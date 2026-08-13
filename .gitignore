@@ -6,6 +6,9 @@
 nohup.out
 TODO.md
 .envrc
+ragd.config
+ragd.db
+ragd.gguf
 
 # dotenv files
 .env

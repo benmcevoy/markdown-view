@@ -51,8 +51,7 @@ namespace wikd
 
             var ipAddress = System.Net.IPAddress.Loopback;
             var port = context.Port;
-
-            var search = new SearchService(context.BasePath);
+            var search = new SearchService(context.BasePath, new Http.Client(new (), ipAddress, 53280));
 
             IRenderingHandler[] renderers = [
                 new MarkdownFileRenderingHandler(),

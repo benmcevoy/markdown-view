@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace wikd.Http;
 
 public class Parser
@@ -32,7 +34,38 @@ public class Parser
         };
     }
 
-    private static (string, string, Dictionary<string, string>) ParseLine(string line)
+    public Response ParseResponse(Stream responseStream)
+    {
+        // TODO: this assumes some json payload
+        // but could be formencoded or whatever
+        // should check the content-type?
+
+        /*
+        HTTP/1.1 200 OK
+        Content-Type: application/json
+        Content-Length: 123
+
+        {
+            "status": "{Status}",
+            "message": "{Message}",
+            "body": "{JsonSerializer.Serialize(Data)}"
+        }
+        */
+
+        var sr = new StreamReader(responseStream);
+
+        // consume until first blank line
+        while (!string.IsNullOrWhiteSpace(sr.ReadLine())) ;
+
+        var body = sr.ReadToEnd();
+
+        return new Response(HttpStatusCode.OK)
+        {
+            Body = body
+        };
+    }
+
+    private static (HttpMethod, string, Dictionary<string, string>) ParseLine(string line)
     {
         var parts = line.Split(Delimiters.Space, StringSplitOptions.RemoveEmptyEntries);
 
@@ -47,12 +80,12 @@ public class Parser
         return (method, path, query);
     }
 
-    private static string ParseMethod(string part)
+    private static HttpMethod ParseMethod(string part)
     {
         return part switch
         {
-            HttpMethod.GET => HttpMethod.GET,
-            HttpMethod.POST => HttpMethod.POST,
+            "GET" => HttpMethod.GET,
+            "POST" => HttpMethod.POST,
             _ => HttpMethod.UNSUPPORTED,
         };
     }
@@ -113,7 +146,7 @@ public class Parser
 
             var (key, value) = KeyValue(line, Delimiters.Colon, true);
 
-            if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("invalid header key");
+            if (string.IsNullOrWhiteSpace(key)) continue;
 
             headers.Add(key, value);
         }

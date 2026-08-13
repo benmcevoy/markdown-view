@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Encodings.Web;
 
 namespace ragd.Http;
 
@@ -13,8 +14,7 @@ public static class DictionaryExtensions
 
         foreach (var kvp in source)
         {
-            // TODO: probably want to url encode
-            sb.Append($"{kvp.Key}={kvp.Value}&");
+            sb.Append($"{UrlEncoder.Default.Encode(kvp.Key)}={UrlEncoder.Default.Encode(kvp.Value)}&");
         }
 
         return sb.ToString(0, sb.Length - 1);

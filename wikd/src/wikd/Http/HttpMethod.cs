@@ -1,8 +1,6 @@
 namespace wikd.Http;
 
-internal struct HttpMethod
+public enum HttpMethod
 {
-    internal const string GET = "GET";
-    internal const string POST = "POST";
-    internal const string UNSUPPORTED = "UNSUPPORTED";
+    UNSUPPORTED = 0, GET, POST,
 }

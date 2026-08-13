@@ -16,7 +16,7 @@ namespace wikd.Routing
 
         private Route Map(Request request)
         {
-            if (!IsValidRequest(request)) return new SpecialRoute { Name = "401", StatusCode = HttpStatusCode.Forbidden };
+            if (!IsValidRequest(request)) return new SpecialRoute { Name = "400", StatusCode = HttpStatusCode.ClientError };
 
             var path = ResolvePath(_rootPath, request.Path);
 
