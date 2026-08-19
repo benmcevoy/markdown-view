@@ -15,10 +15,9 @@ public static class MarkdownObjectExtensions
         return renderer.Render(mdo).ToString() ?? "";
     }
 
-    public static T? TryGetBlock<T>(this MarkdownObject mdo, out bool exists) where T : Block
+    public static bool TryGetBlockAs<T>(this MarkdownObject mdo, out T? block) where T : Block
     {
-        var candidate = mdo as T;
-        exists = candidate != null;
-        return candidate;
+        block = mdo as T;
+        return block != null;
     }
 }

@@ -1,2 +1,2 @@
 namespace ragd.Chunk;
-interface IDocumentChunker : IHandler<Document, IEnumerable<ContentChunk>>;
+public interface IDocumentChunker : IHandler<Document, IEnumerable<ContentChunk>>;

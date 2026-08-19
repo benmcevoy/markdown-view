@@ -5,14 +5,11 @@ namespace ragd.Http;
 public record JsonResponse(HttpStatusCode StatusCode) 
 {
     public HttpStatusCode StatusCode { get; init; } = StatusCode;
+    public Dictionary<string, string> Headers { get; init; }
+        = new(StringComparer.OrdinalIgnoreCase);
     public string Message { get; set; } = "";
     public string Status { get; set; } = "ERROR";
     public object Body { get; set; } = new();
-
-    public T? BodyAs<T>() => Body is JsonElement json
-         ? json.Deserialize<T>()
-         : (T)Body;
-
     public override string ToString() => AsHttp(this);
 
     public static string AsHttp(JsonResponse response)
@@ -35,18 +32,9 @@ Content-Length: {body.Length}
 }}";
     }
 
-    public static string AsText(JsonResponse response) => @$"Status: {response.Status}
-{response.Message}";
-
     public static JsonResponse ServerError = new(HttpStatusCode.ServerError)
     {
         Status = "ERROR",
         Message = "missing handler"
-    };
-
-    public static JsonResponse DaemonNotRunning = new(HttpStatusCode.ServerError)
-    {
-        Status = "ERROR",
-        Message = "Daemon is not running."
     };
 }

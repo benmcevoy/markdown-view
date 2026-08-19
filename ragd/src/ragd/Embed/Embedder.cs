@@ -19,10 +19,8 @@ public class Embedder : IDisposable, IEmbedder
     {
         var modelParameters = new ModelParams(config.ModelPath)
         {
-            ContextSize = config.ContextSize,
             GpuLayerCount = -1,
-            Embeddings = true,
-            AttentionType = config.AttentionType
+            Embeddings = true
         };
 
         _weights = LLamaWeights.LoadFromFile(modelParameters);

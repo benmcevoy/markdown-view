@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ragd.Chunk;
-using ragd.Clean;
 using ragd.Clean.Text;
 using ragd.Embed;
 using ragd.Handlers;
@@ -24,17 +23,29 @@ namespace ragd
 
             builder.Logging.ClearProviders();
 
+            // contextsize is defined by the model so we must instantiate now
+            // as required for context aware adaptive chunker
+            var embedder = new Embedder(config);
+
             builder.Services
-                .AddSingleton<ILogger, RagLogger>()
+                .AddSingleton<ILogger, ConsoleLogger>()
                 .AddSingleton(config)
-                .AddSingleton<MarkdownChunkCleaner>()
                 .AddSingleton<CondenseWhiteSpaceCleaner>()
-                .AddSingleton<MarkdownDocumentChunker>()
-                .AddSingleton<IEmbedder, Embedder>()
+                .AddSingleton<IDocumentChunker>(_ => 
+                    new ContextSizeAdaptiveDocumentChunker(new MarkdownDocumentChunker(new ()), embedder.TrainedContextSize()))
+                .AddSingleton<IEmbedder>(embedder)
                 .AddSingleton<IRepository, Repository>(_ => new Repository(config, new()))
                 .AddSingleton<Http.Parser>()
                 .AddSingleton<IRequestHandler, HelpRequestHandler>()
                 .AddSingleton<IRequestHandler, IndexFileRequestHandler>()
+                // TODO: perhaps here a chain of responsibility/decorator 
+                // to handle the adaptive chunks, 
+                // - join chunks
+                // - remove duplicate documents found
+                // - seems like the spot to think about re-ranker
+                /*
+Grouping-by-parent-section at retrieval time (then picking the best sub-chunk per section, or merging siblings back together for the generation prompt) is often the fix, and it's basically free if you kept the parent-heading metadata we talked about earlier.
+                */
                 .AddSingleton<IRequestHandler, QueryRequestHandler>()
                 .AddHostedService<Daemon>();
 

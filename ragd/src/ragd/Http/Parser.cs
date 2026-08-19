@@ -36,10 +36,6 @@ public class Parser
 
     public JsonResponse ParseResponse(Stream responseStream)
     {
-        // TODO: this assumes some json payload
-        // but could be formencoded or whatever
-        // should check the content-type?
-
         /*
         HTTP/1.1 200 OK
         Content-Type: application/json
@@ -53,13 +49,38 @@ public class Parser
         */
 
         var sr = new StreamReader(responseStream);
+        var line = sr.ReadLine() ?? "";
+        var parts = line.Split(Delimiters.Space);
+        var statusCode = ParseStatusCode(parts[1..2]);
+        var headers = ParseHeaders(sr);
 
-        // consume until first blank line
-        while (!string.IsNullOrWhiteSpace(sr.ReadLine())) ;
+        // TODO: this assumes some json payload
+        // but could be formencoded or whatever
+        // should check the content-type?
+        var response = JsonSerializer.Deserialize<JsonResponse>(sr.BaseStream, JsonSerializerOptions.Web) 
+            ?? JsonResponse.ServerError;
 
-        var body = sr.ReadToEnd();
+        return new JsonResponse(statusCode)
+        {
+            Headers = headers,
+            Body = response.Body,
+            Message = response.Message,
+            Status = response.Status
+        };
+    }
 
-        return JsonSerializer.Deserialize<JsonResponse>(body, JsonSerializerOptions.Web) ?? JsonResponse.ServerError;
+    private static HttpStatusCode ParseStatusCode(string[] parts)
+    {
+        if (parts.Length != 3) return HttpStatusCode.Malformed;
+        if (int.TryParse(parts[0], out var code)) return HttpStatusCode.Malformed;
+
+        return code switch
+        {
+            >= 200 and < 400 => HttpStatusCode.OK,
+            >= 400 and < 500 => HttpStatusCode.ClientError,
+            >= 500 and < 600 => HttpStatusCode.ServerError,
+            _ => HttpStatusCode.Malformed,
+        };
     }
 
     private static (HttpMethod, string, Dictionary<string, string>) ParseLine(string line)

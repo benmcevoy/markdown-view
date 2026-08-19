@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ragd;
 
-public class RagLogger : ILogger
+public class ConsoleLogger : ILogger
 {
     public bool IsQuiet { get; set; }
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull => default;

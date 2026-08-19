@@ -25,10 +25,8 @@ namespace ragd.Chunk
             var chunkSpans = Traverse(dfs, content.Length - 1).ToList();
             var chunkIndex = 0;
 
-            foreach (var chunk in chunkSpans)
+            foreach ((var span, var headingPath, var chunkType) in chunkSpans)
             {
-                var span = chunk.Item1;
-                var headingPath = chunk.Item2;
                 var cleanContent = cleaner.Clean(content.Substring(span.Start, span.Length));
 
                 yield return new ContentChunk(
@@ -39,33 +37,51 @@ namespace ragd.Chunk
                     chunkSpans.Count,
                     span.Start,
                     span.End,
-                    DateTime.UtcNow);
+                    DateTime.UtcNow,
+                    chunkType);
             }
         }
 
-        private static IEnumerable<(SourceSpan, string[])> Traverse(IEnumerable<MarkdownObject> descendants, int eof)
+        private static IEnumerable<(SourceSpan, string[], ChunkType)> Traverse(IEnumerable<MarkdownObject> descendants, int eof)
         {
             var start = descendants.First();
             var headingPath = UpdateHeadingPath(new Stack<(HeadingBlock, string)>(), start as HeadingBlock);
 
+            // TODO: why Skip? what if First was not a heading?
+            // perhaps use TryUpdateHeadingPath or something instead
             foreach (var current in descendants.Skip(1))
             {
                 var isEOF = current.Span.End == eof;
 
                 if (isEOF)
                 {
-                    yield return (new SourceSpan(start.Span.Start, current.Span.End), ToPath(headingPath));
+                    yield return (
+                        new SourceSpan(start.Span.Start, current.Span.End), 
+                        ToPath(headingPath), 
+                        ChunkType.Markdown);
+                    break;
                 }
 
-                var heading = current.TryGetBlock<HeadingBlock>(out var isHeading);
-                var codeFence = current.TryGetBlock<FencedCodeBlock>(out var isCodeFence);
-
-                if (isHeading || isCodeFence)
+                if (current.TryGetBlockAs<FencedCodeBlock>(out var codeFence))
                 {
-                    yield return (new SourceSpan(start.Span.Start, current.Span.Start - 1), ToPath(headingPath));
+                    yield return (
+                        new SourceSpan(start.Span.Start, current.Span.Start - 1), 
+                        ToPath(headingPath), 
+                        ChunkType.Code);
 
                     start = current;
+                    continue;
+                }
+
+
+                if (current.TryGetBlockAs<HeadingBlock>(out var heading))
+                {
+                    yield return (new SourceSpan(start.Span.Start, current.Span.Start - 1), ToPath(headingPath), ChunkType.Markdown);
+
+                    start = current;
+
                     // heading is not null here
+                    // TODO: how do you know heading is not null?
                     headingPath = UpdateHeadingPath(headingPath, heading!);
                 }
             }
