@@ -9,6 +9,14 @@ weight: 10
 
 # PRD: Router
 
+## Goals
+
+- Map request paths (e.g., `/folder/page.md`) to files in the root directory
+- Support both file and directory requests
+- Return appropriate HTTP status codes (200 for success, 404 for not found)
+- Handle URL normalization (remove trailing slashes)
+- Support optional file selection within directories (e.g., `/folder/` serves `index.md`)
+
 ## Open Questions
 
 - Should we implement caching for frequently accessed files?
@@ -34,13 +42,7 @@ graph TD;
     C-->D;
 ```
 
-## Goals
 
-- Map request paths (e.g., `/folder/page.md`) to files in the root directory
-- Support both file and directory requests
-- Return appropriate HTTP status codes (200 for success, 404 for not found)
-- Handle URL normalization (remove trailing slashes)
-- Support optional file selection within directories (e.g., `/folder/` serves `index.md`)
 
 ## User Stories
 
