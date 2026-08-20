@@ -10,4 +10,13 @@ public class Config
     public int Port { get; set; } = 53280;
     public string VectorExtensionPath { get; set; } = "./vec0.so";
     public int TopNResults { get; set; } = 3;
+
+    public override string ToString() => @$"Config:
+DatabasePath: {DatabasePath}
+ModelPath: {ModelPath}
+Host: {Host}
+Port: {Port}
+TopNResults: {TopNResults}    
+";
+
 }

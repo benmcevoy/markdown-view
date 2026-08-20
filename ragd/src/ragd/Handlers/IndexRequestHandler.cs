@@ -4,7 +4,7 @@ using ragd.Http;
 
 namespace ragd.Handlers;
 
-public class IndexFileRequestHandler(IEmbedder embedder, IRepository repository, MarkdownDocumentChunker chunker) : IRequestHandler
+public class IndexFileRequestHandler(IEmbedder embedder, IRepository repository, IDocumentChunker chunker) : IRequestHandler
 {
     private readonly IEmbedder _embedder = embedder;
     private readonly IRepository _repository = repository;

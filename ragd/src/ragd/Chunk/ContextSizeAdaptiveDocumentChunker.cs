@@ -1,13 +1,15 @@
 namespace ragd.Chunk;
 
 using System.Text.RegularExpressions;
+using ragd.Embed;
 
-public partial class ContextSizeAdaptiveDocumentChunker(IDocumentChunker inner, int contextSize) : IDocumentChunker
+
+public partial class ContextSizeAdaptiveDocumentChunker(IDocumentChunker inner, IEmbedder embedder) : IDocumentChunker
 {
     private const float ContextSizeProportion = 0.8f;
     private const float CharactersPerToken = 3.4f;
     private readonly IDocumentChunker _inner = inner;
-    public readonly int CharacterLimit = Convert.ToInt32(ContextSizeProportion * contextSize * CharactersPerToken);
+    public readonly int CharacterLimit = Convert.ToInt32(ContextSizeProportion * embedder.TrainedContextSize() * CharactersPerToken);
 
     // recursive named delegate.  Using a Func<> instead of a delegate is not possible (AFAIK)
     // this information came courtesy of Claude

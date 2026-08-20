@@ -8,6 +8,7 @@ public interface IEmbedder
 {
     int EmbeddingSize();
     Task<float[]> GetEmbedding(string content);
+    int TrainedContextSize();
 }
 
 public class Embedder : IDisposable, IEmbedder

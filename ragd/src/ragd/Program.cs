@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using LLama.Native;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ragd.Chunk;
+using ragd.Clean;
 using ragd.Clean.Text;
 using ragd.Embed;
 using ragd.Handlers;
@@ -11,7 +13,7 @@ namespace ragd
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             WriteBanner();
 
@@ -22,19 +24,29 @@ namespace ragd
             builder.Configuration.Bind(config);
 
             builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
 
-            // contextsize is defined by the model so we must instantiate now
-            // as required for context aware adaptive chunker
-            var embedder = new Embedder(config);
+            // shut up llama
+            NativeLogConfig.llama_log_set((level, message) =>
+            {
+                // TODO: should delegate to ILogger
+                // LLamaLogLevel is a bit odd, after Error comes Continue...
+                // which would map to Critical? should be None.
+                if (level == LLamaLogLevel.Warning || level == LLamaLogLevel.Error)
+                    Console.Write($"[{level}] {message}");
+            });
+
+            var chunkerFactory = (IServiceProvider s) =>
+                new ContextSizeAdaptiveDocumentChunker(new MarkdownDocumentChunker(new()), s.GetRequiredService<IEmbedder>());
 
             builder.Services
-                .AddSingleton<ILogger, ConsoleLogger>()
+                .AddLogging()
                 .AddSingleton(config)
                 .AddSingleton<CondenseWhiteSpaceCleaner>()
-                .AddSingleton<IDocumentChunker>(_ => 
-                    new ContextSizeAdaptiveDocumentChunker(new MarkdownDocumentChunker(new ()), embedder.TrainedContextSize()))
-                .AddSingleton<IEmbedder>(embedder)
-                .AddSingleton<IRepository, Repository>(_ => new Repository(config, new()))
+                .AddSingleton<QueryResultCleaner>()
+                .AddSingleton<IDocumentChunker>(chunkerFactory)
+                .AddSingleton<IEmbedder, Embedder>()
+                .AddSingleton<IRepository, Repository>()
                 .AddSingleton<Http.Parser>()
                 .AddSingleton<IRequestHandler, HelpRequestHandler>()
                 .AddSingleton<IRequestHandler, IndexFileRequestHandler>()
@@ -51,7 +63,7 @@ Grouping-by-parent-section at retrieval time (then picking the best sub-chunk pe
 
             var host = builder.Build();
 
-            host.Run();
+            await host.RunAsync();
         }
 
         private static void WriteBanner()

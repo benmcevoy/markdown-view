@@ -8,6 +8,7 @@ public class ContextSizeAdaptiveDocumentChunkerTests
     {
         // arrange
         // a context size of 200 equates to 544 characters, so all these paragraphs wshould fit fine
+        var contextSize = 200;
         var sut = new ContextSizeAdaptiveDocumentChunker(new FakeDocumentChunker(ChunkType.PlainText, 
 @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. In lacus diam, facilisis ac condimentum a, egestas sed lorem. Sed et nisl libero. 
 Donec vitae est a metus consequat aliquet nec a metus. Quisque viverra ut lorem vitae sollicitudin. 
@@ -21,7 +22,7 @@ Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
 
 Fusce sit amet euismod mi, ac pellentesque lacus. Suspendisse potenti. Quisque a dolor faucibus, condimentum felis vitae, pretium diam. 
 Ut et feugiat mi, non bibendum nunc. Curabitur id porttitor urna. In nunc felis, ultricies quis condimentum vitae, laoreet vel ante. 
-Donec ut feugiat augue. Suspendisse iaculis eros libero, ac efficitur leo porttitor eu. So there"), 200);
+Donec ut feugiat augue. Suspendisse iaculis eros libero, ac efficitur leo porttitor eu. So there"), new FakeEmbedder(contextSize));
 
         // act
         var actual = sut.Handle(null!).ToList();
@@ -36,7 +37,8 @@ Donec ut feugiat augue. Suspendisse iaculis eros libero, ac efficitur leo portti
     public void ContextSizeAdaptiveDocumentChunker_plaintext_chunks_to_fit_contextsize()
     {
         // arrange
-        // a context size of 200 equates to 272 characters, so some paragraphs will be broken to sentances
+        // a context size of 100 equates to 272 characters, so some paragraphs will be broken to sentances
+        var contextSize = 100;
         var sut = new ContextSizeAdaptiveDocumentChunker(new FakeDocumentChunker(ChunkType.PlainText, 
 @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. In lacus diam, facilisis ac condimentum a, egestas sed lorem. Sed et nisl libero. 
 Donec vitae est a metus consequat aliquet nec a metus. Quisque viverra ut lorem vitae sollicitudin. 
@@ -50,7 +52,7 @@ Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
 
 Fusce sit amet euismod mi, ac pellentesque lacus. Suspendisse potenti. Quisque a dolor faucibus, condimentum felis vitae, pretium diam. 
 Ut et feugiat mi, non bibendum nunc. Curabitur id porttitor urna. In nunc felis, ultricies quis condimentum vitae, laoreet vel ante. 
-Donec ut feugiat augue. Suspendisse iaculis eros libero, ac efficitur leo porttitor eu. So there"), 100);
+Donec ut feugiat augue. Suspendisse iaculis eros libero, ac efficitur leo porttitor eu. So there"), new FakeEmbedder(contextSize));
 
         // act
         var actual = sut.Handle(null!).ToList();
@@ -73,6 +75,7 @@ Donec ut feugiat augue. Suspendisse iaculis eros libero, ac efficitur leo portti
         // both of these paragraphs could be combined to fit in a single chunk
         // but to preserve the original semantic boundary
         // they should be seperate
+        var contextSize = 200;
         var sut = new ContextSizeAdaptiveDocumentChunker(new FakeDocumentChunker(ChunkType.PlainText, 
 @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. In lacus diam, facilisis ac condimentum a, egestas sed lorem. Sed et nisl libero. 
 Donec vitae est a metus consequat aliquet nec a metus. Quisque viverra ut lorem vitae sollicitudin.",
@@ -80,7 +83,7 @@ Donec vitae est a metus consequat aliquet nec a metus. Quisque viverra ut lorem 
 @"Pellentesque rutrum finibus turpis, tristique hendrerit elit porta vel; 
 Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos! Fusce at accumsan purus. 
 Mauris in purus ac nulla fermentum lobortis?"
-), 200);
+), new FakeEmbedder(contextSize));
 
         // act
         var actual = sut.Handle(null!).ToList();
@@ -96,6 +99,7 @@ Mauris in purus ac nulla fermentum lobortis?"
     {
         // arrange
         // a context size of 150 equates to 408 characters, so all the second paragraphs should break down to sentances
+        var contextSize = 150;
         var sut = new ContextSizeAdaptiveDocumentChunker(new FakeDocumentChunker(ChunkType.Markdown, 
 @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. In lacus diam, facilisis ac condimentum a, egestas sed lorem. Sed et nisl libero. 
 Donec vitae est a metus consequat aliquet nec a metus. Quisque viverra ut lorem vitae sollicitudin. 
@@ -109,7 +113,7 @@ Donec pharetra nulla quis orci lacinia pharetra. Pellentesque ornare nisi eu odi
 ### this heading is part of the following paragraph
 
 Donec vitae orci at sapien lacinia tempor quis at orci!? Cras sem elit, lacinia ac semper sit amet, pretium sagittis dolor. 
-Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla sit amet efficitur justo."), 150);
+Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla sit amet efficitur justo."), new FakeEmbedder(contextSize));
 
         // act
         var actual = sut.Handle(null!).ToList();
