@@ -17,6 +17,7 @@ namespace ragd.Clean
 
         public string Clean(string chunk)
         {
+            if(string.IsNullOrWhiteSpace(chunk)) return "";
             if (IsCodeFence(chunk)) return _codeBlockCleaner.Clean(chunk);
 
             return _cleaners.Aggregate(chunk, (current, cleaner) => cleaner.Clean(current));

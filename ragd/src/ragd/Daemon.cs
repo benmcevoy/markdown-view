@@ -27,9 +27,8 @@ namespace ragd
                 {
                     using var client = await _listener.AcceptTcpClientAsync(stoppingToken);
                     using var stream = client.GetStream();
-
                     var request = _parser.ParseRequest(stream);
-                    var response = JsonResponse.ServerError;
+                    var response = JsonResponse.ServerError(request.Path);
 
                     _logger.LogInformation(request.ToString());
 

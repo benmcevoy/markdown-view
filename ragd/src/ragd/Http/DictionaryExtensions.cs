@@ -32,6 +32,6 @@ public static class DictionaryExtensions
             sb.AppendLine($"{kvp.Key}: {kvp.Value}");
         }
 
-        return sb.ToString();
+        return sb.ToString().TrimEnd();
     }
 }

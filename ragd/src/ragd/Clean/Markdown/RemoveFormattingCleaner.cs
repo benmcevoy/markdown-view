@@ -11,13 +11,18 @@ namespace ragd.Clean.Markdown
     {
         public string Clean(string chunk)
         {
-            var result = new StringBuilder(chunk.Length);
             var document = Markdig.Parsers.MarkdownParser.Parse(chunk);
             var html = new HtmlDocument();
 
             html.LoadHtml(document.ToHtml());
 
-            foreach (var node in html.DocumentNode.SelectNodes("//text()"))
+            var nodes = html.DocumentNode.SelectNodes("//text()");
+
+            if(nodes is null) return html.DocumentNode.InnerText;
+
+            var result = new StringBuilder(chunk.Length);
+
+            foreach (var node in nodes)
             {
                 result.Append(node.InnerText);
             }

@@ -58,7 +58,7 @@ public class Parser
         // but could be formencoded or whatever
         // should check the content-type?
         var response = JsonSerializer.Deserialize<JsonResponse>(sr.BaseStream, JsonSerializerOptions.Web) 
-            ?? JsonResponse.ServerError;
+            ?? JsonResponse.ServerError();
 
         return new JsonResponse(statusCode)
         {

@@ -9,6 +9,6 @@ namespace ragd.Clean
         ];
 
         public string Clean(string chunk) => 
-            _cleaners.Aggregate(chunk, (current, cleaner) => cleaner.Clean(current));
+            _cleaners.Aggregate(chunk ?? "", (current, cleaner) => cleaner.Clean(current));
     }
 }
