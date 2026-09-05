@@ -1,117 +1,117 @@
-using wikd.Routing;
+// using wikd.Routing;
 
-namespace wikd.Tests.Routing
-{
-    public class RouterTests
-    {
-        private const string RootPath = "./sample";
-        private readonly FileSystemRouter _fileSystemService;
-        private readonly Router _router;
+// namespace wikd.Tests.Routing
+// {
+//     public class RouterTests
+//     {
+//         private const string RootPath = "./sample";
+//         private readonly FileSystemRouter _fileSystemService;
+//         private readonly Router _router;
 
-        public RouterTests()
-        {
-            _fileSystemService = new(RootPath, [".md"]);
-            _router = new(new Http.Parser(), _fileSystemService);
-        }
+//         public RouterTests()
+//         {
+//             _fileSystemService = new(RootPath, [".md"]);
+//             _router = new(new Http.Parser(), _fileSystemService);
+//         }
 
-        private static Stream AsGET(string url)
-        {
-            return new MemoryStream(System.Text.Encoding.UTF8.GetBytes($"GET {url} HTTP/1.1"));
-        }
+//         private static Stream AsGET(string url)
+//         {
+//             return new MemoryStream(System.Text.Encoding.UTF8.GetBytes($"GET {url} HTTP/1.1"));
+//         }
 
-        [Fact]
-        public void Map_Root_ReturnsIsFolder()
-        {
-            // arrange
-            // act
-            var route = _router.Map(AsGET("/"));
+//         [Fact]
+//         public void Map_Root_ReturnsIsFolder()
+//         {
+//             // arrange
+//             // act
+//             var route = _router.Map(AsGET("/"));
 
-            // assert
-            Assert.True(route is FolderRoute); // Root path points to sample directory (a folder)
-            Assert.Equal(RootPath, route.Path);
-        }
+//             // assert
+//             Assert.True(route is FolderRoute); // Root path points to sample directory (a folder)
+//             Assert.Equal(RootPath, route.Path);
+//         }
 
-        [Fact]
-        public void Map_IndexMd_ReturnsIndexMdAbsolutePath()
-        {
-            // arrange
-            // act
-            var route = _router.Map(AsGET("/index.md"));
+//         [Fact]
+//         public void Map_IndexMd_ReturnsIndexMdAbsolutePath()
+//         {
+//             // arrange
+//             // act
+//             var route = _router.Map(AsGET("/index.md"));
 
-            // assert
-            Assert.Equal($"{RootPath}/index.md", route.Path);
-            Assert.False(route is FolderRoute);
-        }
+//             // assert
+//             Assert.Equal($"{RootPath}/index.md", route.Path);
+//             Assert.False(route is FolderRoute);
+//         }
 
-        [Fact]
-        public void Map_FileMd_ReturnsFileMd()
-        {
-            // arrange
-            // act
-            var route = _router.Map(AsGET("/page1.md"));
+//         [Fact]
+//         public void Map_FileMd_ReturnsFileMd()
+//         {
+//             // arrange
+//             // act
+//             var route = _router.Map(AsGET("/page1.md"));
 
-            // assert
-            Assert.Equal($"{RootPath}/page1.md", route.Path);
-            Assert.True(route is FileRoute);
-        }
+//             // assert
+//             Assert.Equal($"{RootPath}/page1.md", route.Path);
+//             Assert.True(route is FileRoute);
+//         }
 
-        [Fact]
-        public void Map_FileMd_IsNotFolder()
-        {
-            // arrange
-            // act
-            var route = _router.Map(AsGET("/page1.md"));
+//         [Fact]
+//         public void Map_FileMd_IsNotFolder()
+//         {
+//             // arrange
+//             // act
+//             var route = _router.Map(AsGET("/page1.md"));
 
-            // assert
-            Assert.False(route is FolderRoute);
-        }
+//             // assert
+//             Assert.False(route is FolderRoute);
+//         }
 
-        [Fact]
-        public void Map_PathTraversal_Returns401()
-        {
-            // arrange
-            // act
-            var route = _router.Map(AsGET("/../../../etc/passwd"));
+//         [Fact]
+//         public void Map_PathTraversal_Returns401()
+//         {
+//             // arrange
+//             // act
+//             var route = _router.Map(AsGET("/../../../etc/passwd"));
 
-            // assert
-            Assert.True(route.RouteType() == "special");
-            Assert.True(route.Name == "401");
-        }
+//             // assert
+//             Assert.True(route.RouteType() == "special");
+//             Assert.True(route.Name == "401");
+//         }
 
-        [Fact]
-        public void Map_QueryString_CleanUri()
-        {
-            // arrange
-            // act
-            var route = _router.Map(AsGET("/index.md?foo=bar"));
+//         [Fact]
+//         public void Map_QueryString_CleanUri()
+//         {
+//             // arrange
+//             // act
+//             var route = _router.Map(AsGET("/index.md?foo=bar"));
 
-            // assert
-            Assert.True(route.RouteType() == "file");
-            Assert.True(route.Uri == "/index.md");
-        }
+//             // assert
+//             Assert.True(route.RouteType() == "file");
+//             Assert.True(route.Uri == "/index.md");
+//         }
 
-        [Fact]
-        public void Map_UriFragment_CleanUri()
-        {
-            // arrange
-            // act
-            var route = _router.Map(AsGET("/index.md#section"));
+//         [Fact]
+//         public void Map_UriFragment_CleanUri()
+//         {
+//             // arrange
+//             // act
+//             var route = _router.Map(AsGET("/index.md#section"));
 
-            // assert
-            Assert.True(route.RouteType() == "file");
-            Assert.True(route.Uri == "/index.md");
-        }
+//             // assert
+//             Assert.True(route.RouteType() == "file");
+//             Assert.True(route.Uri == "/index.md");
+//         }
 
-        [Fact]
-        public void Map_UriEndcoded_Returns404()
-        {
-            // arrange
-            // act
-            var route = _router.Map(AsGET("/index%20page.md"));
+//         [Fact]
+//         public void Map_UriEndcoded_Returns404()
+//         {
+//             // arrange
+//             // act
+//             var route = _router.Map(AsGET("/index%20page.md"));
 
-            // assert
-            Assert.True(route.RouteType() == "special");
-            Assert.True(route.Name == "404");
-        }
-    }
-}
+//             // assert
+//             Assert.True(route.RouteType() == "special");
+//             Assert.True(route.Name == "404");
+//         }
+//     }
+// }

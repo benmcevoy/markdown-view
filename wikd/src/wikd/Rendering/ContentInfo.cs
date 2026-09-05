@@ -1,11 +1,9 @@
-using wikd.Http;
+using http;
 
-namespace wikd.Rendering
+namespace wikd.Rendering;
+
+public class ContentInfo : Response
 {
-    public class ContentInfo
-    {
-        public string Content { get; set; } = "";
-        public string ContentType { get; set; } = "text/html";
-        public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;
-    }
+    public ContentInfo(HttpStatusCode statusCode) : base(statusCode) 
+        => Headers["Content-Type"] = "text/html";
 }

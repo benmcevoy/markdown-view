@@ -1,72 +1,58 @@
-using System.Net.Sockets;
 using Microsoft.Extensions.Hosting;
-using ragd.Http;
+using http;
 using ragd.Handlers;
 using Microsoft.Extensions.Logging;
 
 namespace ragd
 {
-    public class Daemon(IEnumerable<IRequestHandler> handlers, Parser parser, Config config, ILogger<Daemon> logger) : BackgroundService
+    public class Daemon : BackgroundService
     {
-        private readonly TcpListener _listener = new(config.Host, config.Port);
-        private readonly IEnumerable<IRequestHandler> _handlers = handlers;
-        private readonly Parser _parser = parser;
-        private readonly ILogger _logger = logger;
+        private readonly IEnumerable<IRequestHandler> _handlers;
+        private readonly Config _config;
+        private readonly ILogger _logger;
+        private http.Daemon _daemon;
+
+        public Daemon(IEnumerable<IRequestHandler> handlers, Config config, ILogger<Daemon> logger)
+        {
+            _handlers = handlers;
+            _config = config;
+            _logger = logger;
+
+            _daemon = new(config.Host, config.Port)
+            {
+                RequestHandler = HandleRequest
+            };
+        }
+
+        Response HandleRequest(Request request)
+        {
+            _logger.LogInformation(request.ToString());
+
+            foreach (var r in _handlers)
+            {
+                if (r.CanHandle(request))
+                {
+                    return r.Handle(request);
+                }
+            }
+
+            return new Response(HttpStatusCode.NotFound);
+        }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("daemon starting");
-            _logger.LogInformation(config.ToString());
-            _logger.LogInformation($"Listening on http://{config.Host}:{config.Port}/");
+            _logger.LogInformation("Daemon starting");
+            _logger.LogInformation(_config.ToString());
+            _logger.LogInformation($"Listening on http://{_config.Host}:{_config.Port}/");
 
-            _listener.Start();
-
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                try
-                {
-                    using var client = await _listener.AcceptTcpClientAsync(stoppingToken);
-                    using var stream = client.GetStream();
-                    var request = _parser.ParseRequest(stream);
-                    var response = JsonResponse.ServerError(request.Path);
-
-                    _logger.LogInformation(request.ToString());
-
-                    foreach (var r in _handlers)
-                    {
-                        if (r.CanHandle(request))
-                        {
-                            response = r.Handle(request);
-                            break;
-                        }
-                    }
-
-                    var responseString = response.ToString();
-
-                    _logger.LogInformation(responseString);
-
-                    var msg = System.Text.Encoding.UTF8.GetBytes(responseString);
-
-                    await stream.WriteAsync(msg, stoppingToken);
-                    await stream.FlushAsync(stoppingToken);
-                }
-                catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
-                {
-                    break;
-                }
-                catch (SocketException) when (stoppingToken.IsCancellationRequested)
-                {
-                    break;
-                }
-            }
+            await _daemon.Start(stoppingToken);
 
             _logger.LogInformation("daemon stopping");
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            _listener.Stop();
-            _listener.Dispose();
+            _daemon.Dispose();
 
             return base.StopAsync(cancellationToken);
         }

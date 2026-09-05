@@ -1,4 +1,4 @@
-namespace wikd.Http;
+namespace wikd;
 
 // JsonSerializerJsonContext is source generated, requires a build to create the implementation
 // can then use SearchServiceJsonContext.Default.MyType
@@ -6,6 +6,7 @@ namespace wikd.Http;
 // prevents SearchService from building... chicken and egg... circular dependancy
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using http;
 
 [JsonSourceGenerationOptions(JsonSerializerDefaults.Web)]
 [JsonSerializable(typeof(Response))]

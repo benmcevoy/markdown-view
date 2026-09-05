@@ -1,7 +1,7 @@
 using ragd.Clean;
 using ragd.Clean.Text;
 using ragd.Embed;
-using ragd.Http;
+using http;
 
 namespace ragd.Handlers;
 
@@ -13,7 +13,7 @@ public class QueryRequestHandler(IRepository repository, IEmbedder embedder, Con
     private const int LimitDefault = 3;
 
     public bool CanHandle(Request request) => request.Path.Equals("query", StringComparison.OrdinalIgnoreCase)
-        && request.Method == Http.HttpMethod.GET
+        && request.Method == http.HttpMethod.GET
         && request.Query.ContainsKey("q");
 
     public JsonResponse Handle(Request request)
@@ -29,9 +29,8 @@ public class QueryRequestHandler(IRepository repository, IEmbedder embedder, Con
         var embedding = Task.Run(() => _embedder.GetEmbedding(cleanQuery)).GetAwaiter().GetResult();
         var results = _repository.Query(embedding, name ?? "", limit);
 
-        return new(HttpStatusCode.OK)
+        return new JsonResponse<ICollection<QueryResult>>(HttpStatusCode.OK, results)
         {
-            Body = results,
             Status = "OK",
             Message = $"Found {results.Count} results."
         };

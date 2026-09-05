@@ -1,11 +1,11 @@
 using System.Text;
 using System.Text.Encodings.Web;
 
-namespace ragd.Http;
+namespace http;
 
 public static class DictionaryExtensions
 {
-    public static string AsQuery(this Dictionary<string, string> source)
+    public static string AsQueryString(this Dictionary<string, string> source)
     {
         if (source == null) return "";
         if (source.Count == 0) return "";

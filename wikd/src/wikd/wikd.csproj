@@ -18,6 +18,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../../http/src/http/http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Markdig" Version="1.1.1" />
     <PackageReference Include="Markdown.ColorCode" Version="3.0.1" />
   </ItemGroup>

@@ -1,2 +1,2 @@
 namespace ragd.Handlers;
-public interface IRequestHandler : IHandler<Http.Request, Http.JsonResponse>;
+public interface IRequestHandler : IHandler<http.Request, JsonResponse>;

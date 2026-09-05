@@ -1,4 +1,4 @@
-namespace wikd.Http;
+namespace http;
 
 public enum HttpMethod
 {

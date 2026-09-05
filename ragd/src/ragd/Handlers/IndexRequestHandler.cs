@@ -1,6 +1,6 @@
 using ragd.Chunk;
 using ragd.Embed;
-using ragd.Http;
+using http;
 
 namespace ragd.Handlers;
 
@@ -11,7 +11,7 @@ public class IndexFileRequestHandler(IEmbedder embedder, IRepository repository,
     private readonly IDocumentChunker _chunker = chunker;
 
     public bool CanHandle(Request request) => request.Path.Equals("index", StringComparison.OrdinalIgnoreCase)
-        && request.Method == Http.HttpMethod.POST
+        && request.Method == http.HttpMethod.POST
         && request.Query.ContainsKey("path");
 
     public JsonResponse Handle(Request request)
@@ -26,21 +26,19 @@ public class IndexFileRequestHandler(IEmbedder embedder, IRepository repository,
 
         if (!file.Exists)
         {
-            return new (HttpStatusCode.ClientError)
+            return new JsonResponse<IndexResult> (HttpStatusCode.ClientError, new IndexResult(0, file.FullName, name))
             {
                 Status = "ERROR",
                 Message = "Unable to find file to index.",
-                Body = new IndexResult(0, file.FullName, name)
             };
         }
 
         if (!IsSupportedFileType(file, ".md"))
         {
-            return new (HttpStatusCode.ClientError)
+            return new JsonResponse<IndexResult> (HttpStatusCode.ClientError, new IndexResult(0, file.FullName, name))
             {
                 Status = "ERROR",
                 Message = $"File of type {file.Extension} is unsupported.",
-                Body = new IndexResult(0, file.FullName, name)
             };
         }
 
@@ -48,22 +46,20 @@ public class IndexFileRequestHandler(IEmbedder embedder, IRepository repository,
         {
             var result = IngestDocument(file, name);
 
-            return new (HttpStatusCode.OK)
+            return new JsonResponse<IndexResult> (HttpStatusCode.OK, result)
             {
                 Status = "OK",
                 Message = $"Successfully indexed {path}",
-                Body = result
             };
         }
         catch (ArgumentException ex)
         {
             // ah Exception<> would be handy...
             // type unions are coming
-            return new (HttpStatusCode.ServerError)
+            return new JsonResponse<IndexResult>(HttpStatusCode.ServerError, new IndexResult(0, file.FullName, name))
             {
                 Status = "ERROR",
                 Message = ex.Message,
-                Body = new IndexResult(0, file.FullName, name)
             };
         }
     }

@@ -4,11 +4,12 @@
 ## Get latest from `dotnet new gitignore`
 
 nohup.out
-TODO.md
+TODO*.md
 .envrc
 ragd.config
 ragd.db
 ragd.gguf
+spike/
 
 # dotenv files
 .env

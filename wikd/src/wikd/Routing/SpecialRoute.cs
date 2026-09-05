@@ -1,4 +1,4 @@
-using wikd.Http;
+using http;
 
 namespace wikd.Routing
 {

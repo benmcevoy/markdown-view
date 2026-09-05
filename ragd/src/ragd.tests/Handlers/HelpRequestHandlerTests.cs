@@ -1,5 +1,5 @@
 using ragd.Handlers;
-using ragd.Http;
+using http;
 
 namespace ragd.Tests.Handlers;
 
@@ -12,7 +12,7 @@ public class HelpRequestHandlerTest
         var sut = new HelpRequestHandler();
         var request = new Request
         {
-            Method = ragd.Http.HttpMethod.GET,
+            Method = http.HttpMethod.GET,
             Path = "Help"
         };
 
@@ -30,7 +30,7 @@ public class HelpRequestHandlerTest
         var sut = new HelpRequestHandler();
         var request = new Request
         {
-            Method = ragd.Http.HttpMethod.GET,
+            Method = http.HttpMethod.GET,
             Path = "/help"
         };
 
@@ -42,7 +42,7 @@ public class HelpRequestHandlerTest
     }
 
     [Fact]
-    public void HelpRequestHandler_Handle_returns_help_as_string()
+    public void HelpRequestHandler_Handle_returns_help_as_stream()
     {
         // arrange
         var sut = new HelpRequestHandler();
@@ -51,7 +51,7 @@ public class HelpRequestHandlerTest
         var actual = sut.Handle(new());
 
         // assert
-        Assert.True(actual.Body is string);
-        Assert.False(string.IsNullOrWhiteSpace(actual.Body as string));
+        Assert.NotNull(actual.Body);
+        Assert.True(actual.Body.Length > 0);
     }
 }

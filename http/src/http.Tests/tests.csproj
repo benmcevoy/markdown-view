@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <RootNamespace>ragd.Tests</RootNamespace>
+    <RootNamespace>http.Tests</RootNamespace>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
@@ -14,11 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../../http/src/http/http.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ragd\ragd.csproj" />
+    <ProjectReference Include="..\http\http.csproj" />
   </ItemGroup>
 
   <ItemGroup>

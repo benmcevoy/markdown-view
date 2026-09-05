@@ -47,7 +47,6 @@ namespace ragd
                 .AddSingleton<IDocumentChunker>(chunkerFactory)
                 .AddSingleton<IEmbedder, Embedder>()
                 .AddSingleton<IRepository, Repository>()
-                .AddSingleton<Http.Parser>()
                 .AddSingleton<IRequestHandler, HelpRequestHandler>()
                 .AddSingleton<IRequestHandler, IndexFileRequestHandler>()
                 // TODO: perhaps here a chain of responsibility/decorator 

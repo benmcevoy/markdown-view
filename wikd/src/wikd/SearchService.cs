@@ -1,4 +1,4 @@
-using wikd.Http;
+using http;
 
 namespace wikd;
 
@@ -18,14 +18,14 @@ public class SearchService
 
     public string Search(string query)
     {
-        var result = _client.Send(new Request
+        var result = _client.SendAsync(new Request
         {
-            Method = Http.HttpMethod.GET,
+            Method = http.HttpMethod.GET,
             Path = "query",
             Query = { {"name", _collectionName}, {"q", query}}
         });
         
-        return result.Body;
+        return "TODO:"; //result.Body.ReadToEnd;
     }
 
     private static void Index()

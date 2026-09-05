@@ -2,14 +2,12 @@ using wikd.Rendering;
 using wikd.Templates;
 using wikd.Routing;
 using wikd.Cli;
-using System.Net.Sockets;
-using System.Reflection;
 
 namespace wikd
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             // TODO:
             // - routing is pretty whacky - probably just want Route type with data/values like asp.net
@@ -17,6 +15,8 @@ namespace wikd
             // - "special" routes are stupid. route inheritance is stupid.
             // - rendering is annoying as weird use of handlers, templates, etc - pick a lane
             // - my tests suck
+
+args = ["/media/ben/DATA/Dev/git/markdown-view/wikd/src/wikd.tests/sample"];
 
             var context = new Context();
             var commands = CliParser.Parse(args);
@@ -38,10 +38,10 @@ namespace wikd
                 return;
             }
 
-            Start(context);
+            await Start(context);
         }
 
-        private static void Start(Context context)
+        private static async Task Start(Context context)
         {
             if (string.IsNullOrWhiteSpace(context?.BasePath)) return;
 
@@ -51,7 +51,7 @@ namespace wikd
 
             var ipAddress = System.Net.IPAddress.Loopback;
             var port = context.Port;
-            var search = new SearchService(context.BasePath, new Http.Client(new (), ipAddress, 53280));
+            var search = new SearchService(context.BasePath, new http.Client(ipAddress, 53280));
 
             IRenderingHandler[] renderers = [
                 new MarkdownFileRenderingHandler(),
@@ -67,33 +67,17 @@ namespace wikd
             var allowedFileExtensions = renderers.SelectMany(x => x.SupportedFileExtensions).ToArray();
             var fileSystemRouter = new FileSystemRouter(context.BasePath, allowedFileExtensions);
             var renderer = new Renderer(new DefaultTemplate(), renderers);
-            var router = new Router(new Http.Parser(), fileSystemRouter);
+            var router = new Router(fileSystemRouter, renderer);
 
-            using TcpListener listener = new(ipAddress, port);
-
-            listener.Start();
+            var daemon = new http.Daemon(ipAddress, port)
+            {
+                RequestHandler = router.RequestReceived
+            };
 
             Console.WriteLine("Starting server.");
             Console.WriteLine($"Listening on: http://{ipAddress}:{port}");
-
-            while (true)
-            {
-                using var client = listener.AcceptTcpClient();
-                using var stream = client.GetStream();
-
-                var route = router.Map(stream);
-                var content = renderer.Render(route);
-                var response = @$"HTTP/1.1 {content.StatusCode}
-Content-Length: {content.Content.Length}
-Content-Type: {content.ContentType}
-
-{content.Content}";
-
-                var msg = System.Text.Encoding.UTF8.GetBytes(response);
-
-                stream.Write(msg, 0, msg.Length);
-                stream.Flush();
-            }
+ 
+            await daemon.Start(CancellationToken.None);
         }
 
         private static void WriteBanner()
