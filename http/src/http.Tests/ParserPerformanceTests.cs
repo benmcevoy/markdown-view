@@ -17,19 +17,19 @@ public class ParserPerformanceTests(ITestOutputHelper output)
 
         var cancellationSource = new CancellationTokenSource();
         var cancelToken = cancellationSource.Token;
-
         var client = new Client(System.Net.IPAddress.Loopback, 53280);
 
         new Thread(() =>
          {
              var server = new Daemon(System.Net.IPAddress.Loopback, 53280)
              {
-                 RequestHandler = (r) => new Response(HttpStatusCode.OK)
+                 Receive = (r) => new Response(HttpStatusCode.OK)
              };
              Task.Run(() => server.Start(cancelToken)).GetAwaiter().GetResult();
+
          }).Start();
 
-        Thread.Sleep(2000);
+        Thread.Sleep(200);
 
         for (var i = 0; i < iterations; i++)
         {
@@ -38,7 +38,7 @@ public class ParserPerformanceTests(ITestOutputHelper output)
             sw.Start();
 
             // act
-            var response = await client.SendAsync(request, cancelToken);
+            var response = await client.Send(request, cancelToken);
 
             sw.Stop();
             ticks += sw.ElapsedTicks;
@@ -57,7 +57,7 @@ public class ParserPerformanceTests(ITestOutputHelper output)
         cancellationSource.Cancel();
 
         //Assert.Fail();
-        
+
         // performance number here ~400k in debug (~630k in release), but should be
         // - Release
         // - End to end

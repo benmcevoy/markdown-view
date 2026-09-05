@@ -20,11 +20,11 @@ namespace ragd
 
             _daemon = new(config.Host, config.Port)
             {
-                RequestHandler = HandleRequest
+                Receive = Receive
             };
         }
 
-        Response HandleRequest(Request request)
+        private Response Receive(Request request)
         {
             _logger.LogInformation(request.ToString());
 

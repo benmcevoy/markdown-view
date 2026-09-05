@@ -69,7 +69,7 @@ namespace wikd
 
             var daemon = new http.Daemon(ipAddress, port)
             {
-                RequestHandler = router.RequestReceived
+                Receive = router.RequestReceived
             };
 
             Console.WriteLine("Starting server.");

@@ -3,12 +3,17 @@ using System.Net.Sockets;
 
 namespace http;
 
-public class Daemon 
+public interface IDaemon
+{
+    Task Start(CancellationToken cancellationToken = default);
+}
+
+public class Daemon : IDaemon
 {
     private readonly TcpListener _listener;
     private readonly Parser _parser;
 
-    public required Func<Request, Response> RequestHandler { get; init; }
+    public required Func<Request, Response> Receive { get; init; }
 
     public Daemon(IPAddress host, int port)
     {
@@ -16,7 +21,7 @@ public class Daemon
         _listener = new(host, port);
     }
 
-    public async Task Start(CancellationToken cancellationToken)
+    public async Task Start(CancellationToken cancellationToken = default)
     {
         _listener.Start();
 
@@ -34,7 +39,7 @@ public class Daemon
                 {
                     try
                     {
-                        response = RequestHandler(request);
+                        response = Receive(request);
                     }
                     catch (Exception ex)
                     {
@@ -55,6 +60,8 @@ public class Daemon
                 break;
             }
         }
+
+        Stop();
     }
 
     public void Stop() => _listener.Stop();
@@ -75,4 +82,3 @@ public class Daemon
         return true;
     }
 }
-
