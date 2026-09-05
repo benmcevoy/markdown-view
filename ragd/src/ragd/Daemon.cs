@@ -52,8 +52,6 @@ namespace ragd
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
-            _daemon.Dispose();
-
             return base.StopAsync(cancellationToken);
         }
     }

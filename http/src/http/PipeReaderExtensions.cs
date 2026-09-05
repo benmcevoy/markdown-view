@@ -29,7 +29,10 @@ public static class PipeReaderExtensions
             if (isFound)
             {
                 // materialize the string and advance the reader
-                var line = Encoding.UTF8.GetString(candidate).TrimEnd(CarriageReturn);
+                var line = (candidate.IsSingleSegment
+                    ? Encoding.UTF8.GetString(candidate.FirstSpan)
+                    : Encoding.UTF8.GetString(candidate.ToArray())).TrimEnd(CarriageReturn);
+
                 // MUST advance AFTER materializing bytes
                 pipeReader.AdvanceTo(sequenceReader.Position);
                 return line;
@@ -41,7 +44,7 @@ public static class PipeReaderExtensions
                 // same as StreamReader
                 // expectation is "this is a line" and "this is also a line\n"
                 var trailing = sequence.Buffer.Length > 0
-                    ? Encoding.UTF8.GetString(sequence.Buffer).TrimEnd(CarriageReturn)
+                    ? Encoding.UTF8.GetString(sequence.Buffer.ToArray()).TrimEnd(CarriageReturn)
                     : null;
 
                 // advance to the end

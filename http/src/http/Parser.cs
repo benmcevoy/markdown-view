@@ -169,7 +169,7 @@ public partial class Parser
 
         query = query.TrimStart(Delimiters.Query);
 
-        var lines = query.Split(Delimiters.Ampersand, StringSplitOptions.TrimEntries);
+        var lines = query.Split(Delimiters.Ampersand, StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var line in lines)
         {

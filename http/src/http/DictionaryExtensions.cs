@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.Encodings.Web;
 
 namespace http;
 
@@ -14,7 +13,7 @@ public static class DictionaryExtensions
 
         foreach (var kvp in source)
         {
-            sb.Append($"{UrlEncoder.Default.Encode(kvp.Key)}={UrlEncoder.Default.Encode(kvp.Value)}&");
+            sb.Append($"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}&");
         }
 
         return sb.ToString(0, sb.Length - 1);

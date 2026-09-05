@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace http;
 
-public class Daemon : IDisposable
+public class Daemon 
 {
     private readonly TcpListener _listener;
     private readonly Parser _parser;
@@ -24,7 +24,7 @@ public class Daemon : IDisposable
         {
             try
             {
-                using var client = await _listener.AcceptTcpClientAsync(cancellationToken);
+                using var client = await _listener.AcceptTcpClientAsync();
                 using var stream = client.GetStream();
 
                 var request = await _parser.ParseRequestAsync(stream, cancellationToken);
@@ -58,15 +58,6 @@ public class Daemon : IDisposable
     }
 
     public void Stop() => _listener.Stop();
-
-    private bool _isDisposed = false;
-    public void Dispose()
-    {
-        if (_isDisposed) return;
-
-        _isDisposed = true;
-        _listener.Dispose();
-    }
 
     private static bool IsValidRequest(Request request)
     {

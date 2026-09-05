@@ -16,8 +16,6 @@ namespace wikd
             // - rendering is annoying as weird use of handlers, templates, etc - pick a lane
             // - my tests suck
 
-args = ["/media/ben/DATA/Dev/git/markdown-view/wikd/src/wikd.tests/sample"];
-
             var context = new Context();
             var commands = CliParser.Parse(args);
 
