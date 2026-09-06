@@ -29,7 +29,7 @@ Listen on a specified port.
 
 Daemon must be given an `IPAddress` and port, typically `System.Net.IPAddress.Loopback`.
 
-The `RequestHandler` must be provided — a function that accepts a `Request` and returns a `Response`.
+The `RequestHandler` must be provided - a function that accepts a `Request` and returns a `Response`.
 
 `public required Func<Request, Response> RequestHandler { get; init; }`
 
