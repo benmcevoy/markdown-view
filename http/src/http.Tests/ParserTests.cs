@@ -18,7 +18,7 @@ public class ParserTests
 
         // assert
         Assert.Equal(expectedPath, request.Path);
-        //Assert.Equal(expected.Item2, request.Query);
+        Assert.Equal(expectedQuery, request.Query.AsQueryString());
     }
 
     [Theory]

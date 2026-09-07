@@ -14,7 +14,6 @@ public class ParserPerformanceTests(ITestOutputHelper output)
         var ticks = 0L;
         var iterations = 100000L;
         var request = new Request { Method = HttpMethod.GET };
-
         var cancellationSource = new CancellationTokenSource();
         var cancelToken = cancellationSource.Token;
         var client = new Client(System.Net.IPAddress.Loopback, 53280);
@@ -25,7 +24,7 @@ public class ParserPerformanceTests(ITestOutputHelper output)
              {
                  Receive = (r) => new Response(HttpStatusCode.OK)
              };
-             Task.Run(() => server.Start(cancelToken)).GetAwaiter().GetResult();
+             Task.Run(() => server.StartAsync(cancelToken)).GetAwaiter().GetResult();
 
          }).Start();
 
@@ -38,7 +37,7 @@ public class ParserPerformanceTests(ITestOutputHelper output)
             sw.Start();
 
             // act
-            var response = await client.Send(request, cancelToken);
+            var response = await client.SendAsync(request, cancelToken);
 
             sw.Stop();
             ticks += sw.ElapsedTicks;

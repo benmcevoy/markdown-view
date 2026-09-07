@@ -23,6 +23,12 @@ public class QueryStringDataFixture : IEnumerable<object[]>
             // "?" with nothing after it
             ["?", new Dictionary<string, string>()],
 
+            // fragment
+            ["#section", new Dictionary<string, string>()],
+
+            // query amd fragment
+            ["?bar=baz#section", new Dictionary<string, string> { {"bar", "baz"} }],
+
             // empty segment between two ampersands should be skipped, not truncate the rest
             ["?a=1&&b=2", new Dictionary<string, string> {
                 {"a", "1"}, {"b", "2"} }],

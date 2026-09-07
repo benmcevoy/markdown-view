@@ -18,7 +18,7 @@ public class SearchService
 
     public string Search(string query)
     {
-        var result = _client.Send(new Request
+        var result = _client.SendAsync(new Request
         {
             Method = http.HttpMethod.GET,
             Path = "query",

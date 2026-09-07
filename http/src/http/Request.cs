@@ -4,7 +4,7 @@ namespace http;
 
 public class Request
 {
-    public HttpMethod Method { get; init; } = HttpMethod.UNSUPPORTED;
+    public HttpMethod Method { get; init; } = HttpMethod.GET;
 
     public string Path { get; init; } = "/";
 
@@ -18,12 +18,16 @@ public class Request
 
     internal byte[] AsRequestLineAndHeaders()
     {
-        if(Body != Stream.Null) Headers["Content-Length"] = $"{Body?.Length ?? 0}";
+        if (Body != Stream.Null) Headers["Content-Length"] = $"{Body?.Length ?? 0}";
 
-        return Encoding.UTF8.GetBytes(@$"{Method} {Path}{Query.AsQueryString()} HTTP/1.1
+        var query = Query.AsQueryString();
+        
+        if (query.Length >= 1) query = "?" + query;
+
+        return Encoding.UTF8.GetBytes(@$"{Method} {Path}{query} HTTP/1.1
 {Headers.AsHeaders()}
 
 ");
     }
-    
+
 }

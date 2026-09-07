@@ -116,16 +116,16 @@ public partial class Parser
 
         // continue scanning for
         // ?foo=bar&baz=boo
-        if (length >= partLength) return (path, new());
-        if (part[length] != Delimiters.Query) return (path, new());
+        if (length >= partLength) return (path, []);
+        if (part[length] != Delimiters.Query) return (path, []);
 
         // skip the leading "?"
         var queryStart = length + 1;
 
-        length = part.IndexOfAny([Delimiters.Space, Delimiters.Fragment], startIndex: queryStart);
-        length = length == -1 ? (partLength - queryStart) : length - 1;
+        length = part.IndexOfAny([Delimiters.Space, Delimiters.Fragment]);
+        length = length == -1 ? partLength : length;
 
-        var query = part[queryStart..(queryStart + length)];
+        var query = part[queryStart..length];
 
         return (path, QueryStringToDictionary(query));
     }

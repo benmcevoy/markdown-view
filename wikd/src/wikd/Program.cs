@@ -75,7 +75,7 @@ namespace wikd
             Console.WriteLine("Starting server.");
             Console.WriteLine($"Listening on: http://{ipAddress}:{port}");
  
-            await daemon.Start(CancellationToken.None);
+            await daemon.StartAsync(CancellationToken.None);
         }
 
         private static void WriteBanner()

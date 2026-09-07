@@ -9,7 +9,7 @@ public static class DictionaryExtensions
         if (source == null) return "";
         if (source.Count == 0) return "";
 
-        var sb = new StringBuilder("?");
+        var sb = new StringBuilder();
 
         foreach (var kvp in source)
         {

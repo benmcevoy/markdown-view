@@ -54,7 +54,6 @@ internal sealed class BodyStream : Stream
         base.Dispose(disposing);
     }
 
-
     private static void ValidateBufferArgs(byte[] buffer, int offset, int count)
     {
         if (buffer == null) throw new ArgumentNullException(nameof(buffer));
@@ -67,7 +66,6 @@ internal sealed class BodyStream : Stream
     public override bool CanRead => true;
     public override long Length => _length;
     public override long Position { get => _position; set => throw new NotSupportedException(); }
-    public override void CopyTo(Stream destination, int bufferSize) => base.CopyTo(destination, bufferSize);
     public override void Flush() { }
     public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
     public override void SetLength(long value) => throw new NotSupportedException();

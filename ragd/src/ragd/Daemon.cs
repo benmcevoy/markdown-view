@@ -45,7 +45,7 @@ namespace ragd
             _logger.LogInformation(_config.ToString());
             _logger.LogInformation($"Listening on http://{_config.Host}:{_config.Port}/");
 
-            await _daemon.Start(stoppingToken);
+            await _daemon.StartAsync(stoppingToken);
 
             _logger.LogInformation("daemon stopping");
         }

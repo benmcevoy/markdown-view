@@ -5,7 +5,7 @@ namespace http;
 
 public interface IDaemon
 {
-    Task Start(CancellationToken cancellationToken = default);
+    Task StartAsync(CancellationToken cancellationToken = default);
 }
 
 public class Daemon : IDaemon
@@ -21,7 +21,7 @@ public class Daemon : IDaemon
         _listener = new(host, port);
     }
 
-    public async Task Start(CancellationToken cancellationToken = default)
+    public async Task StartAsync(CancellationToken cancellationToken = default)
     {
         _listener.Start();
 
@@ -61,10 +61,8 @@ public class Daemon : IDaemon
             }
         }
 
-        Stop();
-    }
-
-    public void Stop() => _listener.Stop();
+        _listener.Stop();
+    }    
 
     private static bool IsValidRequest(Request request)
     {
