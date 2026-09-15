@@ -21,9 +21,7 @@ public class ParserPerformanceTests(ITestOutputHelper output)
         new Thread(() =>
          {
              var server = new Daemon(System.Net.IPAddress.Loopback, 53280)
-             {
-                 Receive = (r) => new Response(HttpStatusCode.OK)
-             };
+             ;
              Task.Run(() => server.StartAsync(cancelToken)).GetAwaiter().GetResult();
 
          }).Start();

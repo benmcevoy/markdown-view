@@ -158,7 +158,7 @@ public class PipeReaderReadLineTests
         var sut = PipeReader.Create(AsStream(longLine));
 
         // act
-        var actual = await sut.ReadLineAsync();
+        var actual = await sut.ReadLineAsync(cancellationToken: TestContext.Current.CancellationToken);
 
         // assert
         Assert.Equal(longLine, actual);

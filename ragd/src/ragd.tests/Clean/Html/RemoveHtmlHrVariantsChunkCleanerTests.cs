@@ -1,6 +1,6 @@
 namespace ragd.Tests.Clean.Html;
 
-using ragd.Clean.Html;
+using ragd.Core.Clean.Html;
 
 public class RemoveLinesAndRulesCleanerTests
 {

@@ -1,6 +1,6 @@
 namespace ragd.Tests.Clean.Text;
 
-using ragd.Clean.Text;
+using ragd.Core.Clean.Text;
 
 public class CondenseWhitespaceCleanerTests
 {

@@ -29,19 +29,20 @@ Listen on a specified port.
 
 Daemon must be given an `IPAddress` and port, typically `System.Net.IPAddress.Loopback`.
 
-The `RequestHandler` must be provided - a function that accepts a `Request` and returns a `Response`.
+The `ReceiveAsync` function must be provided - a function that accepts a `Request` and returns a `Response`.
 
-`public required Func<Request, Response> RequestHandler { get; init; }`
+`public Func<Request, CancellationToken, Task<Response>> ReceiveAsync { get; set; }`
 
 ```csharp
 var daemon = new http.Daemon(ipAddress, port)
 {
-    RequestHandler = MyRequestReceived
+    ReceiveAsync = MyRequestReceived
 };
 
 await daemon.Start(cancellationToken);
 
-http.Response MyRequestReceived(http.Request request) => handle the request and return a response;
+http.Response MyRequestReceived(http.Request request, CancellationToken cancellationToken) 
+    => handle the request and return a response;
 ```
 
 ### Client

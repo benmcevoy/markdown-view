@@ -1,4 +1,4 @@
-using ragd.Chunk;
+using ragd.Core.Chunk;
 namespace ragd.Tests.Chunk;
 
 public class ContextSizeAdaptiveDocumentChunkerTests

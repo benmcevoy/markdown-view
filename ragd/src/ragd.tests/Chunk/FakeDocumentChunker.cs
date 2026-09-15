@@ -1,5 +1,6 @@
-using ragd.Chunk;
-using ragd.Embed;
+using ragd.Core;
+using ragd.Core.Chunk;
+using ragd.Core.Embed;
 namespace ragd.Tests.Chunk;
 
 class FakeDocumentChunker(ChunkType chunkType, params string[] content) : IDocumentChunker

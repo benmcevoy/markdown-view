@@ -1,6 +1,6 @@
 ﻿namespace ragd.Tests.Clean;
 
-using ragd.Clean;
+using ragd.Core.Clean;
 
 public class MarkdownChunkCleanerTests
 {

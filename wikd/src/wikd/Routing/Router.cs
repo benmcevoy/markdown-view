@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using http;
 using wikd.Rendering;
 
@@ -18,7 +19,7 @@ public class Router
         _renderer = renderer;
     }
 
-    public Response RequestReceived(Request request) => _renderer.Render(Map(request));
+    public async Task<Response> RequestReceived(Request request, CancellationToken cancellationToken) => _renderer.Render(Map(request));
 
     private Route Map(Request request)
     {

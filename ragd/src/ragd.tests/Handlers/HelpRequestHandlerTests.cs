@@ -1,5 +1,5 @@
-using ragd.Handlers;
 using http;
+using ragd.Http.Handlers;
 
 namespace ragd.Tests.Handlers;
 
@@ -51,7 +51,8 @@ public class HelpRequestHandlerTest
         var actual = sut.Handle(new());
 
         // assert
-        Assert.NotNull(actual.Body);
-        Assert.True(actual.Body.Length > 0);
+        Assert.NotNull(actual.Data);
+        Assert.True(actual.Data is string);
+        Assert.True((actual.Data as string)!.Length > 0);
     }
 }

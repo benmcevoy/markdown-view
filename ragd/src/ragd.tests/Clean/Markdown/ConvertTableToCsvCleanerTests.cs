@@ -1,6 +1,6 @@
 namespace ragd.Tests.Clean.Text;
 
-using ragd.Clean.Markdown;
+using ragd.Core.Clean.Markdown;
 
 public class ConvertTableToCsvCleanerTests
 {
