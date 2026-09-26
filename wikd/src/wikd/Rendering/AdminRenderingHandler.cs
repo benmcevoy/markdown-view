@@ -6,8 +6,8 @@ public class AdminRenderingHandler : IRenderingHandler
 {
     public string[] SupportedFileExtensions => [];
 
-    bool IHandler<Route, string>.CanHandle(Route input) =>
+    public bool CanHandle(Route input) =>
             input is SpecialRoute f && input.Path == Router.AdminRoute;
 
-    public string Handle(Route input) => "TODO: admin, reindex, list supported file extension, list scripts";
+    public Task<string> HandleAsync(Route input) => Task.FromResult("TODO: admin, reindex, list supported file extension, list scripts");
 }

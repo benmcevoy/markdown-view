@@ -6,10 +6,9 @@ public class DefaultSpecialRenderingHandler : IRenderingHandler
 {
     public string[] SupportedFileExtensions => [];
 
-    bool IHandler<Route, string>.CanHandle(Route input) =>
-            input is SpecialRoute f;
+    public bool CanHandle(Route input) => input is SpecialRoute;
 
-    public string Handle(Route input) => @"<div style='white-space: pre;font-family: monospace;line-height:1.17'>
+    public Task<string> HandleAsync(Route input) => Task.FromResult(@"<div style='white-space: pre;font-family: monospace;line-height:1.17'>
  █████ █████     █████    █████ █████ 
 ░░███ ░░███    ███░░░███ ░░███ ░░███  
  ░███  ░███ █ ███   ░░███ ░███  ░███ █
@@ -18,5 +17,5 @@ public class DefaultSpecialRenderingHandler : IRenderingHandler
        ░███░ ░░███   ███        ░███░ 
        █████  ░░░█████░         █████ 
       ░░░░░     ░░░░░░         ░░░░░  
-    </div>";
+    </div>");
 }

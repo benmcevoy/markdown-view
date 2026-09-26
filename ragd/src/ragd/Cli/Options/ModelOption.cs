@@ -6,10 +6,10 @@ public class ModelOption : Option<FileInfo>
 {
     public const string OptionName = "--model";
 
-    public ModelOption(bool optional = false) : base(OptionName, "-m")
+    public ModelOption() : base(OptionName, "-m")
     {
         Description = "Path to embedding model, e.g. './bge-small-en.gguf'";
-        Required = !optional;
+        Required = false;
         AcceptLegalFilePathsOnly();
         Validators.Add(OptionResultValidators.FileExists);
     }

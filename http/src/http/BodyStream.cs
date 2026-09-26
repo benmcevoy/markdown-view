@@ -1,4 +1,5 @@
 using System.IO.Pipelines;
+using System.Net.Sockets;
 
 namespace http;
 
@@ -8,14 +9,16 @@ namespace http;
 internal sealed class BodyStream : Stream
 {
     private readonly Stream _inner;
+    private readonly TcpClient _owner;
     private readonly PipeReader _reader;
     private readonly long _length;
     private long _position;
     private long _remaining;
 
-    public BodyStream(PipeReader reader, long length)
+    public BodyStream(TcpClient owner, PipeReader reader, long length)
     {
         _inner = reader.AsStream();
+        _owner = owner;
         _reader = reader;
         _length = length;
         _position = 0;
@@ -40,6 +43,12 @@ internal sealed class BodyStream : Stream
         _remaining -= read;
         _position += read;
 
+        if (_remaining <= 0)
+        {
+            // auto-close connection once fully consumed
+            Dispose(); 
+        }
+
         return read;
     }
 
@@ -49,6 +58,7 @@ internal sealed class BodyStream : Stream
         {
             _inner.Dispose();
             _reader.Complete();
+            _owner.Dispose();
         }
 
         base.Dispose(disposing);

@@ -10,14 +10,14 @@ namespace wikd.Rendering
         private readonly DefaultTemplate _template = template;
         private readonly IRenderingHandler[] _handlers = handlers;
 
-        public ContentInfo Render(Route route)
+        public async Task<ContentInfo> RenderAsync(Route route)
         {
             var main = "nothing to see here";
 
             foreach (var r in _handlers)
             {
                 if (!r.CanHandle(route)) continue;
-                main = r.Handle(route);
+                main = await r.HandleAsync(route);
                 break;
             }
 

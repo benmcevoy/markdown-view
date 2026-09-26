@@ -6,26 +6,26 @@ namespace ragd.Cli;
 
 public class StartCommand : Command
 {
+    private readonly Config _config;
     private readonly LifeCycleManager _lifeCycleManager;
 
-    public StartCommand(LifeCycleManager lifeCycleManager) : base("start", "Start the RAG daemon.")
+    public StartCommand(Config config, LifeCycleManager lifeCycleManager) : base("start", "Start the RAG daemon.")
     {
+        _config = config;
+
         _lifeCycleManager = lifeCycleManager;
 
-        Options.Add(new DatabaseOption(optional: true));
-        Options.Add(new ModelOption(optional: true));
+        Options.Add(new DatabaseOption());
+        Options.Add(new ModelOption());
 
         SetAction(Start);
     }
 
     private async Task Start(ParseResult parseResult)
     {
-        var database = parseResult.GetValue<FileInfo>(DatabaseOption.OptionName);
-        var model = parseResult.GetValue<FileInfo>(ModelOption.OptionName);
-
         parseResult.Log("Starting RAG daemon...");
 
-        var state = _lifeCycleManager.StartDaemon(database, model);
+        var state = _lifeCycleManager.StartDaemon(_config);
 
         await WaitForStart(parseResult);
 

@@ -8,19 +8,27 @@ public interface IClient
     Task<Response> SendAsync(Request request, CancellationToken cancellationToken = default);
 }
 
-public class Client(IPAddress host, int port): IClient
+public class Client(IPAddress host, int port) : IClient
 {
     private readonly Parser _parser = new();
 
     public async Task<Response> SendAsync(Request request, CancellationToken cancellationToken = default)
     {
-        using var client = new TcpClient(host.ToString(), port);
-        using var stream = client.GetStream();
+        var client = new TcpClient(host.ToString(), port);
+        try
+        {
+            var stream = client.GetStream();
 
-        await stream.WriteAsync(request.AsRequestLineAndHeaders(), cancellationToken);
-        await request.Body.CopyToAsync(stream, cancellationToken);
-        await stream.FlushAsync(cancellationToken);
+            await stream.WriteAsync(request.AsRequestLineAndHeaders(), cancellationToken);
+            await request.Body.CopyToAsync(stream, cancellationToken);
+            await stream.FlushAsync(cancellationToken);
 
-        return await _parser.ParseResponseAsync(stream, cancellationToken);
+            return await _parser.ParseResponseAsync(client, stream, cancellationToken);
+        }
+        catch
+        {
+            client.Dispose();
+            throw;
+        }
     }
 }

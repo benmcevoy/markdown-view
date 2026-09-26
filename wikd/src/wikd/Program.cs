@@ -2,6 +2,8 @@ using wikd.Rendering;
 using wikd.Templates;
 using wikd.Routing;
 using wikd.Cli;
+using Markdig;
+using Markdown.ColorCode;
 
 namespace wikd
 {
@@ -50,14 +52,21 @@ namespace wikd
             var ipAddress = System.Net.IPAddress.Loopback;
             var port = context.Port;
             var search = new SearchService(context.BasePath, new http.Client(ipAddress, 53280));
+            var markdownPipeline = new MarkdownPipelineBuilder()
+                            .UseAdvancedExtensions()
+                            .UseYamlFrontMatter()
+                            .UseColorCode()
+                            .DisableHtml()
+                            .Build();
+
 
             IRenderingHandler[] renderers = [
-                new MarkdownFileRenderingHandler(),
+                new MarkdownFileRenderingHandler(markdownPipeline),
                 new CodeFileRenderingHandler(),
                 new ImageFileRenderingHandler(),
                 new PdfFileRenderingHandler(),
                 new FolderRenderingHandler(),
-                new SearchRenderingHandler(search),
+                new SearchRenderingHandler(search, markdownPipeline, context.BasePath),
                 new AdminRenderingHandler(),
                 new DefaultSpecialRenderingHandler()
                 ];
@@ -74,7 +83,7 @@ namespace wikd
 
             Console.WriteLine("Starting server.");
             Console.WriteLine($"Listening on: http://{ipAddress}:{port}");
- 
+
             await daemon.StartAsync(CancellationToken.None);
         }
 

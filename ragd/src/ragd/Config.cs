@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Net;
+using System.Text.Json.Serialization;
 
 namespace ragd;
 
@@ -7,15 +8,23 @@ public class Config
 {
     public string DatabasePath { get; set; } = "./ragd.db";
     public string ModelPath { get; set; } = "./ragd.gguf";
+
+    [JsonConverter(typeof(IPAddressConverter))]
     public IPAddress Host { get; set; } = IPAddress.Loopback;
     public int Port { get; set; } = 53280;
     public string VectorExtensionPath { get; set; } = "./vec0.so";
     public int TopNResults { get; set; } = 3;
+    public bool IsQuiet { get; set; } = false;
+    public bool IsJson { get; set; } = false;
+    public string Name { get; set; } = "";
 
     public override string ToString() => @$"
 config.DatabasePath: {new FileInfo(DatabasePath).FullName}
-config.ModelPath: {new FileInfo(ModelPath).FullName}
 config.Host: {Host}
+config.IsQuiet: {IsQuiet}
+config.IsJson: {IsJson}
+config.Name: {Name}
+config.ModelPath: {new FileInfo(ModelPath).FullName}
 config.Port: {Port}
 config.TopNResults: {TopNResults}    
 config.VectorExtensionPath: {new FileInfo(VectorExtensionPath).FullName}

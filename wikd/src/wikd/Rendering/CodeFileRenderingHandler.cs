@@ -17,10 +17,10 @@ namespace wikd.Rendering
 
         public string[] SupportedFileExtensions => [".json", ".xml", ".js", ".cs", ".ts", ".html", ".sh", ".ps1", ".css", ".sql"];
 
-        public string Handle(Route input)
+        public async Task<string> HandleAsync(Route input)
         {
             var file = input as FileRoute;
-            var content = File.ReadAllText(file!.Path);
+            var content = await File.ReadAllTextAsync(file!.Path);
             var markdown = @$"```{file.Extension[1..]}
 {content}
 ```";

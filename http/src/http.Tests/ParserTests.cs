@@ -14,7 +14,7 @@ public class ParserTests
         var sut = new Parser();
 
         // act
-        var request = await sut.ParseRequestAsync(AsStream(requestLine), TestContext.Current.CancellationToken);
+        var request = await sut.ParseRequestAsync(new System.Net.Sockets.TcpClient(), AsStream(requestLine), TestContext.Current.CancellationToken);
 
         // assert
         Assert.Equal(expectedPath, request.Path);
@@ -29,7 +29,7 @@ public class ParserTests
         var sut = new Parser();
 
         // act
-        var request = await sut.ParseRequestAsync(AsStream($"GET {query} HTTP/1.1\n"), TestContext.Current.CancellationToken);
+        var request = await sut.ParseRequestAsync(new System.Net.Sockets.TcpClient(), AsStream($"GET {query} HTTP/1.1\n"), TestContext.Current.CancellationToken);
 
         // assert
         Assert.Equal(expected, request.Query);
@@ -43,7 +43,7 @@ public class ParserTests
         var sut = new Parser();
 
         // act
-        var request = await sut.ParseRequestAsync(AsStream($"GET / HTTP/1.1\n{headers}\n"), TestContext.Current.CancellationToken);
+        var request = await sut.ParseRequestAsync(new System.Net.Sockets.TcpClient(), AsStream($"GET / HTTP/1.1\n{headers}\n"), TestContext.Current.CancellationToken);
 
         // assert
         Assert.Equal(expected, request.Headers, AreDictionariesEquivalent);
@@ -56,7 +56,7 @@ public class ParserTests
         var sut = new Parser();
 
         // act
-        var result = await sut.ParseRequestAsync(RequestWithBody, TestContext.Current.CancellationToken);
+        var result = await sut.ParseRequestAsync(new System.Net.Sockets.TcpClient(), RequestWithBody, TestContext.Current.CancellationToken);
 
         // assert
         var sr = new StreamReader(result.Body);

@@ -6,6 +6,7 @@
 nohup.out
 TODO*.md
 .envrc
+.ragd
 ragd.config
 ragd.db
 ragd.gguf

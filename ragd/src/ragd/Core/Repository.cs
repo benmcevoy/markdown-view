@@ -46,7 +46,10 @@ public class Repository : IDisposable, IRepository
         // also Chunk could be normalized to Document and Chunk tables
         // for now I do not care
         cmd.CommandText = $@"
-CREATE VIRTUAL TABLE chunks_vec USING vec0(embedding float[{vectorLength}] distance_metric=cosine);
+CREATE VIRTUAL TABLE chunks_vec USING vec0(
+    embedding float[{vectorLength}] distance_metric=cosine,
+    name TEXT PARTITION KEY
+);
 
 CREATE TABLE chunks_meta (
     chunks_vec_rowid INTEGER PRIMARY KEY,
@@ -73,14 +76,15 @@ CREATE TABLE chunks_meta (
             using var vecCmd = _connection.CreateCommand();
             vecCmd.Transaction = transaction;
             vecCmd.CommandText = @"
-            INSERT INTO chunks_vec(embedding)
-            VALUES (@embedding)
+            INSERT INTO chunks_vec(embedding, name)
+            VALUES (@embedding, @name)
             ";
 
             // vec0 expects a raw blob of little-endian IEEE 754 floats
             var embeddingBytes = new byte[embedding.Length * sizeof(float)];
             Buffer.BlockCopy(embedding, 0, embeddingBytes, 0, embeddingBytes.Length);
             vecCmd.Parameters.AddWithValue("@embedding", embeddingBytes);
+            vecCmd.Parameters.AddWithValue("@name", name);
 
             vecCmd.ExecuteScalar();
 
@@ -163,9 +167,9 @@ CREATE TABLE chunks_meta (
 
         FROM chunks_vec
         INNER JOIN chunks_meta on chunks_meta.chunks_vec_rowid = chunks_vec.rowid
+             {(hasName ? "AND chunks_meta.name = @name" : "")}
         WHERE chunks_vec.embedding match @embedding
             AND k = @limit
-            {(hasName ? "AND chunks_meta.name = @name" : "")}
         ORDER BY chunks_vec.distance ASC
         ";
 

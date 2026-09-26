@@ -19,7 +19,8 @@ public class Router
         _renderer = renderer;
     }
 
-    public async Task<Response> RequestReceived(Request request, CancellationToken cancellationToken) => _renderer.Render(Map(request));
+    public async Task<Response> RequestReceived(Request request, CancellationToken cancellationToken) 
+        => await _renderer.RenderAsync(Map(request));
 
     private Route Map(Request request)
     {

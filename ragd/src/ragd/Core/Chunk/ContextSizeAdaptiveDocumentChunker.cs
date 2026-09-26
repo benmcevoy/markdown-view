@@ -126,7 +126,9 @@ public partial class ContextSizeAdaptiveDocumentChunker(IDocumentChunker inner, 
 
         var lines = content.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-        if (lines[1].StartsWith("===") || lines[1].StartsWith("---")) return true;
+        if (lines.Length == 0) return false;
+
+        if (lines[0].StartsWith("===") || lines[0].StartsWith("---")) return true;
 
         return false;
     }

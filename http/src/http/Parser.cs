@@ -1,10 +1,18 @@
 using System.IO.Pipelines;
+using System.Net.Sockets;
 
 namespace http;
 
-public partial class Parser
+internal interface IParser
 {
-    public async Task<Request> ParseRequestAsync(Stream requestStream, CancellationToken cancellationToken = default)
+    Task<Request> ParseRequestAsync(TcpClient owner, Stream requestStream, CancellationToken cancellationToken = default);
+    Task<Response> ParseResponseAsync(TcpClient owner, Stream responseStream, CancellationToken cancellationToken = default);
+}
+
+
+internal partial class Parser : IParser
+{
+    public async Task<Request> ParseRequestAsync(TcpClient owner, Stream requestStream, CancellationToken cancellationToken = default)
     {
         /*
         GET <path>["?"<query>] HTTP/1.1
@@ -20,7 +28,7 @@ public partial class Parser
         if (method == HttpMethod.POST)
         {
             headers.TryGetValue("Content-Length", out var contentLength);
-            body = ParseBody(pipeReader, contentLength ?? "");
+            body = ParseBody(owner, pipeReader, contentLength ?? "");
         }
 
         return new Request
@@ -33,7 +41,7 @@ public partial class Parser
         };
     }
 
-    public async Task<Response> ParseResponseAsync(Stream responseStream, CancellationToken cancellationToken = default)
+    public async Task<Response> ParseResponseAsync(TcpClient owner, Stream responseStream, CancellationToken cancellationToken = default)
     {
         /*
         HTTP/1.1 200 OK
@@ -54,7 +62,7 @@ public partial class Parser
         var headers = await ParseHeaders(pipeReader, cancellationToken);
 
         headers.TryGetValue("Content-Length", out var contentLength);
-        var body = ParseBody(pipeReader, contentLength ?? "");
+        var body = ParseBody(owner, pipeReader, contentLength ?? "");
 
         return new Response(statusCode)
         {
@@ -196,12 +204,12 @@ public partial class Parser
         return result;
     }
 
-    private static Stream ParseBody(PipeReader reader, string contentLength)
+    private static Stream ParseBody(TcpClient owner, PipeReader reader, string contentLength)
     {
         if (string.IsNullOrWhiteSpace(contentLength)) return Stream.Null;
 
         return int.TryParse(contentLength, out var length)
-            ? new BodyStream(reader, length)
+            ? new BodyStream(owner, reader, length)
             : Stream.Null;
     }
 

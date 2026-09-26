@@ -11,7 +11,7 @@ public class RequestTests
         var sut = new Parser();
 
         // act
-        var actual = await sut.ParseRequestAsync(JsonPost(), TestContext.Current.CancellationToken);
+        var actual = await sut.ParseRequestAsync(new System.Net.Sockets.TcpClient(), JsonPost(), TestContext.Current.CancellationToken);
 
         var sr = new StreamReader(actual.Body);
         var text = sr.ReadToEnd();

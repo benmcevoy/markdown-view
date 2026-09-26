@@ -7,6 +7,7 @@
     <IsPackable>false</IsPackable>
     <RootNamespace>http.Tests</RootNamespace>
     <OutputType>Exe</OutputType>
+    <AssemblyName>http.Tests</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

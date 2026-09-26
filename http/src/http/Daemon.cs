@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Sockets;
 
@@ -19,9 +20,10 @@ public class Daemon : IDaemon
     private Func<Request, CancellationToken, Task<Response>>? _receiveAsync;
 
     [DisallowNull]
-    public Func<Request, CancellationToken, Task<Response>> ReceiveAsync { 
-        get => _receiveAsync ?? throw new InvalidOperationException("Daemon.ReceiveAsync mus be set before use."); 
-        set => _receiveAsync = value; 
+    public Func<Request, CancellationToken, Task<Response>> ReceiveAsync
+    {
+        get => _receiveAsync ?? throw new InvalidOperationException("Daemon.ReceiveAsync must be set before use.");
+        set => _receiveAsync = value;
     }
 
     /// <summary>
@@ -48,44 +50,70 @@ public class Daemon : IDaemon
     {
         _listener.Start();
 
+        // register _listener for cancellation
+        // AcceptTcpClientAsync in netsatandrd2.1 does not have canellation overload
+        // so this mechanism address that
+        using var listenerCancellationRegisteration = cancellationToken.Register(() => _listener.Stop());
+
         while (!cancellationToken.IsCancellationRequested)
         {
+            TcpClient client;
             try
             {
-                using var client = await _listener.AcceptTcpClientAsync();
-                using var stream = client.GetStream();
-
-                var request = await _parser.ParseRequestAsync(stream, cancellationToken);
-                var response = new Response(HttpStatusCode.ClientError);
-
-                if (IsValidRequest(request))
-                {
-                    try
-                    {
-                        response = await ReceiveAsync(request, cancellationToken);
-                    }
-                    catch (Exception ex)
-                    {
-                        response = Response.ServerError($"Error handling request for {request.Path} - {ex.Message}");
-                    }
-                }
-
-                await stream.WriteAsync(response.AsResponseLineAndHeaders(), cancellationToken);
-                await response.Body.CopyToAsync(stream, cancellationToken);
-                await stream.FlushAsync(cancellationToken);
+                client = await _listener.AcceptTcpClientAsync();
             }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            catch (OperationCanceledException)
             {
                 break;
             }
-            catch (SocketException) when (cancellationToken.IsCancellationRequested)
+            catch (ObjectDisposedException) when (cancellationToken.IsCancellationRequested)
             {
+                // listener was stopped due to cancellation
                 break;
             }
+
+            var _ = HandleConnectionAsync(client, cancellationToken);
         }
 
         await StopAsync(cancellationToken);
     }
+
+    private async Task HandleConnectionAsync(TcpClient client, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var stream = client.GetStream();
+            var request = await _parser.ParseRequestAsync(client, stream, cancellationToken);
+            var response = new Response(HttpStatusCode.ClientError);
+
+            if (IsValidRequest(request))
+            {
+                try
+                {
+                    response = await ReceiveAsync(request, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    response = Response.ServerError($"Error handling request for {request.Path} - {ex.Message}");
+                }
+            }
+
+            await stream.WriteAsync(response.AsResponseLineAndHeaders(), cancellationToken);
+            await response.Body.CopyToAsync(stream, cancellationToken);
+            await stream.FlushAsync(cancellationToken);
+        }
+        catch (Exception ex) when (ex is IOException or SocketException or OperationCanceledException)
+        {
+            // connection dropped or shutting down
+            // ignore
+            // thanks Claude.
+        }
+        finally
+        {
+            client.Dispose();
+        }
+    }
+
 
     public Task StopAsync(CancellationToken cancellationToken = default)
     {

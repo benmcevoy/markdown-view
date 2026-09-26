@@ -7,18 +7,22 @@ namespace ragd.Cli;
 
 public class NewCommand : Command
 {
-    public NewCommand() : base("new", "Create a new sqlite embedding database.")
+    private readonly Config _config;
+
+    public NewCommand(Config config) : base("new", "Create a new sqlite embedding database.")
     {
-        Options.Add(new DatabaseOption(true));
+        Options.Add(new DatabaseOption(databaseMustExistIsOptional: true));
         Options.Add(new ModelOption());
 
         SetAction(New);
+        _config = config;
+
     }
 
     private void New(ParseResult parseResult)
     {
-        var database = parseResult.GetRequiredValue<FileInfo>(DatabaseOption.OptionName);
-        var model = parseResult.GetRequiredValue<FileInfo>(ModelOption.OptionName);
+        var database = new FileInfo(_config.DatabasePath);
+        var model = new FileInfo(_config.ModelPath);
 
         // TODO: unhappy that I have not injected this
         // the embedder is a heavyweight object

@@ -17,10 +17,11 @@ public class ApiResponse<T> : IApiResponse<T>
 
 public class ApiResponse : ApiResponse<object>
 {
-    internal static ApiResponse Stopped() =>
+    internal static ApiResponse Stopped(object? data = null) =>
         new()
         {
             Status = LifeCycleStates.STOPPED,
-            Message = "RAG daemon is not running."
-        };
+            Message = "RAG daemon is not running.",
+            Data = data
+        };        
 }

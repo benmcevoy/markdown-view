@@ -20,8 +20,8 @@ public class ParserPerformanceTests(ITestOutputHelper output)
 
         new Thread(() =>
          {
-             var server = new Daemon(System.Net.IPAddress.Loopback, 53280)
-             ;
+             var server = new Daemon(System.Net.IPAddress.Loopback, 53280, 
+                (r, c) => Task.FromResult(new Response(HttpStatusCode.OK) { Body = ResponseStream() }));
              Task.Run(() => server.StartAsync(cancelToken)).GetAwaiter().GetResult();
 
          }).Start();
@@ -80,13 +80,13 @@ public class ParserPerformanceTests(ITestOutputHelper output)
             var sut = new Parser();
 
             // act
-            var actual = await sut.ParseRequestAsync(request, TestContext.Current.CancellationToken);
+            var actual = await sut.ParseRequestAsync(new System.Net.Sockets.TcpClient(), request, TestContext.Current.CancellationToken);
 
             sw.Stop();
             ticks += sw.ElapsedTicks;
 
             // assert
-            // Assert.Equal("test", actual.Path);
+             Assert.Equal("test", actual.Path);
             // Assert.Equal("hello", actual.Headers["X-Foo-Bar"]);
             // Assert.Equal("b", actual.Query["a"]);
         }
@@ -125,7 +125,7 @@ public class ParserPerformanceTests(ITestOutputHelper output)
             var sut = new Parser();
 
             // act
-            var actual = await sut.ParseResponseAsync(request, TestContext.Current.CancellationToken);
+            var actual = await sut.ParseResponseAsync(new System.Net.Sockets.TcpClient(), request, TestContext.Current.CancellationToken);
 
             sw.Stop();
             ticks += sw.ElapsedTicks;

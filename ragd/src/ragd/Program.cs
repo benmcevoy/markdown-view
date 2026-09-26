@@ -1,9 +1,11 @@
-﻿using http;
+﻿using System.CommandLine;
+using http;
 using LLama.Native;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ragd.Cli;
+using ragd.Cli.Options;
 
 namespace ragd
 {
@@ -12,9 +14,9 @@ namespace ragd
         static async Task Main(string[] args)
         {
             var builder = Host.CreateApplicationBuilder();
-            // TODO: config - needs to be some kind of merge from cli args
+            
             var config = new Config();
-            builder.Configuration.AddJsonFile("ragd.config", optional: true);
+            builder.Configuration.AddJsonFile(".ragd", optional: true);
             builder.Configuration.Bind(config);
 
             // shut up llama
@@ -24,18 +26,48 @@ namespace ragd
                 // LLamaLogLevel is a bit odd, after Error comes Continue...
                 // which would map to Critical? should be None.
                 if (level == LLamaLogLevel.Warning || level == LLamaLogLevel.Error)
-                    Console.Write($"[{level}] {message}");
+                    Console.WriteLine($"[{level}] {message}");
             });
 
             var cmd = new Commands(
+                    config,
                     new(),
                     new Client(config.Host, config.Port)
                     )
                     .Parse(args!);
 
-            if (!cmd.IsQuiet()) WriteBanner();
+            // I really dislike mutating the config here :(
+            MergeCliOptions(ref config, cmd);
+
+            var (isValid, errors) = config.Validate();
+            if (!isValid)
+            {
+                var c = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Red;
+                foreach (var error in errors)
+                {
+                    Console.WriteLine(error);
+                }
+                Console.ForegroundColor = c;
+
+                return;
+            }
+
+            if (!config.IsQuiet) WriteBanner();
 
             await cmd.InvokeAsync();
+        }
+
+        private static void MergeCliOptions(ref Config config, ParseResult parseResult)
+        {
+            config.IsQuiet = parseResult.GetValue<bool>(QuietOption.OptionName) ? true : config.IsQuiet;
+            config.IsJson = parseResult.GetValue<bool>(JsonOption.OptionName) ? true : config.IsJson;
+            config.Name =  parseResult.GetValue<string>(NameOption.OptionName) ?? config.Name;
+            config.TopNResults =  parseResult.GetValue<int?>(LimitOption.OptionName) ?? config.TopNResults;
+            config.DatabasePath =  parseResult.GetValue<string>(DatabaseOption.OptionName) ?? config.DatabasePath;
+            config.ModelPath =  parseResult.GetValue<string>(ModelOption.OptionName) ?? config.ModelPath;
+
+            // other config properties are NOT cli options, e.g. host, port
         }
 
         private static void WriteBanner()

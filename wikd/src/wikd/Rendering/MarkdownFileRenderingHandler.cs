@@ -1,7 +1,6 @@
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
-using Markdown.ColorCode;
 using wikd.Routing;
 
 namespace wikd.Rendering
@@ -10,20 +9,16 @@ namespace wikd.Rendering
     {
         private readonly MarkdownPipeline _pipeline;
 
-        public MarkdownFileRenderingHandler()
+        public MarkdownFileRenderingHandler(MarkdownPipeline pipeline)
         {
-            _pipeline = new MarkdownPipelineBuilder()
-                .UseAdvancedExtensions()
-                .UseYamlFrontMatter()
-                .UseColorCode()
-                .Build();
+            _pipeline = pipeline;
         }
 
         public string[] SupportedFileExtensions => [".md"];
 
-        public string Handle(Route input)
+        public async Task<string> HandleAsync(Route input)
         {
-            var content = File.ReadAllText(input.Path);
+            var content = await File.ReadAllTextAsync(input.Path);
             var document = Markdig.Markdown.Parse(content, _pipeline);
 
             document = RewriteImages(input, document);

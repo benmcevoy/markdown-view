@@ -8,15 +8,16 @@ namespace ragd.Cli;
 
 public class IndexCommand : Command
 {
+    private readonly Config _config;
     private readonly LifeCycleManager _lifeCycleManager;
     private readonly Client _client;
     private const string ArgumentName = "path";
 
-    public IndexCommand(LifeCycleManager lifeCycleManager, Client client)
+    public IndexCommand(Config config, LifeCycleManager lifeCycleManager, Client client)
         : base("index", "Index the given file or folder.")
     {
+        _config = config;
         _lifeCycleManager = lifeCycleManager;
-
         _client = client;
 
         var argument = new Argument<string>(ArgumentName);
@@ -37,7 +38,7 @@ public class IndexCommand : Command
             return;
         }
 
-        var name = parseResult.GetValue<string>(NameOption.OptionName) ?? "";
+        var name = _config.Name;
         var path = parseResult.GetRequiredValue<string>(ArgumentName);
 
         var response = await _client.SendAsync(
