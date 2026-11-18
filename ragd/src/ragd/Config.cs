@@ -19,22 +19,22 @@ public class Config
     public string Name { get; set; } = "";
 
     public override string ToString() => @$"
-config.DatabasePath: {new FileInfo(DatabasePath).FullName}
+config.DatabasePath: {DatabasePath}
 config.Host: {Host}
 config.IsQuiet: {IsQuiet}
 config.IsJson: {IsJson}
 config.Name: {Name}
-config.ModelPath: {new FileInfo(ModelPath).FullName}
+config.ModelPath: {ModelPath}
 config.Port: {Port}
 config.TopNResults: {TopNResults}    
-config.VectorExtensionPath: {new FileInfo(VectorExtensionPath).FullName}
+config.VectorExtensionPath: {VectorExtensionPath}
 ";
     public (bool, Collection<string>) Validate()
     {
         var results = new Collection<string>();
         var isValid = true;
-
         var test = new FileInfo(VectorExtensionPath);
+
         if (!test.Exists)
         {
             isValid = false;
@@ -42,6 +42,7 @@ config.VectorExtensionPath: {new FileInfo(VectorExtensionPath).FullName}
         }
 
         test = new FileInfo(ModelPath);
+
         if (!test.Exists)
         {
             isValid = false;
@@ -49,6 +50,7 @@ config.VectorExtensionPath: {new FileInfo(VectorExtensionPath).FullName}
         }
 
         test = new FileInfo(DatabasePath);
+        
         if (!test.Exists)
         {
             isValid = false;

@@ -7,6 +7,8 @@ namespace ragd.Cli;
 
 public static class ParseResultExtensions
 {
+    private static JsonSerializerOptions _serializerOptions = new(JsonSerializerOptions.Web) { WriteIndented = true };
+
     public static bool IsQuiet(this ParseResult parseResult)
         => parseResult.GetValue<bool>(QuietOption.OptionName) || parseResult.IsJson();
     private static bool IsJson(this ParseResult parseResult) => parseResult.GetValue<bool>(JsonOption.OptionName);
@@ -15,10 +17,10 @@ public static class ParseResultExtensions
     /// Write response to the caller via std out. 
     /// </summary>
     /// <remarks>--quiet has no effect</remarks>
-    public static void Out(this ParseResult parseResult, ApiResponse response, Func<ApiResponse, string>? formatter = default) =>
+    public static void Out(this ParseResult parseResult, ApiResponse response) =>
         Console.WriteLine(parseResult.IsJson()
             ? AsJson(response)
-            : AsText(response, formatter));
+            : AsText(response));
 
     public static void Out(this ParseResult parseResult, string message) => Console.WriteLine(message);
 
@@ -33,15 +35,13 @@ public static class ParseResultExtensions
     {
         if (response.Data is null)
         {
-            return JsonSerializer.Serialize(new { response.Status, response.Message }, new JsonSerializerOptions(JsonSerializerOptions.Web) { WriteIndented = true });
+            return JsonSerializer.Serialize(new { response.Status, response.Message }, _serializerOptions);
         }
 
-        return JsonSerializer.Serialize(new { response.Status, response.Message, response.Data }, new JsonSerializerOptions(JsonSerializerOptions.Web) { WriteIndented = true });
+        return JsonSerializer.Serialize(new { response.Status, response.Message, response.Data }, _serializerOptions);
     }
 
-    private static string AsText(ApiResponse response, Func<ApiResponse, string>? formatter)
-        => (formatter is null)
-            ? @$"{response.Status} - {response.Message}"
-            : formatter(response);
+    private static string AsText(ApiResponse response)
+        =>  @$"{response.Status} - {response.Message}";
 }
 

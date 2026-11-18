@@ -26,14 +26,14 @@ public class ConfigCommand : Command
 
         if (!_lifeCycleManager.IsRunning())
         {
-            parseResult.Out(ApiResponse.Stopped(_config), FormatResponse);
+            parseResult.Out(FormatResponse(ApiResponse.Stopped(_config)));
 
             return;
         }
 
         var response = await _client.SendAsync(new Request { Method = http.HttpMethod.GET, Path = "config" });
 
-        parseResult.Out(response.AsApiResponse(), FormatResponse);
+        parseResult.Out(FormatResponse(response.AsApiResponse()));
     }
 
     private string FormatResponse(ApiResponse response) =>

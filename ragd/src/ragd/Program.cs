@@ -3,6 +3,8 @@ using http;
 using LLama.Native;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Hosting;
 using ragd.Cli;
 using ragd.Cli.Options;
@@ -14,9 +16,12 @@ namespace ragd
         static async Task Main(string[] args)
         {
             var builder = Host.CreateApplicationBuilder();
-            
+
             var config = new Config();
-            builder.Configuration.AddJsonFile(".ragd", optional: true);
+            // dotnet does not like .dotfiles
+            builder.Configuration.AddJsonFile(
+                new PhysicalFileProvider(Directory.GetCurrentDirectory(), ExclusionFilters.None),
+                ".ragd", optional: true, reloadOnChange: false);
             builder.Configuration.Bind(config);
 
             // shut up llama
@@ -62,12 +67,17 @@ namespace ragd
         {
             config.IsQuiet = parseResult.GetValue<bool>(QuietOption.OptionName) ? true : config.IsQuiet;
             config.IsJson = parseResult.GetValue<bool>(JsonOption.OptionName) ? true : config.IsJson;
-            config.Name =  parseResult.GetValue<string>(NameOption.OptionName) ?? config.Name;
-            config.TopNResults =  parseResult.GetValue<int?>(LimitOption.OptionName) ?? config.TopNResults;
-            config.DatabasePath =  parseResult.GetValue<string>(DatabaseOption.OptionName) ?? config.DatabasePath;
-            config.ModelPath =  parseResult.GetValue<string>(ModelOption.OptionName) ?? config.ModelPath;
+            config.Name = parseResult.GetValue<string>(NameOption.OptionName) ?? config.Name;
+            config.TopNResults = parseResult.GetValue<int?>(LimitOption.OptionName) ?? config.TopNResults;
+            config.DatabasePath = parseResult.GetValue<string>(DatabaseOption.OptionName) ?? config.DatabasePath;
+            config.ModelPath = parseResult.GetValue<string>(ModelOption.OptionName) ?? config.ModelPath;
 
             // other config properties are NOT cli options, e.g. host, port
+
+            // express paths as absolute
+            config.DatabasePath = new FileInfo(config.DatabasePath).FullName;
+            config.ModelPath = new FileInfo(config.ModelPath).FullName;
+            config.VectorExtensionPath = new FileInfo(config.VectorExtensionPath).FullName;
         }
 
         private static void WriteBanner()
